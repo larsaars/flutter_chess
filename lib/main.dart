@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
 
-ain() {
+import 'generated/i18n.dart';
+
+void main() {
   runApp(MyApp());
 }
 
-  class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      //manage resources first
+      localizationsDelegates: [S.delegate],
+      supportedLocales: [const Locale('de'), const Locale('en')],
+      //define title etc.
+      title: S.of(context).app_name,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -26,7 +32,7 @@ ain() {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: S.of(context).app_name),
     );
   }
 }
