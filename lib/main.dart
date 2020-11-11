@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'generated/i18n.dart';
+import 'package:chess_bot/generated/i18n.dart';
+
+S strings;
 
 void main() {
   runApp(MyApp());
@@ -10,12 +12,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    const appName = 'chess';
+
     return MaterialApp(
       //manage resources first
-      localizationsDelegates: [S.delegate],
-      supportedLocales: [const Locale('de'), const Locale('en')],
+      localizationsDelegates: [
+        S.delegate
+      ],
+      supportedLocales: [
+        const Locale('de'),
+        const Locale('en')
+      ],
       //define title etc.
-      title: S.of(context).app_name,
+      title: appName,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -32,7 +41,7 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: S.of(context).app_name),
+      home: MyHomePage(title: appName),
     );
   }
 }
@@ -71,6 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    //set strings object
+    strings = S.of(context);
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -87,24 +98,10 @@ class _MyHomePageState extends State<MyHomePage> {
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'You have pushed the button this many times:',
+              strings.close,
             ),
             Text(
               '$_counter',
@@ -115,9 +112,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        tooltip: strings.app_name,
         child: Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 }
