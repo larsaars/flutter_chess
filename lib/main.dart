@@ -86,8 +86,8 @@ class _MyHomePageState extends State<MyHomePage> {
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
           child: _chessController.chessBoard = ChessBoard(
-        boardType: BoardType.darkBrown,
-        size: MediaQuery.of(context).size.width,
+            boardType: BoardType.darkBrown,
+            size: MediaQuery.of(context).size.width,
         onCheckMate: (color) => _chessController.onCheckMate(color),
         onDraw: () => _chessController.onDraw(),
         onMove: (move) => _chessController.onMove(move),
