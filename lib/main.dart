@@ -66,15 +66,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   ChessBoard _chessBoard;
 
   void _onCheckMate(color) {
-    print('onCheckMate');
+    print('onCheckMate: $color');
   }
 
   void _onMove(move) {
-    print('onMove');
+    print('onMove: $move');
   }
 
   void _onDraw() {
@@ -93,18 +92,15 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
           child: _chessBoard = ChessBoard(
-            size: MediaQuery
-                .of(context)
-                .size
-                .width,
-            onCheckMate: (color) => _onCheckMate(color),
-            onDraw: () => _onDraw(),
-            onMove: (move) => _onMove(move),
-          )
-      ),
+        boardType: BoardType.darkBrown,
+        size: MediaQuery.of(context).size.width,
+        onCheckMate: (color) => _onCheckMate(color),
+        onDraw: () => _onDraw(),
+        onMove: (move) => _onMove(move),
+      )),
     );
   }
 }
