@@ -1,3 +1,4 @@
 {
-  "app_name": "Chess"
+  "app_name": "Chess",
+  "close": "close"
 }

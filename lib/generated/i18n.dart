@@ -30,6 +30,10 @@ class S {
     return Intl.message("Chess", name: 'app_name');
   }
 
+  String get close {
+    return Intl.message("close", name: 'close');
+  }
+
 
 }
 
