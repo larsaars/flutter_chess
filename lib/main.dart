@@ -1,3 +1,4 @@
+import 'package:chess_bot/chess_controller.dart';
 import 'package:chess_bot/generated/i18n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -66,24 +67,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  ChessBoard _chessBoard;
-
-  void _onCheckMate(color) {
-    print('onCheckMate: $color');
-  }
-
-  void _onMove(move) {
-    print('onMove: $move');
-  }
-
-  void _onDraw() {
-    print('onDraw');
-  }
+  ChessController _chessController;
 
   @override
   Widget build(BuildContext context) {
     //set strings object
     strings = S.of(context);
+    //build the chess controller
+    _chessController = ChessController();
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -94,12 +85,12 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
-          child: _chessBoard = ChessBoard(
+          child: _chessController.chessBoard = ChessBoard(
         boardType: BoardType.darkBrown,
         size: MediaQuery.of(context).size.width,
-        onCheckMate: (color) => _onCheckMate(color),
-        onDraw: () => _onDraw(),
-        onMove: (move) => _onMove(move),
+        onCheckMate: (color) => _chessController.onCheckMate(color),
+        onDraw: () => _chessController.onDraw(),
+        onMove: (move) => _chessController.onMove(move),
       )),
     );
   }
