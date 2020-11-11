@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
-
 import 'package:chess_bot/generated/i18n.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_chess_board/flutter_chess_board.dart';
 
 S strings;
 
@@ -12,17 +13,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    //the app name
     const appName = 'chess';
 
+    //set fullscreen
+    SystemChrome.setEnabledSystemUIOverlays([]);
+
+    //create the material app
     return MaterialApp(
       //manage resources first
-      localizationsDelegates: [
-        S.delegate
-      ],
-      supportedLocales: [
-        const Locale('de'),
-        const Locale('en')
-      ],
+      localizationsDelegates: [S.delegate],
+      supportedLocales: S.delegate.supportedLocales,
       //define title etc.
       title: appName,
       theme: ThemeData(
@@ -65,17 +66,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  ChessBoard _chessBoard;
+
+  void _onCheckMate(color) {
+    print('onCheckMate');
+  }
+
+  void _onMove(move) {
+    print('onMove');
+  }
+
+  void _onDraw() {
+    print('onDraw');
   }
 
   @override
@@ -89,31 +92,18 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              strings.close,
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: strings.app_name,
-        child: Icon(Icons.add),
+          child: _chessBoard = ChessBoard(
+            size: MediaQuery
+                .of(context)
+                .size
+                .width,
+            onCheckMate: (color) => _onCheckMate(color),
+            onDraw: () => _onDraw(),
+            onMove: (move) => _onMove(move),
+          )
       ),
     );
   }

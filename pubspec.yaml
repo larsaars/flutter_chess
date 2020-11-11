@@ -16,11 +16,11 @@ dependencies:
 
   chess: ^0.6.5
   flutter_chess_board: ^0.9.4
-  gen_lang: 0.1.3
   intl: ^0.16.1
   flutter_launcher_icons: ^0.8.1
 
 dev_dependencies:
+  gen_lang: 0.1.3
   flutter_test:
     sdk: flutter
 

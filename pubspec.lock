@@ -124,7 +124,7 @@ packages:
     source: sdk
     version: "0.0.0"
   gen_lang:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: gen_lang
       url: "https://pub.dartlang.org"
