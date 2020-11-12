@@ -14,10 +14,13 @@ dependencies:
   flutter:
     sdk: flutter
 
-  chess: ^0.6.5
-  flutter_chess_board: ^0.9.4
   intl: ^0.16.1
   flutter_launcher_icons: ^0.8.1
+
+  #for the chess board
+  chess: ^0.6.5
+  chess_vectors_flutter: ^1.0.12
+  scoped_model: ^1.1.0
 
 dev_dependencies:
   gen_lang: 0.1.3
@@ -67,6 +70,7 @@ flutter:
     - assets/
     - res/string/
     - res/drawable/
+    - res/chess_board/
 
 #icons
 flutter_icons:

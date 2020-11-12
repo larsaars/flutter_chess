@@ -2,17 +2,21 @@ import 'package:flutter/material.dart';
 
 class FancyButton extends StatefulWidget {
 
-  final GestureTapCallback onPressed;
+  final VoidCallback onPressed;
   final String text;
   final IconData icon;
+  final Color splashColor, fillColor, iconColor;
 
-  FancyButton({@required this.onPressed, this.text = "", this.icon});
+  FancyButton({Key key, @required this.onPressed, this.text = "", this.icon, this.splashColor = Colors.orange, this.fillColor = Colors.brown, this.iconColor = Colors.amber}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _FancyButtonState(
     onPressed: onPressed,
     text: text,
-    icon: icon
+    icon: icon,
+    splashColor: splashColor,
+    fillColor: fillColor,
+    iconColor: iconColor,
   );
 }
 
@@ -20,17 +24,24 @@ class _FancyButtonState extends State<FancyButton> with SingleTickerProviderStat
 
   AnimationController animationController;
 
-  final GestureTapCallback onPressed;
+  final VoidCallback onPressed;
   final String text;
   final IconData icon;
+  final Color splashColor, fillColor, iconColor;
 
-  _FancyButtonState({@required this.onPressed, this.text = "", this.icon});
+  _FancyButtonState({@required this.onPressed, this.text = "", this.icon, this.splashColor = Colors.orange, this.fillColor = Colors.brown, this.iconColor = Colors.amber});
+
+  void onTapped() {
+    //animate, then call callback
+    animationController.forward();
+    onPressed();
+  }
 
   @override
   Widget build(BuildContext context) {
     return RawMaterialButton(
-            onPressed: onPressed,
-            splashColor: Colors.orange,
+            onPressed: () => onTapped(),
+            splashColor: splashColor,
             fillColor: Colors.brown,
             shape: StadiumBorder(),
             child: Padding(
@@ -48,7 +59,7 @@ class _FancyButtonState extends State<FancyButton> with SingleTickerProviderStat
                     ).animate(animationController),
                     child: Icon(
                       icon,
-                      color: Colors.amber,
+                      color: iconColor,
                     ),
                   ),
                   SizedBox(
@@ -68,17 +79,9 @@ class _FancyButtonState extends State<FancyButton> with SingleTickerProviderStat
   }
 
   @override
-  BuildContext get context => context;
-
-  @override
-  void deactivate() {
+  void dispose() {
     animationController.dispose();
-    super.deactivate();
-  }
-
-  @override
-  void didUpdateWidget(covariant StatefulWidget oldWidget) {
-    super.didUpdateWidget(oldWidget);
+    super.dispose();
   }
 
   @override
@@ -87,6 +90,11 @@ class _FancyButtonState extends State<FancyButton> with SingleTickerProviderStat
       duration: const Duration(milliseconds: 412),
       vsync: this,
     );
+
+    animationController.addStatusListener((status) {
+      if(status == AnimationStatus.completed)
+        animationController.reset();
+    });
     super.initState();
   }
 }
