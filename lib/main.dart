@@ -1,5 +1,6 @@
 import 'package:chess_bot/chess_controller.dart';
 import 'package:chess_bot/generated/i18n.dart';
+import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chess_board/flutter_chess_board.dart';
@@ -92,13 +93,18 @@ class _MyHomePageState extends State<MyHomePage> {
             onDraw: () => _chessController.onDraw(),
             onMove: (move) => _chessController.onMove(move),
       )),
-      bottomNavigationBar: SingleChildScrollView(
+      floatingActionButton: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-
-          ],
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              FancyButton(onPressed: () => print('pressed'),
+                icon: Icons.add,
+              ),
+            ],
+          ),
         ),
       ),
     );
