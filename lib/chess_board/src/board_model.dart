@@ -5,9 +5,11 @@ import 'package:scoped_model/scoped_model.dart';
 
 import 'chess_board_controller.dart';
 
-typedef Null MoveCallback(String moveNotation);
-typedef Null CheckMateCallback(PieceColor color);
-typedef Null CheckCallback(PieceColor color);
+typedef void MoveCallback(move);
+typedef void CheckMateCallback(PieceColor color);
+typedef void CheckCallback(PieceColor color);
+typedef void GameCallback(chess.Chess game);
+typedef void ChessBoardControllerCallback(ChessBoardController controller);
 
 class BoardModel extends Model {
   /// The size of the board (The board is a square)
@@ -24,6 +26,10 @@ class BoardModel extends Model {
 
   /// Callback for when the game is a draw (Example: K v K)
   VoidCallback onDraw;
+
+  //the callbacks for returning the controller and game
+  GameCallback onGame;
+  ChessBoardControllerCallback onChessBoardController;
 
   /// If the white side of the board is towards the user
   bool whiteSideTowardsUser;
@@ -57,10 +63,15 @@ class BoardModel extends Model {
       this.onCheckMate,
       this.onCheck,
       this.onDraw,
+      this.onGame,
+      this.onChessBoardController,
       this.whiteSideTowardsUser,
       this.chessBoardController,
       this.enableUserMoves) {
     chessBoardController?.game = game;
     chessBoardController?.refreshBoard = refreshBoard;
+    //return controller and game
+    onChessBoardController(chessBoardController);
+    onGame(game);
   }
 }

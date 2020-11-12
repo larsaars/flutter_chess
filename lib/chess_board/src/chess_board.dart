@@ -113,6 +113,10 @@ class ChessBoard extends StatefulWidget {
   /// Callback for when the game is a draw
   final VoidCallback onDraw;
 
+  //the callbacks for returning the controller and game
+  GameCallback onGame;
+  ChessBoardControllerCallback onChessBoardController;
+
   /// A boolean which notes if white board side is towards users
   final bool whiteSideTowardsUser;
 
@@ -132,6 +136,8 @@ class ChessBoard extends StatefulWidget {
     @required this.onCheckMate,
     @required this.onCheck,
     @required this.onDraw,
+    @required this.onGame,
+    @required this.onChessBoardController,
     this.chessBoardController,
     this.enableUserMoves = true,
     this.boardType = BoardType.brown,
@@ -151,6 +157,8 @@ class _ChessBoardState extends State<ChessBoard> {
         widget.onCheckMate,
         widget.onCheck,
         widget.onDraw,
+        widget.onGame,
+        widget.onChessBoardController,
         widget.whiteSideTowardsUser,
         widget.chessBoardController,
         widget.enableUserMoves,
@@ -202,25 +210,21 @@ class _ChessBoardState extends State<ChessBoard> {
       case BoardType.brown:
         return Image.asset(
           "res/chess_board/brown_board.png",
-          package: 'flutter_chess_board',
           fit: BoxFit.cover,
         );
       case BoardType.darkBrown:
         return Image.asset(
           "res/chess_board/dark_brown_board.png",
-          package: 'chess_bot',
           fit: BoxFit.cover,
         );
       case BoardType.green:
         return Image.asset(
           "res/chess_board/green_board.png",
-          package: 'chess_bot',
           fit: BoxFit.cover,
         );
       case BoardType.orange:
         return Image.asset(
           "res/chess_board/orange_board.png",
-          package: 'chess_bot',
           fit: BoxFit.cover,
         );
       default:

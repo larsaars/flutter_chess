@@ -1,3 +1,4 @@
+import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_controller.dart';
 import 'package:chess_bot/generated/i18n.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
@@ -21,6 +22,11 @@ class MyApp extends StatelessWidget {
 
     //set fullscreen
     SystemChrome.setEnabledSystemUIOverlays([]);
+    //and portrait only
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown
+    ]);
 
     //create the material app
     return MaterialApp(
@@ -68,23 +74,16 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   ChessController _chessController;
+  int _timesResumed = 0;
 
   @override
   Widget build(BuildContext context) {
     //set strings object
     strings = S.of(context);
     //build the chess controller
-    _chessController = ChessController();
-    //create the board
-    _chessController.chessBoard = ChessBoard(
-      boardType: BoardType.darkBrown,
-      size: MediaQuery.of(context).size.width,
-      onCheckMate: (color) => _chessController.onCheckMate(),
-      onDraw: () => _chessController.onDraw(),
-      onMove: (move) => _chessController.onMove(move),
-    );
+    _chessController = ChessController(context);
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -95,22 +94,89 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
-          child: _chessController.chessBoard,
+          child: ChessBoard(
+            boardType: BoardType.darkBrown,
+            size: MediaQuery.of(context).size.width,
+            onGame: (game) {
+              _chessController.game = game;
+              _chessController.onReloadLastGame();
+            },
+            onChessBoardController: (chessBoardController) => _chessController.controller = chessBoardController,
+            onCheckMate: (color) => _chessController.onCheckMate(color),
+            onDraw: () => _chessController.onDraw(),
+            onMove: (move) => _chessController.onMove(move),
+            onCheck: (color) => _chessController.onCheckMate(color),
+          ),
       ),
-      floatingActionButton: SingleChildScrollView(
+      bottomNavigationBar: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              FancyButton(onPressed: () => print('pressed'),
+              FancyButton(
+                onPressed: () => print('pressed'),
                 icon: Icons.add,
               ),
+              SizedBox(
+                width: 8.0,
+              ),
+              FancyButton(
+                onPressed: () => print('pressed'),
+                icon: Icons.add,
+              ),
+              SizedBox(
+                width: 8.0,
+              ),
+              FancyButton(
+                onPressed: () => print('pressed'),
+                icon: Icons.add,
+              ),
+              SizedBox(
+                width: 8.0,
+              ),
+              FancyButton(
+                onPressed: () => print('pressed'),
+                icon: Icons.add,
+              ),
+              SizedBox(
+                width: 8.0,
+              ),
+              FancyButton(
+                onPressed: () => print('pressed'),
+                icon: Icons.add,
+              ),
+              SizedBox(
+                width: 8.0,
+              ),
+              FancyButton(
+                onPressed: () => _chessController.resetBoard(),
+                icon: Icons.autorenew,
+              )
             ],
           ),
         ),
       ),
     );
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    //on pause save game,
+    //on resume load game only if is not the first time to re enter activity
+    switch(state) {
+      case AppLifecycleState.paused:
+        _chessController.onSaveGame();
+        break;
+      case AppLifecycleState.resumed:
+        if(_timesResumed != 0)
+          _chessController.onReloadLastGame();
+        _timesResumed++;
+        break;
+      default:
+        break;
+    }
+    super.didChangeAppLifecycleState(state);
   }
 }
