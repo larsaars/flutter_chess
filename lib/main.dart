@@ -88,10 +88,19 @@ class _MyHomePageState extends State<MyHomePage> {
           child: _chessController.chessBoard = ChessBoard(
             boardType: BoardType.darkBrown,
             size: MediaQuery.of(context).size.width,
-        onCheckMate: (color) => _chessController.onCheckMate(color),
-        onDraw: () => _chessController.onDraw(),
-        onMove: (move) => _chessController.onMove(move),
+            onCheckMate: (color) => _chessController.onCheckMate(),
+            onDraw: () => _chessController.onDraw(),
+            onMove: (move) => _chessController.onMove(move),
       )),
+      bottomNavigationBar: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+
+          ],
+        ),
+      ),
     );
   }
 }
