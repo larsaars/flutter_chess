@@ -3,7 +3,8 @@ import 'package:chess_bot/generated/i18n.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_chess_board/flutter_chess_board.dart';
+
+import 'chess_board/src/chess_board.dart';
 
 S strings;
 
@@ -76,6 +77,14 @@ class _MyHomePageState extends State<MyHomePage> {
     strings = S.of(context);
     //build the chess controller
     _chessController = ChessController();
+    //create the board
+    _chessController.chessBoard = ChessBoard(
+      boardType: BoardType.darkBrown,
+      size: MediaQuery.of(context).size.width,
+      onCheckMate: (color) => _chessController.onCheckMate(),
+      onDraw: () => _chessController.onDraw(),
+      onMove: (move) => _chessController.onMove(move),
+    );
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -86,13 +95,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
           // Center is a layout widget. It takes a single child and positions it
           // in the middle of the parent.
-          child: _chessController.chessBoard = ChessBoard(
-            boardType: BoardType.darkBrown,
-            size: MediaQuery.of(context).size.width,
-            onCheckMate: (color) => _chessController.onCheckMate(),
-            onDraw: () => _chessController.onDraw(),
-            onMove: (move) => _chessController.onMove(move),
-      )),
+          child: _chessController.chessBoard,
+      ),
       floatingActionButton: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Padding(

@@ -1,21 +1,21 @@
 import 'package:chess/chess.dart';
-import 'package:flutter_chess_board/flutter_chess_board.dart';
+
+import 'chess_board/src/chess_board.dart';
+import 'chess_board/src/chess_board_controller.dart';
 
 class ChessController {
   ChessBoard chessBoard;
-
-  Chess game() {
-    return chessBoard.chessBoardController.game;
-  }
+  ChessBoardController controller;
+  Chess game;
 
   void onMove(move) {
     print('onMove: $move');
 
-    if(game().in_checkmate)
+    /*if(chessBoard.chessBoardController.game.in_checkmate)
       onCheckMate();
 
-    if(game().in_draw)
-      onDraw();
+    if(chessBoard.chessBoardController.game.in_draw)
+      onDraw();*/
   }
 
   void onDraw() {

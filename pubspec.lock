@@ -58,7 +58,7 @@ packages:
     source: hosted
     version: "0.6.5"
   chess_vectors_flutter:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: chess_vectors_flutter
       url: "https://pub.dartlang.org"
@@ -104,13 +104,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_chess_board:
-    dependency: "direct main"
-    description:
-      name: flutter_chess_board
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.9.4"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -180,7 +173,7 @@ packages:
     source: hosted
     version: "2.1.5"
   scoped_model:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: scoped_model
       url: "https://pub.dartlang.org"
