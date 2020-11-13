@@ -567,7 +567,7 @@ class Chess {
     }
 
     List<Move> moves = [];
-    Color us = turn;
+    Color us = game.turn;
     Color them = swap_color(us);
     ColorMap<int> second_rank = new ColorMap(0);
     second_rank[BLACK] = RANK_7;
@@ -598,7 +598,7 @@ class Chess {
         continue;
       }
 
-      Piece piece = board[i];
+      Piece piece = game.board[i];
       if (piece == null || piece.color != us) {
         continue;
       }
@@ -606,13 +606,13 @@ class Chess {
       if (piece.type == PAWN) {
         /* single square, non-capturing */
         int square = i + PAWN_OFFSETS[us][0];
-        if (board[square] == null) {
-          add_move(board, moves, i, square, BITS_NORMAL);
+        if (game.board[square] == null) {
+          add_move(game.board, moves, i, square, BITS_NORMAL);
 
           /* double square */
           var square2 = i + PAWN_OFFSETS[us][1];
-          if (second_rank[us] == rank(i) && board[square2] == null) {
-            add_move(board, moves, i, square2, BITS_BIG_PAWN);
+          if (second_rank[us] == rank(i) && game.board[square2] == null) {
+            add_move(game.board, moves, i, square2, BITS_BIG_PAWN);
           }
         }
 
@@ -621,10 +621,10 @@ class Chess {
           int square = i + PAWN_OFFSETS[us][j];
           if ((square & 0x88) != 0) continue;
 
-          if (board[square] != null && board[square].color == them) {
-            add_move(board, moves, i, square, BITS_CAPTURE);
-          } else if (square == ep_square) {
-            add_move(board, moves, i, ep_square, BITS_EP_CAPTURE);
+          if (game.board[square] != null && game.board[square].color == them) {
+            add_move(game.board, moves, i, square, BITS_CAPTURE);
+          } else if (square == game.ep_square) {
+            add_move(game.board, moves, i, game.ep_square, BITS_EP_CAPTURE);
           }
         }
       } else {
@@ -637,13 +637,13 @@ class Chess {
             square += offset;
             if ((square & 0x88) != 0) break;
 
-            if (board[square] == null) {
-              add_move(board, moves, i, square, BITS_NORMAL);
+            if (game.board[square] == null) {
+              add_move(game.board, moves, i, square, BITS_NORMAL);
             } else {
-              if (board[square].color == us) {
+              if (game.board[square].color == us) {
                 break;
               }
-              add_move(board, moves, i, square, BITS_CAPTURE);
+              add_move(game.board, moves, i, square, BITS_CAPTURE);
               break;
             }
 
@@ -656,24 +656,24 @@ class Chess {
 
     // check for castling if: a) we're generating all moves, or b) we're doing
     // single square move generation on the king's square
-    if ((!single_square) || last_sq == kings[us]) {
+    if ((!single_square) || last_sq == game.kings[us]) {
       /* king-side castling */
-      if ((castling[us] & BITS_KSIDE_CASTLE) != 0) {
-        var castling_from = kings[us];
+      if ((game.castling[us] & BITS_KSIDE_CASTLE) != 0) {
+        var castling_from = game.kings[us];
         var castling_to = castling_from + 2;
 
-        if (board[castling_from + 1] == null && board[castling_to] == null && !attacked(them, kings[us]) && !attacked(them, castling_from + 1) && !attacked(them, castling_to)) {
-          add_move(board, moves, kings[us], castling_to, BITS_KSIDE_CASTLE);
+        if (game.board[castling_from + 1] == null && game.board[castling_to] == null && !attacked(them, game.kings[us]) && !attacked(them, castling_from + 1) && !attacked(them, castling_to)) {
+          add_move(game.board, moves, game.kings[us], castling_to, BITS_KSIDE_CASTLE);
         }
       }
 
       /* queen-side castling */
-      if ((castling[us] & BITS_QSIDE_CASTLE) != 0) {
-        var castling_from = kings[us];
+      if ((game.castling[us] & BITS_QSIDE_CASTLE) != 0) {
+        var castling_from = game.kings[us];
         var castling_to = castling_from - 2;
 
-        if (board[castling_from - 1] == null && board[castling_from - 2] == null && board[castling_from - 3] == null && !attacked(them, kings[us]) && !attacked(them, castling_from - 1) && !attacked(them, castling_to)) {
-          add_move(board, moves, kings[us], castling_to, BITS_QSIDE_CASTLE);
+        if (game.board[castling_from - 1] == null && game.board[castling_from - 2] == null && game.board[castling_from - 3] == null && !attacked(them, game.kings[us]) && !attacked(them, castling_from - 1) && !attacked(them, castling_to)) {
+          add_move(game.board, moves, game.kings[us], castling_to, BITS_QSIDE_CASTLE);
         }
       }
     }
@@ -750,7 +750,7 @@ class Chess {
       }
 
       /* if empty square or wrong color */
-      Piece piece = board[i];
+      Piece piece = game.board[i];
       if (piece == null || piece.color != color) continue;
 
       var difference = i - square;
@@ -775,7 +775,7 @@ class Chess {
 
         var blocked = false;
         while (j != square) {
-          if (board[j] != null) {
+          if (game.board[j] != null) {
             blocked = true;
             break;
           }
@@ -790,11 +790,11 @@ class Chess {
   }
 
   bool king_attacked(Color color) {
-    return attacked(swap_color(color), kings[color]);
+    return attacked(swap_color(color), game.kings[color]);
   }
 
   bool get in_check {
-    return king_attacked(turn);
+    return king_attacked(game.turn);
   }
 
   bool get in_checkmate {
@@ -818,7 +818,7 @@ class Chess {
         continue;
       }
 
-      var piece = board[i];
+      var piece = game.board[i];
       if (piece != null) {
         pieces[piece.type] = (pieces.containsKey(piece.type)) ? pieces[piece.type] + 1 : 1;
         if (piece.type == BISHOP) {
@@ -888,46 +888,46 @@ class Chess {
   }
 
   void push(Move move) {
-    history.add(new State(move, new ColorMap.clone(kings), turn, new ColorMap.clone(castling), ep_square, half_moves, move_number));
+    game.history.add(new State(move, new ColorMap.clone(game.kings), game.turn, new ColorMap.clone(game.castling), game.ep_square, game.half_moves, game.move_number));
   }
 
   make_move(Move move) {
-    Color us = turn;
+    Color us = game.turn;
     Color them = swap_color(us);
     push(move);
 
-    board[move.to] = board[move.from];
-    board[move.from] = null;
+    game.board[move.to] = game.board[move.from];
+    game.board[move.from] = null;
 
     /* if ep capture, remove the captured pawn */
     if ((move.flags & BITS_EP_CAPTURE) != 0) {
-      if (turn == BLACK) {
-        board[move.to - 16] = null;
+      if (game.turn == BLACK) {
+        game.board[move.to - 16] = null;
       } else {
-        board[move.to + 16] = null;
+        game.board[move.to + 16] = null;
       }
     }
 
     /* if pawn promotion, replace with new piece */
     if ((move.flags & BITS_PROMOTION) != 0) {
-      board[move.to] = new Piece(move.promotion, us);
+      game.board[move.to] = new Piece(move.promotion, us);
     }
 
     /* if we moved the king */
-    if (board[move.to].type == KING) {
-      kings[board[move.to].color] = move.to;
+    if (game.board[move.to].type == KING) {
+      game.kings[game.board[move.to].color] = move.to;
 
       /* if we castled, move the rook next to the king */
       if ((move.flags & BITS_KSIDE_CASTLE) != 0) {
         var castling_to = move.to - 1;
         var castling_from = move.to + 1;
-        board[castling_to] = board[castling_from];
-        board[castling_from] = null;
+        game.board[castling_to] = game.board[castling_from];
+        game.board[castling_from] = null;
       } else if ((move.flags & BITS_QSIDE_CASTLE) != 0) {
         var castling_to = move.to + 1;
         var castling_from = move.to - 2;
-        board[castling_to] = board[castling_from];
-        board[castling_from] = null;
+        game.board[castling_to] = game.board[castling_from];
+        game.board[castling_from] = null;
       }
 
       /* turn off castling */
