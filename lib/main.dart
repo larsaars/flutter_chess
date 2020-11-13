@@ -1,9 +1,11 @@
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_controller.dart';
 import 'package:chess_bot/generated/i18n.dart';
+import 'package:chess_bot/utils.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'chess_board/src/chess_board.dart';
 
@@ -32,7 +34,11 @@ class MyApp extends StatelessWidget {
     //create the material app
     return MaterialApp(
       //manage resources first
-      localizationsDelegates: [S.delegate],
+      localizationsDelegates: [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       supportedLocales: S.delegate.supportedLocales,
       //define title etc.
       title: appName,
@@ -77,8 +83,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
-  bool _firstResume = true;
-
   @override
   void initState() {
     super.initState();
@@ -102,6 +106,8 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     //set strings object
     strings = S.of(context);
+    //init the context singleton object
+    ContextSingleton(context);
     //build the chess controller
     _chessController = ChessController(context);
     // This method is rerun every time setState is called, for instance as done
@@ -111,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
-      body: Center(
+        body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
         child: ChessBoard(
