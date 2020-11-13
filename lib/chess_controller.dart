@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chess/chess.dart' as chess;
+import 'package:chess_bot/chess_board/chess.dart' as chess;
 import 'package:chess_bot/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -35,14 +35,16 @@ class ChessController {
   void onReloadLastGame() async {
     final root = await rootDir;
     final saveFile = File('$root/game.pgn');
-    if(await saveFile.exists()) {
+    if(await saveFile.exists())
       controller.loadPGN(await saveFile.readAsString());
-    }
   }
 
   void onSaveGame() async {
     final root = await rootDir;
     final saveFile = File('$root/game.pgn');
+    if(!await saveFile.exists())
+      await saveFile.create();
+    print('pgn save: ' + game.pgn());
     saveFile.writeAsString(game.pgn());
   }
 
