@@ -931,26 +931,26 @@ class Chess {
       }
 
       /* turn off castling */
-      castling[us] = 0;
+      game.castling[us] = 0;
     }
 
     /* turn off castling if we move a rook */
-    if (castling[us] != 0) {
+    if (game.castling[us] != 0) {
       for (int i = 0,
           len = ROOKS[us].length; i < len; i++) {
-        if (move.from == ROOKS[us][i]['square'] && ((castling[us] & ROOKS[us][i]['flag']) != 0)) {
-          castling[us] ^= ROOKS[us][i]['flag'];
+        if (move.from == ROOKS[us][i]['square'] && ((game.castling[us] & ROOKS[us][i]['flag']) != 0)) {
+          game.castling[us] ^= ROOKS[us][i]['flag'];
           break;
         }
       }
     }
 
     /* turn off castling if we capture a rook */
-    if (castling[them] != 0) {
+    if (game.castling[them] != 0) {
       for (int i = 0,
           len = ROOKS[them].length; i < len; i++) {
-        if (move.to == ROOKS[them][i]['square'] && ((castling[them] & ROOKS[them][i]['flag']) != 0)) {
-          castling[them] ^= ROOKS[them][i]['flag'];
+        if (move.to == ROOKS[them][i]['square'] && ((game.castling[them] & ROOKS[them][i]['flag']) != 0)) {
+          game.castling[them] ^= ROOKS[them][i]['flag'];
           break;
         }
       }
@@ -958,57 +958,57 @@ class Chess {
 
     /* if big pawn move, update the en passant square */
     if ((move.flags & BITS_BIG_PAWN) != 0) {
-      if (turn == BLACK) {
-        ep_square = move.to - 16;
+      if (game.turn == BLACK) {
+        game.ep_square = move.to - 16;
       } else {
-        ep_square = move.to + 16;
+        game.ep_square = move.to + 16;
       }
     } else {
-      ep_square = EMPTY;
+      game.ep_square = EMPTY;
     }
 
     /* reset the 50 move counter if a pawn is moved or a piece is captured */
     if (move.piece == PAWN) {
-      half_moves = 0;
+      game.half_moves = 0;
     } else if ((move.flags & (BITS_CAPTURE | BITS_EP_CAPTURE)) != 0) {
-      half_moves = 0;
+      game.half_moves = 0;
     } else {
-      half_moves++;
+      game.half_moves++;
     }
 
-    if (turn == BLACK) {
-      move_number++;
+    if (game.turn == BLACK) {
+      game.move_number++;
     }
-    turn = swap_color(turn);
+    game.turn = swap_color(game.turn);
   }
 
   /// Undoes a move and returns it, or null if move history is empty
   Move undo_move() {
-    if (history.isEmpty) {
+    if (game.history.isEmpty) {
       return null;
     }
-    State old = history.removeLast();
+    State old = game.history.removeLast();
     if (old == null) {
       return null;
     }
 
     Move move = old.move;
-    kings = old.kings;
-    turn = old.turn;
-    castling = old.castling;
-    ep_square = old.ep_square;
-    half_moves = old.half_moves;
-    move_number = old.move_number;
+    game.kings = old.kings;
+    game.turn = old.turn;
+    game.castling = old.castling;
+    game.ep_square = old.ep_square;
+    game.half_moves = old.half_moves;
+    game.move_number = old.move_number;
 
-    Color us = turn;
-    Color them = swap_color(turn);
+    Color us = game.turn;
+    Color them = swap_color(game.turn);
 
-    board[move.from] = board[move.to];
-    board[move.from].type = move.piece; // to undo any promotions
-    board[move.to] = null;
+    game.board[move.from] = game.board[move.to];
+    game.board[move.from].type = move.piece; // to undo any promotions
+    game.board[move.to] = null;
 
     if ((move.flags & BITS_CAPTURE) != 0) {
-      board[move.to] = new Piece(move.captured, them);
+      game.board[move.to] = new Piece(move.captured, them);
     } else if ((move.flags & BITS_EP_CAPTURE) != 0) {
       var index;
       if (us == BLACK) {
@@ -1016,7 +1016,7 @@ class Chess {
       } else {
         index = move.to + 16;
       }
-      board[index] = new Piece(PAWN, them);
+      game.board[index] = new Piece(PAWN, them);
     }
 
 
@@ -1030,8 +1030,8 @@ class Chess {
         castling_from = move.to + 1;
       }
 
-      board[castling_to] = board[castling_from];
-      board[castling_from] = null;
+      game.board[castling_to] = game.board[castling_from];
+      game.board[castling_from] = null;
     }
 
     return move;
@@ -1102,11 +1102,11 @@ class Chess {
       }
 
       /* empty piece */
-      if (board[i] == null) {
+      if (game.board[i] == null) {
         s += ' . ';
       } else {
-        PieceType type = board[i].type;
-        Color color = board[i].color;
+        PieceType type = game.board[i].type;
+        Color color = game.board[i].color;
         var symbol = (color == WHITE) ? type.toUpperCase() : type.toLowerCase();
         s += ' ' + symbol + ' ';
       }
@@ -1174,7 +1174,7 @@ class Chess {
       'legal': false
     });
     var nodes = 0;
-    var color = turn;
+    var color = game.turn;
 
     for (var i = 0,
         len = moves.length; i < len; i++) {
@@ -1244,7 +1244,7 @@ class Chess {
   }
 
   bool get in_draw {
-    return half_moves >= 100 || in_stalemate || insufficient_material || in_threefold_repetition;
+    return game.half_moves >= 100 || in_stalemate || insufficient_material || in_threefold_repetition;
   }
 
   bool get game_over {
@@ -1266,21 +1266,21 @@ class Chess {
     var header_exists = false;
 
     /* add the PGN header headerrmation */
-    for (var i in header.keys) {
+    for (var i in game.header.keys) {
       /* TODO: order of enumerated properties in header object is not
          * guaranteed, see ECMA-262 spec (section 12.6.4)
          */
-      result.add('[' + i.toString() + ' \"' + header[i].toString() + '\"]' + newline);
+      result.add('[' + i.toString() + ' \"' + game.header[i].toString() + '\"]' + newline);
       header_exists = true;
     }
 
-    if (header_exists && (history.length != 0)) {
+    if (header_exists && (game.history.length != 0)) {
       result.add(newline);
     }
 
     /* pop all of history onto reversed_history */
     List<Move> reversed_history = [];
-    while (history.length > 0) {
+    while (game.history.length > 0) {
       reversed_history.add(undo_move());
     }
 
@@ -1315,8 +1315,8 @@ class Chess {
     }
 
     /* is there a result? */
-    if (header['Result'] != null) {
-      moves.add(header['Result']);
+    if (game.header['Result'] != null) {
+      moves.add(game.header['Result']);
     }
 
     /* history should be back to what is was before we started generating PGN,
@@ -1472,7 +1472,7 @@ class Chess {
     /* examine last move */
     move = moves[moves.length - 1];
     if (POSSIBLE_RESULTS.contains(move)) {
-      if (!header.containsKey("Result")) {
+      if (!game.header.containsKey("Result")) {
         set_header(['Result', move]);
       }
     } else {
@@ -1554,7 +1554,7 @@ class Chess {
     var move_history = [];
     var verbose = (options != null && options.containsKey("verbose") && options["verbose"] == true);
 
-    while (history.length > 0) {
+    while (game.history.length > 0) {
       reversed_history.add(undo_move());
     }
 
