@@ -162,15 +162,7 @@ class Chess {
   };
 
   // Instance Variables
-  List<Piece> board = new List(128);
-  ColorMap<int> kings = new ColorMap(EMPTY);
-  Color turn = WHITE;
-  ColorMap<int> castling = new ColorMap(0);
-  int ep_square = EMPTY;
-  int half_moves = 0;
-  int move_number = 1;
-  List<State> history = [];
-  Map header = {};
+  Game game = Game();
 
   /// By default start with the standard chess starting position
   Chess() {
@@ -185,29 +177,20 @@ class Chess {
   /// Deep copy of the current Chess instance
   Chess copy() {
     return new Chess()
-      ..board = new List<Piece>.from(this.board)
-      ..kings = new ColorMap<int>.clone(this.kings)
-      ..turn = new Color._internal(this.turn.value)
-      ..castling = new ColorMap<int>.clone(this.castling)
-      ..ep_square = this.ep_square
-      ..half_moves = this.half_moves
-      ..move_number = this.move_number
-      ..history = new List<State>.from(this.history)
-      ..header = new Map.from(this.header);
+      ..game.board = new List<Piece>.from(this.game.board)
+      ..game.kings = new ColorMap<int>.clone(this.game.kings)
+      ..game.turn = new Color._internal(this.game.turn.value)
+      ..game.castling = new ColorMap<int>.clone(this.game.castling)
+      ..game.ep_square = this.game.ep_square
+      ..game.half_moves = this.game.half_moves
+      ..game.move_number = this.game.move_number
+      ..game.history = new List<State>.from(this.game.history)
+      ..game.header = new Map.from(this.game.header);
   }
 
   /// Reset all of the instance variables
   clear() {
-    board = new List(128);
-    kings = new ColorMap(EMPTY);
-    turn = WHITE;
-    castling = new ColorMap(0);
-    ep_square = EMPTY;
-    half_moves = 0;
-    move_number = 1;
-    history = [];
-    header = {};
-    update_setup(generate_fen());
+    game = Game();
   }
 
   /// Go back to the chess starting position
@@ -246,28 +229,28 @@ class Chess {
     }
 
     if (tokens[1] == 'w') {
-      turn = WHITE;
+      game.turn = WHITE;
     } else {
       assert(tokens[1] == 'b');
-      turn = BLACK;
+      game.turn = BLACK;
     }
 
     if (tokens[2].indexOf('K') > -1) {
-      castling[WHITE] |= BITS_KSIDE_CASTLE;
+      game.castling[WHITE] |= BITS_KSIDE_CASTLE;
     }
     if (tokens[2].indexOf('Q') > -1) {
-      castling[WHITE] |= BITS_QSIDE_CASTLE;
+      game.castling[WHITE] |= BITS_QSIDE_CASTLE;
     }
     if (tokens[2].indexOf('k') > -1) {
-      castling[BLACK] |= BITS_KSIDE_CASTLE;
+      game.castling[BLACK] |= BITS_KSIDE_CASTLE;
     }
     if (tokens[2].indexOf('q') > -1) {
-      castling[BLACK] |= BITS_QSIDE_CASTLE;
+      game.castling[BLACK] |= BITS_QSIDE_CASTLE;
     }
 
-    ep_square = (tokens[3] == '-') ? EMPTY : SQUARES[tokens[3]];
-    half_moves = int.parse(tokens[4]);
-    move_number = int.parse(tokens[5]);
+    game.ep_square = (tokens[3] == '-') ? EMPTY : SQUARES[tokens[3]];
+    game.half_moves = int.parse(tokens[4]);
+    game.move_number = int.parse(tokens[5]);
 
     update_setup(generate_fen());
 
@@ -434,15 +417,15 @@ class Chess {
     String fen = '';
 
     for (int i = SQUARES_A8; i <= SQUARES_H1; i++) {
-      if (board[i] == null) {
+      if (game.board[i] == null) {
         empty++;
       } else {
         if (empty > 0) {
           fen += empty.toString();
           empty = 0;
         }
-        Color color = board[i].color;
-        PieceType type = board[i].type;
+        Color color = game.board[i].color;
+        PieceType type = game.board[i].type;
 
         fen += (color == WHITE) ? type.toUpperCase() : type.toLowerCase();
       }
@@ -462,16 +445,16 @@ class Chess {
     }
 
     String cflags = '';
-    if ((castling[WHITE] & BITS_KSIDE_CASTLE) != 0) {
+    if ((game.castling[WHITE] & BITS_KSIDE_CASTLE) != 0) {
       cflags += 'K';
     }
-    if ((castling[WHITE] & BITS_QSIDE_CASTLE) != 0) {
+    if ((game.castling[WHITE] & BITS_QSIDE_CASTLE) != 0) {
       cflags += 'Q';
     }
-    if ((castling[BLACK] & BITS_KSIDE_CASTLE) != 0) {
+    if ((game.castling[BLACK] & BITS_KSIDE_CASTLE) != 0) {
       cflags += 'k';
     }
-    if ((castling[BLACK] & BITS_QSIDE_CASTLE) != 0) {
+    if ((game.castling[BLACK] & BITS_QSIDE_CASTLE) != 0) {
       cflags += 'q';
     }
 
@@ -479,19 +462,19 @@ class Chess {
     if (cflags == "") {
       cflags = '-';
     }
-    String epflags = (ep_square == EMPTY) ? '-' : algebraic(ep_square);
+    String epflags = (game.ep_square == EMPTY) ? '-' : algebraic(game.ep_square);
 
-    return [fen, turn, cflags, epflags, half_moves, move_number].join(' ');
+    return [fen, game.turn, cflags, epflags, game.half_moves, game.move_number].join(' ');
   }
 
   /// Updates [header] with the List of args and returns it
   Map set_header(args) {
     for (int i = 0; i < args.length; i += 2) {
       if (args[i] is String && args[i + 1] is String) {
-        header[args[i]] = args[i + 1];
+        game.header[args[i]] = args[i + 1];
       }
     }
-    return header;
+    return game.header;
   }
 
   /// called when the initial board setup is changed with put() or remove().
@@ -500,21 +483,21 @@ class Chess {
   /// the setup is only updated if history.length is zero, ie moves haven't been
   /// made.
   void update_setup(String fen) {
-    if (history.length > 0) return;
+    if (game.history.length > 0) return;
 
     if (fen != DEFAULT_POSITION) {
-      header['SetUp'] = '1';
-      header['FEN'] = fen;
+      game.header['SetUp'] = '1';
+      game.header['FEN'] = fen;
     } else {
-      header.remove('SetUp');
-      header.remove('FEN');
+      game.header.remove('SetUp');
+      game.header.remove('FEN');
     }
   }
 
   /// Returns the piece at the square in question or null
   /// if there is none
   Piece get(String square) {
-    return board[SQUARES[square]];
+    return game.board[SQUARES[square]];
   }
 
   /// Put [piece] on [square]
@@ -530,9 +513,9 @@ class Chess {
     }
 
     int sq = SQUARES[square];
-    board[sq] = piece;
+    game.board[sq] = piece;
     if (piece.type == KING) {
-      kings[piece.color] = sq;
+      game.kings[piece.color] = sq;
     }
 
     update_setup(generate_fen());
@@ -544,9 +527,9 @@ class Chess {
   /// or null if none is present
   Piece remove(String square) {
     Piece piece = get(square);
-    board[SQUARES[square]] = null;
+    game.board[SQUARES[square]] = null;
     if (piece != null && piece.type == KING) {
-      kings[piece.color] = EMPTY;
+      game.kings[piece.color] = EMPTY;
     }
 
     update_setup(generate_fen());
@@ -566,7 +549,7 @@ class Chess {
     } else if ((flags & BITS_EP_CAPTURE) != 0) {
       captured = PAWN;
     }
-    return new Move(turn, from, to, flags, board[from].type, captured, promotion);
+    return new Move(game.turn, from, to, flags, board[from].type, captured, promotion);
   }
 
   List<Move> generate_moves([Map options]) {
