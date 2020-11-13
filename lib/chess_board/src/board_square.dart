@@ -6,6 +6,7 @@ import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import '../../main.dart';
 import 'board_model.dart';
 
 /// A single square on the chessboard
@@ -75,7 +76,7 @@ class BoardSquare extends StatelessWidget {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return new AlertDialog(
-          title: new Text('Choose promotion'),
+          title: new Text(strings.choose_promotion),
           content: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[

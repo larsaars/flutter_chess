@@ -1,4 +1,5 @@
 {
   "app_name": "Schach",
-  "close": "schließen"
+  "close": "schließen",
+  "choose_promotion": "Umwandlung wählen"
 }

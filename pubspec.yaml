@@ -19,6 +19,7 @@ dependencies:
   intl: ^0.16.1
   flutter_launcher_icons: ^0.8.1
   path_provider: ^1.6.24
+  serializer: ^0.8.2
 
   #for the chess board
   chess_vectors_flutter: ^1.0.12

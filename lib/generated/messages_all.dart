@@ -15,6 +15,7 @@ class $de extends MessageLookupByLibrary {
   final messages = {
 		"app_name" : MessageLookupByLibrary.simpleMessage("Schach"),
 		"close" : MessageLookupByLibrary.simpleMessage("schließen"),
+		"choose_promotion" : MessageLookupByLibrary.simpleMessage("Umwandlung wählen"),
 
   };
 }
@@ -27,6 +28,7 @@ class $en extends MessageLookupByLibrary {
   final messages = {
 		"app_name" : MessageLookupByLibrary.simpleMessage("Chess"),
 		"close" : MessageLookupByLibrary.simpleMessage("close"),
+		"choose_promotion" : MessageLookupByLibrary.simpleMessage("choose promotion"),
 
   };
 }

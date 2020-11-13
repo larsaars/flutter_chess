@@ -10,6 +10,18 @@ library chess;
  *  https://github.com/jhlywa/chess.js/blob/master/LICENSE
  */
 
+class Game {
+  List<Piece> board = new List(128);
+  ColorMap<int> kings = new ColorMap(-1);
+  Color turn = Color.WHITE;
+  ColorMap<int> castling = new ColorMap(0);
+  int ep_square = -1;
+  int half_moves = 0;
+  int move_number = 1;
+  List<State> history = [];
+  Map header = {};
+}
+
 class Chess {
 
   // Constants/Class Variables
@@ -1199,6 +1211,7 @@ class Chess {
   }
 
   //Public APIs
+
   ///  Returns a list of legals moves from the current position.
   ///  The function takes an optional parameter which controls the
   ///  single-square move generation and verbosity.
