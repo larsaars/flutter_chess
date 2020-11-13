@@ -2,8 +2,8 @@
 
 import 'dart:async';
 
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'messages_all.dart';
 
@@ -32,6 +32,10 @@ class S {
 
   String get close {
     return Intl.message("close", name: 'close');
+  }
+
+  String get choose_promotion {
+    return Intl.message("choose promotion", name: 'choose_promotion');
   }
 
 

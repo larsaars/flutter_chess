@@ -36,6 +36,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.0-nullsafety.1"
+  bson:
+    dependency: transitive
+    description:
+      name: bson
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.4"
   characters:
     dependency: transitive
     description:
@@ -106,6 +113,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.2.1"
+  fixnum:
+    dependency: transitive
+    description:
+      name: fixnum
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.10.11"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -163,6 +177,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0-nullsafety.3"
+  more:
+    dependency: transitive
+    description:
+      name: more
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.8.0"
   path:
     dependency: transitive
     description:
@@ -240,6 +261,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.5"
+  rational:
+    dependency: transitive
+    description:
+      name: rational
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.8"
   scoped_model:
     dependency: "direct main"
     description:
@@ -247,6 +275,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  serializer:
+    dependency: "direct main"
+    description:
+      name: serializer
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.2"
   sky_engine:
     dependency: transitive
     description: flutter
