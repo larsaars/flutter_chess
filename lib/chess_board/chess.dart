@@ -1199,7 +1199,6 @@ class Chess {
   }
 
   //Public APIs
-
   ///  Returns a list of legals moves from the current position.
   ///  The function takes an optional parameter which controls the
   ///  single-square move generation and verbosity.
