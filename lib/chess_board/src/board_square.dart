@@ -39,7 +39,7 @@ class BoardSquare extends StatelessWidget {
           return model.enableUserMoves ? true : false;
         }, onAccept: (List moveInfo) {
           // A way to check if move occurred.
-          chess.Color moveColor = model.game.turn;
+          chess.Color moveColor = model.game.game.turn;
 
           if (moveInfo[1] == "P" &&
               ((moveInfo[0][1] == "7" &&
@@ -56,7 +56,7 @@ class BoardSquare extends StatelessWidget {
           } else {
             model.game.move({"from": moveInfo[0], "to": squareName});
           }
-          if (model.game.turn != moveColor) {
+          if (model.game.game.turn != moveColor) {
             model.onMove({
                 'figure': moveInfo[1],
                 'square': squareName,
