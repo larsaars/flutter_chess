@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:chess/chess.dart' as chess;
+import 'package:chess_bot/chess_board/chess.dart' as chess;
 import 'package:scoped_model/scoped_model.dart';
 
 import 'chess_board_controller.dart';

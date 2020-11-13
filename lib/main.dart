@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'chess_board/src/chess_board.dart';
 
 S strings;
+ChessController _chessController;
 
 void main() {
   runApp(MyApp());
@@ -75,8 +76,27 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
-  ChessController _chessController;
-  int _timesResumed = 0;
+
+  bool _firstResume = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print('state: $state');
+    if(state == AppLifecycleState.paused)
+      _chessController.onSaveGame();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,21 +112,25 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     // than having to individually change instances of widgets.
     return Scaffold(
       body: Center(
-          // Center is a layout widget. It takes a single child and positions it
-          // in the middle of the parent.
-          child: ChessBoard(
-            boardType: BoardType.darkBrown,
-            size: MediaQuery.of(context).size.width,
-            onGame: (game) {
-              _chessController.game = game;
-              _chessController.onReloadLastGame();
-            },
-            onChessBoardController: (chessBoardController) => _chessController.controller = chessBoardController,
-            onCheckMate: (color) => _chessController.onCheckMate(color),
-            onDraw: () => _chessController.onDraw(),
-            onMove: (move) => _chessController.onMove(move),
-            onCheck: (color) => _chessController.onCheckMate(color),
-          ),
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: ChessBoard(
+          boardType: BoardType.darkBrown,
+          size: MediaQuery
+              .of(context)
+              .size
+              .width,
+          onGame: (game) {
+            _chessController.game = game;
+            _chessController.onReloadLastGame();
+          },
+          onChessBoardController: (chessBoardController) =>
+          _chessController.controller = chessBoardController,
+          onCheckMate: (color) => _chessController.onCheckMate(color),
+          onDraw: () => _chessController.onDraw(),
+          onMove: (move) => _chessController.onMove(move),
+          onCheck: (color) => _chessController.onCheckMate(color),
+        ),
       ),
       bottomNavigationBar: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
@@ -159,24 +183,5 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
         ),
       ),
     );
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    //on pause save game,
-    //on resume load game only if is not the first time to re enter activity
-    switch(state) {
-      case AppLifecycleState.paused:
-        _chessController.onSaveGame();
-        break;
-      case AppLifecycleState.resumed:
-        if(_timesResumed != 0)
-          _chessController.onReloadLastGame();
-        _timesResumed++;
-        break;
-      default:
-        break;
-    }
-    super.didChangeAppLifecycleState(state);
   }
 }

@@ -19,7 +19,6 @@ dependencies:
   path_provider: ^1.6.24
 
   #for the chess board
-  chess: ^0.6.5
   chess_vectors_flutter: ^1.0.12
   scoped_model: ^1.1.0
 

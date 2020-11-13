@@ -1,4 +1,4 @@
-import 'package:chess/chess.dart' as chess;
+import 'package:chess_bot/chess_board/chess.dart' as chess;
 
 enum PieceType { Pawn, Rook, Knight, Bishop, Queen, King }
 

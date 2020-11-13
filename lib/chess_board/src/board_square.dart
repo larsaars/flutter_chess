@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:chess/chess.dart' as chess;
+import 'package:chess_bot/chess_board/chess.dart' as chess;
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
