@@ -1,4 +1,5 @@
-import 'package:chess_bot/chess_board/chess.dart' as chess;
+import 'package:chess_bot/chess_board/chess.dart';
+import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 
 enum PieceType { Pawn, Rook, Knight, Bishop, Queen, King }
 
@@ -10,7 +11,7 @@ enum PieceColor {
 /// Controller for programmatically controlling the board
 class ChessBoardController {
   /// The game attached to the controller
-  chess.Chess game;
+  Chess game;
 
   /// Function from the ScopedModel to refresh board
   Function refreshBoard;

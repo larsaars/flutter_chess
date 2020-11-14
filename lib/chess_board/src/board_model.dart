@@ -1,6 +1,7 @@
 import 'dart:ui';
 
-import 'package:chess_bot/chess_board/chess.dart' as chess;
+import 'package:chess_bot/chess_board/chess.dart';
+import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 import 'package:scoped_model/scoped_model.dart';
 
 import 'chess_board_controller.dart';
@@ -8,7 +9,7 @@ import 'chess_board_controller.dart';
 typedef void MoveCallback(move);
 typedef void CheckMateCallback(PieceColor color);
 typedef void CheckCallback(PieceColor color);
-typedef void GameCallback(chess.Chess game);
+typedef void GameCallback(Chess game);
 typedef void ChessBoardControllerCallback(ChessBoardController controller);
 
 class BoardModel extends Model {
@@ -41,7 +42,7 @@ class BoardModel extends Model {
   bool enableUserMoves;
 
   /// Creates a logical game
-  chess.Chess game = chess.Chess();
+  Chess game = Chess();
 
   /// Refreshes board
   void refreshBoard() {

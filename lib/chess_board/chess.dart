@@ -1,5 +1,7 @@
 library chess;
 
+import 'package:chess_bot/chess_board/src/chess_sub.dart';
+
 /*  Copyright (c) 2014, David Kopec (my first name at oaksnow dot com)
  *  Released under the MIT license
  *  https://github.com/davecom/chess.dart/blob/master/LICENSE
@@ -9,18 +11,6 @@ library chess;
  *  Released under the BSD license
  *  https://github.com/jhlywa/chess.js/blob/master/LICENSE
  */
-
-class Game {
-  List<Piece> board = new List(128);
-  ColorMap<int> kings = new ColorMap(-1);
-  Color turn = Color.WHITE;
-  ColorMap<int> castling = new ColorMap(0);
-  int ep_square = -1;
-  int half_moves = 0;
-  int move_number = 1;
-  List<State> history = [];
-  Map header = {};
-}
 
 class Chess {
 
@@ -179,7 +169,7 @@ class Chess {
     return new Chess()
       ..game.board = new List<Piece>.from(this.game.board)
       ..game.kings = new ColorMap<int>.clone(this.game.kings)
-      ..game.turn = new Color._internal(this.game.turn.value)
+      ..game.turn = new Color.internal(this.game.turn.value)
       ..game.castling = new ColorMap<int>.clone(this.game.castling)
       ..game.ep_square = this.game.ep_square
       ..game.half_moves = this.game.half_moves
@@ -569,7 +559,7 @@ class Chess {
     List<Move> moves = [];
     Color us = game.turn;
     Color them = swap_color(us);
-    ColorMap<int> second_rank = new ColorMap(0);
+    ColorMap<int> second_rank = new ColorMap.of(0);
     second_rank[BLACK] = RANK_7;
     second_rank[WHITE] = RANK_2;
 
@@ -1570,93 +1560,4 @@ class Chess {
 
     return move_history;
   }
-
-}
-
-class Piece {
-  PieceType type;
-  final Color color;
-  Piece(this.type, this.color);
-}
-
-class PieceType {
-  final int shift;
-  final String name;
-  const PieceType._internal(this.shift, this.name);
-
-  static const PieceType PAWN = const PieceType._internal(0, 'p');
-  static const PieceType KNIGHT = const PieceType._internal(1, 'n');
-  static const PieceType BISHOP = const PieceType._internal(2, 'b');
-  static const PieceType ROOK = const PieceType._internal(3, 'r');
-  static const PieceType QUEEN = const PieceType._internal(4, 'q');
-  static const PieceType KING = const PieceType._internal(5, 'k');
-
-  int get hashCode => shift;
-  String toString() => name;
-  String toLowerCase() => name;
-  String toUpperCase() => name.toUpperCase();
-}
-
-class Color {
-  final int value;
-  const Color._internal(this.value);
-
-  static const Color WHITE = const Color._internal(0);
-  static const Color BLACK = const Color._internal(1);
-
-  int get hashCode => value;
-  String toString() => (this == WHITE) ? 'w' : 'b';
-}
-
-class ColorMap<T> {
-  T _white;
-  T _black;
-  ColorMap(T value)
-      : _white = value,
-        _black = value;
-  ColorMap.clone(ColorMap other)
-      : _white = other._white,
-        _black = other._black;
-
-  T operator [](Color color) {
-    return (color == Color.WHITE) ? _white : _black;
-  }
-
-  void operator []=(Color color, T value) {
-    if (color == Color.WHITE) {
-      _white = value;
-    } else {
-      _black = value;
-    }
-  }
-}
-
-class Move {
-  final Color color;
-  final int from;
-  final int to;
-  final int flags;
-  final PieceType piece;
-  final PieceType captured;
-  final PieceType promotion;
-  const Move(this.color, this.from, this.to, this.flags, this.piece, this.captured, this.promotion);
-
-  String get fromAlgebraic {
-    return Chess.algebraic(from);
-  }
-
-  String get toAlgebraic {
-    return Chess.algebraic(to);
-  }
-}
-
-class State {
-  final Move move;
-  final ColorMap<int> kings;
-  final Color turn;
-  final ColorMap<int> castling;
-  final int ep_square;
-  final int half_moves;
-  final int move_number;
-  const State(this.move, this.kings, this.turn, this.castling, this.ep_square, this.half_moves, this.move_number);
 }
