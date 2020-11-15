@@ -41,7 +41,7 @@ class BoardModel extends Model {
   bool enableUserMoves;
 
   /// Creates a logical game
-  Chess game = Chess();
+  Chess game;
 
   chess.Game gameState;
 
@@ -71,11 +71,9 @@ class BoardModel extends Model {
       this.chessBoardController,
       this.enableUserMoves,
       this.gameState,) {
+    game = Chess(game: gameState);
     chessBoardController?.game = game;
     chessBoardController?.refreshBoard = refreshBoard;
-    //set the gameState
-    if(gameState != null)
-      game.game = gameState;
     //return controller and game
     onChessBoardController(chessBoardController);
     onGame(game);
