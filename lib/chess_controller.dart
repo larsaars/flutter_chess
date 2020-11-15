@@ -34,13 +34,13 @@ class ChessController {
     print('onCheck');
   }
 
-  Future<chess.Game> loadOldGame() async {
+  Future<Chess> loadOldGame() async {
     final root = await rootDir;
-    final saveFile = File('$root/game.json');
+    final saveFile = File('$root/game.fen');
     if(await saveFile.exists()) {
       String json = await saveFile.readAsString();
       if(json.length < 15)
-        return chess.Game();
+        return null;
       Map<String, dynamic> jsonMap = jsonDecode(json);
 
       /*int b = 0, w = 0, n = 0;
@@ -55,19 +55,22 @@ class ChessController {
 
       print('comp: w=$w; b=$b; n=$n');*/
 
+      print('game loaded');
+
       return chess.Game.fromJson(jsonMap);
     }
 
-    return chess.Game();
+    return null;
   }
 
   void saveOldGame() async {
     final root = await rootDir;
-    final saveFile = File('$root/game.json');
+    final saveFile = File('$root/game.fen');
     if(!await saveFile.exists())
       await saveFile.create();
-    String jsonString = jsonEncode(game.game.toJson());
-    await saveFile.writeAsString(jsonString);
+    await saveFile.writeAsString(game.generate_fen());
+
+    print('game saved');
   }
 
   void resetBoard() {

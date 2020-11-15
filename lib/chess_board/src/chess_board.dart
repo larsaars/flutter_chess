@@ -178,7 +178,7 @@ class _ChessBoardState extends State<ChessBoard> {
               width: widget.size,
               child: _getBoardImage(),
             ),
-            //Overlaying draggables/ dragTargets onto the squares
+            //Overlaying draggables / dragTargets onto the squares
             Center(
               child: Container(
                 height: widget.size,
