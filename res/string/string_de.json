@@ -1,5 +1,7 @@
 {
   "app_name": "Schach",
   "close": "schließen",
-  "choose_promotion": "Umwandlung wählen"
+  "choose_promotion": "Umwandlung wählen",
+  "checkmate": "Schachmatt",
+  "draw": "Unentschieden"
 }

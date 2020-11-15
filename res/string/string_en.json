@@ -1,5 +1,7 @@
 {
   "app_name": "Chess",
   "close": "close",
-  "choose_promotion": "choose promotion"
+  "choose_promotion": "choose promotion",
+  "checkmate": "checkmate",
+  "draw": "draw"
 }

@@ -49,7 +49,7 @@ class BoardModel extends Model {
       onCheckMate(game.game.turn);
     }
     else if (game.in_draw || game.in_stalemate || game.in_threefold_repetition || game.insufficient_material) {
-      onDraw();    
+      onDraw();
     }
     else if (game.in_check) {
       onCheck(game.game.turn);
