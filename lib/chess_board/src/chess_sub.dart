@@ -10,7 +10,7 @@ class Game {
 
   List<Piece> board = List(128);
   ColorMap kings = ColorMap.of(-1);
-  Color turn = Color.WHITE;
+  int turn = WHITE;
   ColorMap castling = ColorMap.of(0);
   int ep_square = -1;
   int half_moves = 0;
@@ -24,7 +24,7 @@ class Game {
 
 @JsonSerializable()
 class Move {
-  final Color color;
+  final int color;
   final int from;
   final int to;
   final int flags;
@@ -49,7 +49,7 @@ class Move {
 class State {
   final Move move;
   final ColorMap kings;
-  final Color turn;
+  final int turn;
   final ColorMap castling;
   final int ep_square;
   final int half_moves;
@@ -63,7 +63,7 @@ class State {
 @JsonSerializable()
 class Piece {
   PieceType type;
-  final Color color;
+  int color;
   Piece(this.type, this.color);
 
   factory Piece.fromJson(Map<String, dynamic> json) => _$PieceFromJson(json);
@@ -94,22 +94,8 @@ class PieceType {
   Map<String, dynamic> toJson() => _$PieceTypeToJson(this);
 }
 
-@JsonSerializable()
-class Color {
-  Color();
-
-   int value;
-  Color.internal(this.value);
-
-  static Color WHITE = Color.internal(0);
-  static Color BLACK = Color.internal(1);
-
-  int get hashCode => value;
-  String toString() => (this == WHITE) ? 'w' : 'b';
-
-  factory Color.fromJson(Map<String, dynamic> json) => _$ColorFromJson(json);
-  Map<String, dynamic> toJson() => _$ColorToJson(this);
-}
+const int WHITE = 0;
+const int BLACK = 1;
 
 @JsonSerializable()
 class ColorMap {
@@ -124,12 +110,12 @@ class ColorMap {
 
   ColorMap();
 
-  int operator [](Color color) {
-    return (color == Color.WHITE) ? white : black;
+  int operator [](int color) {
+    return (color == WHITE) ? white : black;
   }
 
-  void operator []=(Color color, int value) {
-    if (color == Color.WHITE) {
+  void operator []=(int color, int value) {
+    if (color == WHITE) {
       white = value;
     } else {
       black = value;

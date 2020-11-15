@@ -3,11 +3,6 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 
 enum PieceType { Pawn, Rook, Knight, Bishop, Queen, King }
 
-enum PieceColor {
-  White,
-  Black,
-}
-
 /// Controller for programmatically controlling the board
 class ChessBoardController {
   /// The game attached to the controller
@@ -42,7 +37,7 @@ class ChessBoardController {
   }
 
   /// Puts piece on a square
-  void putPiece(PieceType piece, String square, PieceColor color) {
+  void putPiece(PieceType piece, String square, int color) {
     game?.put(_getPiece(piece, color), square);
     refreshBoard == null ? this._throwNotAttachedException() : refreshBoard();
   }
@@ -59,9 +54,9 @@ class ChessBoardController {
   }
 
   /// Gets respective piece
-  chess.Piece _getPiece(PieceType piece, PieceColor color) {
-    chess.Color _getColor(PieceColor color) {
-      return color == PieceColor.White ? chess.Color.WHITE : chess.Color.BLACK;
+  chess.Piece _getPiece(PieceType piece, int color) {
+    int _getColor(int color) {
+      return color;
     }
 
     switch (piece) {
@@ -79,6 +74,6 @@ class ChessBoardController {
         return chess.Piece(chess.PieceType.ROOK, _getColor(color));
     }
 
-    return chess.Piece(chess.PieceType.PAWN, chess.Color.WHITE);
+    return chess.Piece(chess.PieceType.PAWN, chess.WHITE);
   }
 }
