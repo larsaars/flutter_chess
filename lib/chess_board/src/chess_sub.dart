@@ -9,9 +9,9 @@ class Game {
   Game();
 
   List<Piece> board = List(128);
-  ColorMap<int> kings = ColorMap.of(-1);
+  ColorMap kings = ColorMap.of(-1);
   Color turn = Color.WHITE;
-  ColorMap<int> castling = ColorMap.of(0);
+  ColorMap castling = ColorMap.of(0);
   int ep_square = -1;
   int half_moves = 0;
   int move_number = 1;
@@ -48,9 +48,9 @@ class Move {
 @JsonSerializable()
 class State {
   final Move move;
-  final ColorMap<int> kings;
+  final ColorMap kings;
   final Color turn;
-  final ColorMap<int> castling;
+  final ColorMap castling;
   final int ep_square;
   final int half_moves;
   final int move_number;
@@ -96,13 +96,13 @@ class PieceType {
 
 @JsonSerializable()
 class Color {
-  Color({this.value});
+  Color();
 
-  final int value;
-  const Color.internal(this.value);
+   int value;
+  Color.internal(this.value);
 
-  static const Color WHITE = const Color.internal(0);
-  static const Color BLACK = const Color.internal(1);
+  static Color WHITE = Color.internal(0);
+  static Color BLACK = Color.internal(1);
 
   int get hashCode => value;
   String toString() => (this == WHITE) ? 'w' : 'b';
@@ -112,27 +112,27 @@ class Color {
 }
 
 @JsonSerializable()
-class ColorMap<T> {
-  T _white;
-  T _black;
-  ColorMap.of(T value)
-      : _white = value,
-        _black = value;
+class ColorMap {
+  int white;
+  int black;
+  ColorMap.of(int value)
+      : white = value,
+        black = value;
   ColorMap.clone(ColorMap other)
-      : _white = other._white,
-        _black = other._black;
+      : white = other.white,
+        black = other.black;
 
   ColorMap();
 
-  T operator [](Color color) {
-    return (color == Color.WHITE) ? _white : _black;
+  int operator [](Color color) {
+    return (color == Color.WHITE) ? white : black;
   }
 
-  void operator []=(Color color, T value) {
+  void operator []=(Color color, int value) {
     if (color == Color.WHITE) {
-      _white = value;
+      white = value;
     } else {
-      _black = value;
+      black = value;
     }
   }
 
