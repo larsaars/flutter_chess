@@ -54,7 +54,7 @@ class State {
   final int ep_square;
   final int half_moves;
   final int move_number;
-  const State(this.move, this.kings, this.turn, this.castling, this.ep_square, this.half_moves, this.move_number);
+  State(this.move, this.kings, this.turn, this.castling, this.ep_square, this.half_moves, this.move_number);
 
   factory State.fromJson(Map<String, dynamic> json) => _$StateFromJson(json);
   Map<String, dynamic> toJson() => _$StateToJson(this);
@@ -96,6 +96,23 @@ class PieceType {
 
 const int WHITE = 0;
 const int BLACK = 1;
+
+@JsonSerializable()
+class Color {
+  Color();
+
+  int value;
+  Color.internal(this.value);
+
+  static Color WHITE = Color.internal(0);
+  static Color BLACK = Color.internal(1);
+
+  int get hashCode => value;
+  String toString() => (this == WHITE) ? 'w' : 'b';
+
+  factory Color.fromJson(Map<String, dynamic> json) => _$ColorFromJson(json);
+  Map<String, dynamic> toJson() => _$ColorToJson(this);
+}
 
 @JsonSerializable()
 class ColorMap {

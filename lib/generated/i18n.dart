@@ -25,7 +25,7 @@ class S {
       return new S();
     });
   }
-  
+
   String get app_name {
     return Intl.message("Chess", name: 'app_name');
   }
