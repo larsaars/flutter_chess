@@ -154,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
                 onCheck: (color) => _chessController.onCheckMate(color),
                 chessBoardController: ChessBoardController(),
                 //set data from future as game state
-                gameState: snapshot.data,
+                fen: snapshot.data,
               ),
             ),
             bottomNavigationBar: SingleChildScrollView(

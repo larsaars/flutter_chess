@@ -152,12 +152,11 @@ class Chess {
   };
 
   // Instance Variables
-  Game game;
+  Game game = Game();
 
   /// By default start with the standard chess starting position
-  Chess({this.game}) {
-    if(game == null)
-      load(DEFAULT_POSITION);
+  Chess() {
+    load(DEFAULT_POSITION);
   }
 
   /// Start with a position from a FEN

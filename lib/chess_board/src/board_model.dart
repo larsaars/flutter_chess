@@ -43,7 +43,7 @@ class BoardModel extends Model {
   /// Creates a logical game
   Chess game;
 
-  chess.Game gameState;
+  String fen;
 
   /// Refreshes board
   void refreshBoard() {
@@ -70,8 +70,8 @@ class BoardModel extends Model {
       this.whiteSideTowardsUser,
       this.chessBoardController,
       this.enableUserMoves,
-      this.gameState,) {
-    game = Chess(game: gameState);
+      this.fen,) {
+    game = Chess.fromFEN(fen);
     chessBoardController?.game = game;
     chessBoardController?.refreshBoard = refreshBoard;
     //return controller and game

@@ -1,4 +1,3 @@
-import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess_sub;
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -130,7 +129,7 @@ class ChessBoard extends StatefulWidget {
   /// The color type of the board
   final BoardType boardType;
 
-  final chess_sub.Game gameState;
+  final String fen;
 
   ChessBoard({
     this.size = 200.0,
@@ -144,7 +143,7 @@ class ChessBoard extends StatefulWidget {
     this.chessBoardController,
     this.enableUserMoves = true,
     this.boardType = BoardType.brown,
-    this.gameState,
+    this.fen,
   });
 
   @override
@@ -166,7 +165,7 @@ class _ChessBoardState extends State<ChessBoard> {
         widget.whiteSideTowardsUser,
         widget.chessBoardController,
         widget.enableUserMoves,
-        widget.gameState,
+        widget.fen,
       ),
       child: Container(
         height: widget.size,
