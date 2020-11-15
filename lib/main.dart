@@ -136,6 +136,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
           onDraw: () => _chessController.onDraw(),
           onMove: (move) => _chessController.onMove(move),
           onCheck: (color) => _chessController.onCheckMate(color),
+          chessBoardController: ChessBoardController(),
         ),
       ),
       bottomNavigationBar: SingleChildScrollView(
