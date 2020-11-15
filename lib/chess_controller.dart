@@ -10,15 +10,22 @@ import 'package:flutter/material.dart';
 import 'chess_board/src/chess_board_controller.dart';
 
 class ChessController {
-  ChessBoardController controller;
+  ChessBoardController controller = ChessBoardController();
   Chess game;
   BuildContext context;
+
   bool _showing = false;
   bool hasReadGameState = false;
 
   ChessController(this.context);
 
+  //update the views
+  var update;
+
   void onMove(move) {
+    //update text
+    if(update != null)
+      update();
     print('onMove: $move');
     //the piece
     chess.Piece piece = game.get(move['square']);
@@ -45,7 +52,9 @@ class ChessController {
         return AlertDialog(
           title: Center(
               child: Text(
-                  strings.checkmate
+                  strings.checkmate,
+                  style: Theme.of(context).textTheme.subtitle1,
+                  textAlign: Alignment.centerLeft,
               )
           ),
           content: Row(
@@ -56,10 +65,7 @@ class ChessController {
                 child: Text(
                   strings.check_mate_desc(loser, winner),
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-
-                    color: Colors.red,
-                  ),
+                  style: Theme.of(context).textTheme.subtitle2,
                 ),
               )
             ],
@@ -73,6 +79,7 @@ class ChessController {
             FlatButton(
                 child: Text(strings.replay),
                 onPressed: () {
+                  resetBoard();
                   Navigator.of(context).pop();
                 })
           ],
@@ -85,22 +92,23 @@ class ChessController {
     print('onCheck');
   }
 
-  Future<String> loadOldGame() async {
+  Future<void> loadOldGame() async {
     final root = await rootDir;
     final saveFile = File('$root/game.fen');
     if(await saveFile.exists()) {
       String fen = await saveFile.readAsString();
-      if(fen.length < 2)
-        return Chess.DEFAULT_POSITION;
+      if(fen.length < 2) {
+        game = Chess();
+        return;
+      }
 
       print('game loaded');
 
-      hasReadGameState = true;
+      game = Chess.fromFEN(fen);
+    }else
+      game = Chess();
 
-      return fen;
-    }
-
-    return Chess.DEFAULT_POSITION;
+    hasReadGameState = true;
   }
 
   void saveOldGame() async {

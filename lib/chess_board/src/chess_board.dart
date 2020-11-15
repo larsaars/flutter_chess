@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
+import '../chess.dart';
 import 'board_model.dart';
 import 'board_rank.dart';
 import 'chess_board_controller.dart';
@@ -114,8 +115,7 @@ class ChessBoard extends StatefulWidget {
   final VoidCallback onDraw;
 
   //the callbacks for returning the controller and game
-  GameCallback onGame;
-  ChessBoardControllerCallback onChessBoardController;
+  final Chess chess;
 
   /// A boolean which notes if white board side is towards users
   final bool whiteSideTowardsUser;
@@ -129,8 +129,6 @@ class ChessBoard extends StatefulWidget {
   /// The color type of the board
   final BoardType boardType;
 
-  final String fen;
-
   ChessBoard({
     this.size = 200.0,
     this.whiteSideTowardsUser = true,
@@ -138,12 +136,10 @@ class ChessBoard extends StatefulWidget {
     @required this.onCheckMate,
     @required this.onCheck,
     @required this.onDraw,
-    @required this.onGame,
-    @required this.onChessBoardController,
     this.chessBoardController,
     this.enableUserMoves = true,
     this.boardType = BoardType.brown,
-    this.fen,
+    this.chess
   });
 
   @override
@@ -160,12 +156,10 @@ class _ChessBoardState extends State<ChessBoard> {
         widget.onCheckMate,
         widget.onCheck,
         widget.onDraw,
-        widget.onGame,
-        widget.onChessBoardController,
         widget.whiteSideTowardsUser,
         widget.chessBoardController,
         widget.enableUserMoves,
-        widget.fen,
+        widget.chess,
       ),
       child: Container(
         height: widget.size,
