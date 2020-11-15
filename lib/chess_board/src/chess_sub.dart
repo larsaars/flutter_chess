@@ -2,9 +2,6 @@ import 'package:json_annotation/json_annotation.dart';
 
 import '../chess.dart';
 
-part 'chess_sub.g.dart';
-
-@JsonSerializable()
 class Game {
   Game();
 
@@ -17,12 +14,8 @@ class Game {
   int move_number = 1;
   List<State> history = [];
   Map header = {};
-
-  factory Game.fromJson(Map<String, dynamic> json) => _$GameFromJson(json);
-  Map<String, dynamic> toJson() => _$GameToJson(this);
 }
 
-@JsonSerializable()
 class Move {
   final int color;
   final int from;
@@ -40,12 +33,8 @@ class Move {
   String get toAlgebraic {
     return Chess.algebraic(to);
   }
-
-  factory Move.fromJson(Map<String, dynamic> json) => _$MoveFromJson(json);
-  Map<String, dynamic> toJson() => _$MoveToJson(this);
 }
 
-@JsonSerializable()
 class State {
   final Move move;
   final ColorMap kings;
@@ -55,22 +44,14 @@ class State {
   final int half_moves;
   final int move_number;
   State(this.move, this.kings, this.turn, this.castling, this.ep_square, this.half_moves, this.move_number);
-
-  factory State.fromJson(Map<String, dynamic> json) => _$StateFromJson(json);
-  Map<String, dynamic> toJson() => _$StateToJson(this);
 }
 
-@JsonSerializable()
 class Piece {
   PieceType type;
   int color;
   Piece(this.type, this.color);
-
-  factory Piece.fromJson(Map<String, dynamic> json) => _$PieceFromJson(json);
-  Map<String, dynamic> toJson() => _$PieceToJson(this);
 }
 
-@JsonSerializable()
 class PieceType {
   PieceType({this.name, this.shift});
 
@@ -89,9 +70,6 @@ class PieceType {
   String toString() => name;
   String toLowerCase() => name;
   String toUpperCase() => name.toUpperCase();
-
-  factory PieceType.fromJson(Map<String, dynamic> json) => _$PieceTypeFromJson(json);
-  Map<String, dynamic> toJson() => _$PieceTypeToJson(this);
 }
 
 const int WHITE = 0;
@@ -109,9 +87,6 @@ class Color {
 
   int get hashCode => value;
   String toString() => (this == WHITE) ? 'w' : 'b';
-
-  factory Color.fromJson(Map<String, dynamic> json) => _$ColorFromJson(json);
-  Map<String, dynamic> toJson() => _$ColorToJson(this);
 }
 
 @JsonSerializable()
@@ -138,7 +113,4 @@ class ColorMap {
       black = value;
     }
   }
-
-  factory ColorMap.fromJson(Map<String, dynamic> json) => _$ColorMapFromJson(json);
-  Map<String, dynamic> toJson() => _$ColorMapToJson(this);
 }
