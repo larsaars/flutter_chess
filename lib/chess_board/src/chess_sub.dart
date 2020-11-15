@@ -9,9 +9,9 @@ class Game {
   Game();
 
   List<Piece> board = List(128);
-  ColorMap<int> kings = ColorMap.of(-1);
-  Color turn = Color.WHITE;
-  ColorMap<int> castling = ColorMap.of(0);
+  ColorMap kings = ColorMap.of(-1);
+  int turn = WHITE;
+  ColorMap castling = ColorMap.of(0);
   int ep_square = -1;
   int half_moves = 0;
   int move_number = 1;
@@ -24,7 +24,7 @@ class Game {
 
 @JsonSerializable()
 class Move {
-  final Color color;
+  final int color;
   final int from;
   final int to;
   final int flags;
@@ -48,9 +48,9 @@ class Move {
 @JsonSerializable()
 class State {
   final Move move;
-  final ColorMap<int> kings;
-  final Color turn;
-  final ColorMap<int> castling;
+  final ColorMap kings;
+  final int turn;
+  final ColorMap castling;
   final int ep_square;
   final int half_moves;
   final int move_number;
@@ -63,7 +63,7 @@ class State {
 @JsonSerializable()
 class Piece {
   PieceType type;
-  final Color color;
+  int color;
   Piece(this.type, this.color);
 
   factory Piece.fromJson(Map<String, dynamic> json) => _$PieceFromJson(json);
@@ -94,45 +94,31 @@ class PieceType {
   Map<String, dynamic> toJson() => _$PieceTypeToJson(this);
 }
 
-@JsonSerializable()
-class Color {
-  Color({this.value});
-
-  final int value;
-  const Color.internal(this.value);
-
-  static const Color WHITE = const Color.internal(0);
-  static const Color BLACK = const Color.internal(1);
-
-  int get hashCode => value;
-  String toString() => (this == WHITE) ? 'w' : 'b';
-
-  factory Color.fromJson(Map<String, dynamic> json) => _$ColorFromJson(json);
-  Map<String, dynamic> toJson() => _$ColorToJson(this);
-}
+const int WHITE = 0;
+const int BLACK = 1;
 
 @JsonSerializable()
-class ColorMap<T> {
-  T _white;
-  T _black;
-  ColorMap.of(T value)
-      : _white = value,
-        _black = value;
+class ColorMap {
+  int white;
+  int black;
+  ColorMap.of(int value)
+      : white = value,
+        black = value;
   ColorMap.clone(ColorMap other)
-      : _white = other._white,
-        _black = other._black;
+      : white = other.white,
+        black = other.black;
 
   ColorMap();
 
-  T operator [](Color color) {
-    return (color == Color.WHITE) ? _white : _black;
+  int operator [](int color) {
+    return (color == WHITE) ? white : black;
   }
 
-  void operator []=(Color color, T value) {
-    if (color == Color.WHITE) {
-      _white = value;
+  void operator []=(int color, int value) {
+    if (color == WHITE) {
+      white = value;
     } else {
-      _black = value;
+      black = value;
     }
   }
 

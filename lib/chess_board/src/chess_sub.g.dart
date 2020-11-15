@@ -15,9 +15,7 @@ Game _$GameFromJson(Map<String, dynamic> json) {
     ..kings = json['kings'] == null
         ? null
         : ColorMap.fromJson(json['kings'] as Map<String, dynamic>)
-    ..turn = json['turn'] == null
-        ? null
-        : Color.fromJson(json['turn'] as Map<String, dynamic>)
+    ..turn = json['turn'] as int
     ..castling = json['castling'] == null
         ? null
         : ColorMap.fromJson(json['castling'] as Map<String, dynamic>)
@@ -45,9 +43,7 @@ Map<String, dynamic> _$GameToJson(Game instance) => <String, dynamic>{
 
 Move _$MoveFromJson(Map<String, dynamic> json) {
   return Move(
-    json['color'] == null
-        ? null
-        : Color.fromJson(json['color'] as Map<String, dynamic>),
+    json['color'] as int,
     json['from'] as int,
     json['to'] as int,
     json['flags'] as int,
@@ -81,9 +77,7 @@ State _$StateFromJson(Map<String, dynamic> json) {
     json['kings'] == null
         ? null
         : ColorMap.fromJson(json['kings'] as Map<String, dynamic>),
-    json['turn'] == null
-        ? null
-        : Color.fromJson(json['turn'] as Map<String, dynamic>),
+    json['turn'] as int,
     json['castling'] == null
         ? null
         : ColorMap.fromJson(json['castling'] as Map<String, dynamic>),
@@ -108,9 +102,7 @@ Piece _$PieceFromJson(Map<String, dynamic> json) {
     json['type'] == null
         ? null
         : PieceType.fromJson(json['type'] as Map<String, dynamic>),
-    json['color'] == null
-        ? null
-        : Color.fromJson(json['color'] as Map<String, dynamic>),
+    json['color'] as int,
   );
 }
 
@@ -131,19 +123,13 @@ Map<String, dynamic> _$PieceTypeToJson(PieceType instance) => <String, dynamic>{
       'name': instance.name,
     };
 
-Color _$ColorFromJson(Map<String, dynamic> json) {
-  return Color(
-    value: json['value'] as int,
-  );
+ColorMap _$ColorMapFromJson(Map<String, dynamic> json) {
+  return ColorMap()
+    ..white = json['white'] as int
+    ..black = json['black'] as int;
 }
 
-Map<String, dynamic> _$ColorToJson(Color instance) => <String, dynamic>{
-      'value': instance.value,
+Map<String, dynamic> _$ColorMapToJson(ColorMap instance) => <String, dynamic>{
+      'white': instance.white,
+      'black': instance.black,
     };
-
-ColorMap<T> _$ColorMapFromJson<T>(Map<String, dynamic> json) {
-  return ColorMap<T>();
-}
-
-Map<String, dynamic> _$ColorMapToJson<T>(ColorMap<T> instance) =>
-    <String, dynamic>{};

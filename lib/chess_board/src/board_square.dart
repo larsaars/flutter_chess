@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
@@ -39,19 +38,23 @@ class BoardSquare extends StatelessWidget {
           return model.enableUserMoves ? true : false;
         }, onAccept: (List moveInfo) {
           // A way to check if move occurred.
-          chess.Color moveColor = model.game.game.turn;
+          int moveColor = model.game.game.turn;
 
           if (moveInfo[1] == "P" &&
               ((moveInfo[0][1] == "7" &&
                       squareName[1] == "8" &&
-                      moveInfo[2] == chess.Color.WHITE) ||
+                      moveInfo[2] == chess.WHITE) ||
                   (moveInfo[0][1] == "2" &&
                       squareName[1] == "1" &&
-                      moveInfo[2] == chess.Color.BLACK))) {
+                      moveInfo[2] == chess.BLACK))) {
             _promotionDialog(context).then((value) {
-              model.game.move(
-                  {"from": moveInfo[0], "to": squareName, "promotion": value});
-              model.refreshBoard();
+                model.game.move(
+                    {
+                      "from": moveInfo[0],
+                      "to": squareName,
+                      "promotion": value
+                    });
+                model.refreshBoard();
             });
           } else {
             model.game.move({"from": moveInfo[0], "to": squareName});
@@ -60,7 +63,7 @@ class BoardSquare extends StatelessWidget {
             model.onMove({
                 'figure': moveInfo[1],
                 'square': squareName,
-                'color': moveInfo[2] == chess.Color.BLACK ? PieceColor.Black : PieceColor.White,
+                'color': moveInfo[2],
             });
           }
           model.refreshBoard();
@@ -71,6 +74,7 @@ class BoardSquare extends StatelessWidget {
 
   /// Show dialog when pawn reaches last square
   Future<String> _promotionDialog(BuildContext context) async {
+
     return showDialog<String>(
       context: context,
       barrierDismissible: false,
