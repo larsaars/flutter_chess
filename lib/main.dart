@@ -130,8 +130,9 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
             _chessController.game = game;
             _chessController.onReloadLastGame();
           },
-          onChessBoardController: (chessBoardController) =>
-          _chessController.controller = chessBoardController,
+          onChessBoardController: (chessBoardController) {
+            _chessController.controller = chessBoardController;
+          },
           onCheckMate: (color) => _chessController.onCheckMate(color),
           onDraw: () => _chessController.onDraw(),
           onMove: (move) => _chessController.onMove(move),
