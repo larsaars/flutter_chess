@@ -54,7 +54,6 @@ class ChessController {
     if(!await saveFile.exists())
       await saveFile.create();
     String jsonString = jsonEncode(game.game.toJson());
-    print('json: $jsonString');
     await saveFile.writeAsString(jsonString);
   }
 
