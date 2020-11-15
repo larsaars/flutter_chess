@@ -28,10 +28,8 @@ class MyApp extends StatelessWidget {
     //set fullscreen
     SystemChrome.setEnabledSystemUIOverlays([]);
     //and portrait only
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown
-    ]);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
     //create the material app
     return MaterialApp(
@@ -60,31 +58,68 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: appName),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _MyHomepageState createState() => _MyHomepageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+class _MyHomepageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    //set strings object
+    strings ??= S.of(context);
+    //init the context singleton object
+    ContextSingleton(context);
+    //build the chess controller,
+    //if needed set context newly
+    if (_chessController == null)
+      _chessController = ChessController(context);
+    else
+      _chessController.context = context;
+    //future builder: load old screen and show here on start the loading screen,
+    //when the future is finished,
+    //with setState show the real scaffold
+    //return the view
+    return (_chessController.game == null)
+        ? FutureBuilder(
+            future: _chessController.loadOldGame(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  var error = snapshot.error;
+                  print('$error');
+                  return Center(child: Text(strings.error));
+                }
 
+                return MyHomePageAfterLoading();
+              } else {
+                return Center(
+                    child: CircularProgressIndicator(
+                  backgroundColor: Colors.brown,
+                ));
+              }
+            },
+          )
+        : MyHomePageAfterLoading();
+  }
+}
+
+class MyHomePageAfterLoading extends StatefulWidget {
+  MyHomePageAfterLoading({Key key}) : super(key: key);
+
+  @override
+  _MyHomePageAfterLoadingState createState() => _MyHomePageAfterLoadingState();
+}
+
+class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
@@ -99,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch(state) {
+    switch (state) {
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
         _chessController.saveOldGame();
@@ -109,141 +144,105 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
     }
   }
 
+  void update() {
+    setState(() {});
+  }
+
   Future<bool> _onWillPop() async {
     _chessController.saveOldGame();
+
     return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    //set strings object
-    strings ??= S.of(context);
-    //init the context singleton object
-    ContextSingleton(context);
-    //build the chess controller,
-    //if needed set context newly
-    if(_chessController == null)
-      _chessController = ChessController(context);
-    else
-      _chessController.context = context;
-    //future builder: load old screen and show here on start the loading screen,
-    //when the future is finished,
-    //with setState show the real scaffold
-    //return the view
+    //set the update method
+    _chessController.update = update;
+    //the default scaffold
     return WillPopScope(
       onWillPop: _onWillPop,
-      child: FutureBuilder(
-        future: _chessController.loadOldGame(),
-        builder: (context, snapshot) {
-          if(snapshot.connectionState == ConnectionState.done) {
-            if(snapshot.hasError) {
-              var error = snapshot.error;
-              print('$error');
-              return Center(
-                  child: Text(
-                      strings.error
-                  )
-              );
-            }
-            return Scaffold(
-              body: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                      (_chessController?.game?.game?.turn == chess_sub.Color.BLACK) ? strings.black : strings.white,
-                    style: Theme.of(context).textTheme.headline4.copyWith(
+      child: Scaffold(
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+                (_chessController?.game?.game?.turn == chess_sub.Color.BLACK)
+                    ? strings.black
+                    : strings.white,
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
                       inherit: true,
-                      color: (_chessController?.game?.in_check ?? false) ? Colors.red : Colors.black,
-                    )
-                  ),
-                  Center(
-                    // Center is a layout widget. It takes a single child and positions it
-                    // in the middle of the parent.
-                    child: ChessBoard(
-                      boardType: BoardType.darkBrown,
-                      size: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
-                      onGame: (game) => _chessController.game = game,
-                      onChessBoardController: (chessBoardController) => _chessController.controller = chessBoardController,
-                      onCheckMate: (color) => _chessController.onCheckMate(color),
-                      onDraw: () => _chessController.onDraw(),
-                      onMove: (move) {
-                        setState(() {});
-                        _chessController.onMove(move);
-                      },
-                      onCheck: (color) => _chessController.onCheck(color),
-                      chessBoardController: ChessBoardController(),
-                      //set data from future as game state
-                      fen: snapshot.data,
-                    ),
-                  ),
-                ],
+                      color: (_chessController?.game?.in_check ?? false)
+                          ? Colors.red
+                          : Colors.black,
+                    )),
+            Center(
+              // Center is a layout widget. It takes a single child and positions it
+              // in the middle of the parent.
+              child: ChessBoard(
+                boardType: BoardType.darkBrown,
+                size: MediaQuery.of(context).size.width,
+                onCheckMate: (color) => _chessController.onCheckMate(color),
+                onDraw: () => _chessController.onDraw(),
+                onMove: (move) => _chessController.onMove(move),
+                onCheck: (color) => _chessController.onCheck(color),
+                chessBoardController: _chessController.controller,
+                chess: _chessController.game,
               ),
-              bottomNavigationBar: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      FancyButton(
-                        onPressed: () => print('pressed'),
-                        icon: Icons.add,
-                      ),
-                      SizedBox(
-                        width: 8.0,
-                      ),
-                      FancyButton(
-                        onPressed: () => print('pressed'),
-                        icon: Icons.add,
-                      ),
-                      SizedBox(
-                        width: 8.0,
-                      ),
-                      FancyButton(
-                        onPressed: () => print('pressed'),
-                        icon: Icons.add,
-                      ),
-                      SizedBox(
-                        width: 8.0,
-                      ),
-                      FancyButton(
-                        onPressed: () => print('pressed'),
-                        icon: Icons.add,
-                      ),
-                      SizedBox(
-                        width: 8.0,
-                      ),
-                      FancyButton(
-                        onPressed: () => print('pressed'),
-                        icon: Icons.add,
-                      ),
-                      SizedBox(
-                        width: 8.0,
-                      ),
-                      FancyButton(
-                        onPressed: () => _chessController.resetBoard(),
-                        icon: Icons.autorenew,
-                      )
-                    ],
-                  ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FancyButton(
+                  onPressed: () => print('pressed'),
+                  icon: Icons.add,
                 ),
-              ),
-            );
-          }else {
-            return Center(
-                child: CircularProgressIndicator(
-                  backgroundColor: Colors.brown,
+                SizedBox(
+                  width: 8.0,
+                ),
+                FancyButton(
+                  onPressed: () => print('pressed'),
+                  icon: Icons.add,
+                ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                FancyButton(
+                  onPressed: () => print('pressed'),
+                  icon: Icons.add,
+                ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                FancyButton(
+                  onPressed: () => print('pressed'),
+                  icon: Icons.add,
+                ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                FancyButton(
+                  onPressed: () => print('pressed'),
+                  icon: Icons.add,
+                ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                FancyButton(
+                  onPressed: () => _chessController.resetBoard(),
+                  icon: Icons.autorenew,
                 )
-            );
-          }
-        },
+              ],
+            ),
+          ),
+        ),
       ),
     );
-
-
   }
 }

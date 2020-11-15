@@ -14,7 +14,7 @@ class $de extends MessageLookupByLibrary {
   
   final messages = {
 		"app_name" : MessageLookupByLibrary.simpleMessage("Schach"),
-		"close" : MessageLookupByLibrary.simpleMessage("schließen"),
+		"cancel" : MessageLookupByLibrary.simpleMessage("schließen"),
 		"choose_promotion" : MessageLookupByLibrary.simpleMessage("Umwandlung wählen"),
 		"checkmate" : MessageLookupByLibrary.simpleMessage("Schachmatt"),
 		"draw" : MessageLookupByLibrary.simpleMessage("Unentschieden"),
