@@ -15,8 +15,6 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
 class Chess {
 
   // Constants/Class Variables
-  static Color BLACK = Color.BLACK;
-  static Color WHITE = Color.WHITE;
 
   static const int EMPTY = -1;
 
@@ -42,7 +40,7 @@ class Chess {
 
   static const List POSSIBLE_RESULTS = const ['1-0', '0-1', '1/2-1/2', '*'];
 
-  static Map<Color, List> PAWN_OFFSETS = {
+  static Map<int, List> PAWN_OFFSETS = {
     BLACK: [16, 32, 17, 15],
     WHITE: [-16, -32, -17, -15]
   };
@@ -144,7 +142,7 @@ class Chess {
   static const int SQUARES_H1 = 119;
   static const int SQUARES_H8 = 7;
 
-  static final Map<Color, List> ROOKS = {
+  static final Map<int, List> ROOKS = {
     WHITE: [ {'square': SQUARES_A1, 'flag': BITS_QSIDE_CASTLE},
              {'square': SQUARES_H1, 'flag': BITS_KSIDE_CASTLE} ],
     BLACK: [ {'square': SQUARES_A8, 'flag': BITS_QSIDE_CASTLE},
@@ -169,7 +167,7 @@ class Chess {
     return new Chess()
       ..game.board = new List<Piece>.from(this.game.board)
       ..game.kings = new ColorMap.clone(this.game.kings)
-      ..game.turn = new Color.internal(this.game.turn.value)
+      ..game.turn = this.game.turn
       ..game.castling = new ColorMap.clone(this.game.castling)
       ..game.ep_square = this.game.ep_square
       ..game.half_moves = this.game.half_moves
@@ -193,7 +191,6 @@ class Chess {
     List tokens = fen.split(new RegExp(r"\s+"));
     String position = tokens[0];
     int square = 0;
-    String valid = SYMBOLS + '12345678/';
 
     Map validMap = validate_fen(fen);
     if (!validMap["valid"]) {
@@ -211,7 +208,7 @@ class Chess {
       } else if (is_digit(piece)) {
         square += int.parse(piece);
       } else {
-        Color color = (piece == piece.toUpperCase()) ? WHITE : BLACK;
+        int color = (piece == piece.toUpperCase()) ? WHITE : BLACK;
         PieceType type = PIECE_TYPES[piece.toLowerCase()];
         put(new Piece(type, color), algebraic(square));
         square++;
@@ -414,7 +411,7 @@ class Chess {
           fen += empty.toString();
           empty = 0;
         }
-        Color color = game.board[i].color;
+        int color = game.board[i].color;
         PieceType type = game.board[i].type;
 
         fen += (color == WHITE) ? type.toUpperCase() : type.toLowerCase();
@@ -557,8 +554,8 @@ class Chess {
     }
 
     List<Move> moves = [];
-    Color us = game.turn;
-    Color them = swap_color(us);
+    int us = game.turn;
+    int them = swap_color(us);
     ColorMap second_rank = new ColorMap.of(0);
     second_rank[BLACK] = RANK_7;
     second_rank[WHITE] = RANK_2;
@@ -731,7 +728,7 @@ class Chess {
     return output;
   }
 
-  bool attacked(Color color, int square) {
+  bool attacked(int color, int square) {
     for (int i = SQUARES_A8; i <= SQUARES_H1; i++) {
       /* did we run off the end of the board */
       if ((i & 0x88) != 0) {
@@ -779,7 +776,7 @@ class Chess {
     return false;
   }
 
-  bool king_attacked(Color color) {
+  bool king_attacked(int color) {
     return attacked(swap_color(color), game.kings[color]);
   }
 
@@ -882,8 +879,8 @@ class Chess {
   }
 
   make_move(Move move) {
-    Color us = game.turn;
-    Color them = swap_color(us);
+    int us = game.turn;
+    int them = swap_color(us);
     push(move);
 
     game.board[move.to] = game.board[move.from];
@@ -990,8 +987,8 @@ class Chess {
     game.half_moves = old.half_moves;
     game.move_number = old.move_number;
 
-    Color us = game.turn;
-    Color them = swap_color(game.turn);
+    int us = game.turn;
+    int them = swap_color(game.turn);
 
     game.board[move.from] = game.board[move.to];
     game.board[move.from].type = move.piece; // to undo any promotions
@@ -1096,7 +1093,7 @@ class Chess {
         s += ' . ';
       } else {
         PieceType type = game.board[i].type;
-        Color color = game.board[i].color;
+        int color = game.board[i].color;
         var symbol = (color == WHITE) ? type.toUpperCase() : type.toLowerCase();
         s += ' ' + symbol + ' ';
       }
@@ -1127,7 +1124,7 @@ class Chess {
     return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1);
   }
 
-  static Color swap_color(Color c) {
+  static int swap_color(int c) {
     return c == WHITE ? BLACK : WHITE;
   }
 
