@@ -132,18 +132,20 @@ Map<String, dynamic> _$PieceTypeToJson(PieceType instance) => <String, dynamic>{
     };
 
 Color _$ColorFromJson(Map<String, dynamic> json) {
-  return Color(
-    value: json['value'] as int,
-  );
+  return Color()..value = json['value'] as int;
 }
 
 Map<String, dynamic> _$ColorToJson(Color instance) => <String, dynamic>{
       'value': instance.value,
     };
 
-ColorMap<T> _$ColorMapFromJson<T>(Map<String, dynamic> json) {
-  return ColorMap<T>();
+ColorMap _$ColorMapFromJson(Map<String, dynamic> json) {
+  return ColorMap()
+    ..white = json['white'] as int
+    ..black = json['black'] as int;
 }
 
-Map<String, dynamic> _$ColorMapToJson<T>(ColorMap<T> instance) =>
-    <String, dynamic>{};
+Map<String, dynamic> _$ColorMapToJson(ColorMap instance) => <String, dynamic>{
+      'white': instance.white,
+      'black': instance.black,
+    };

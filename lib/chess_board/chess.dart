@@ -15,8 +15,8 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
 class Chess {
 
   // Constants/Class Variables
-  static const Color BLACK = Color.BLACK;
-  static const Color WHITE = Color.WHITE;
+  static Color BLACK = Color.BLACK;
+  static Color WHITE = Color.WHITE;
 
   static const int EMPTY = -1;
 
@@ -42,9 +42,9 @@ class Chess {
 
   static const List POSSIBLE_RESULTS = const ['1-0', '0-1', '1/2-1/2', '*'];
 
-  static const Map<Color, List> PAWN_OFFSETS = const {
-    BLACK: const [16, 32, 17, 15],
-    WHITE: const [-16, -32, -17, -15]
+  static Map<Color, List> PAWN_OFFSETS = {
+    BLACK: [16, 32, 17, 15],
+    WHITE: [-16, -32, -17, -15]
   };
 
   static const Map<PieceType, List> PIECE_OFFSETS = const {
@@ -168,9 +168,9 @@ class Chess {
   Chess copy() {
     return new Chess()
       ..game.board = new List<Piece>.from(this.game.board)
-      ..game.kings = new ColorMap<int>.clone(this.game.kings)
+      ..game.kings = new ColorMap.clone(this.game.kings)
       ..game.turn = new Color.internal(this.game.turn.value)
-      ..game.castling = new ColorMap<int>.clone(this.game.castling)
+      ..game.castling = new ColorMap.clone(this.game.castling)
       ..game.ep_square = this.game.ep_square
       ..game.half_moves = this.game.half_moves
       ..game.move_number = this.game.move_number
@@ -559,7 +559,7 @@ class Chess {
     List<Move> moves = [];
     Color us = game.turn;
     Color them = swap_color(us);
-    ColorMap<int> second_rank = new ColorMap.of(0);
+    ColorMap second_rank = new ColorMap.of(0);
     second_rank[BLACK] = RANK_7;
     second_rank[WHITE] = RANK_2;
 

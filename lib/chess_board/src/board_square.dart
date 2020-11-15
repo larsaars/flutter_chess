@@ -49,9 +49,13 @@ class BoardSquare extends StatelessWidget {
                       squareName[1] == "1" &&
                       moveInfo[2] == chess.Color.BLACK))) {
             _promotionDialog(context).then((value) {
-              model.game.move(
-                  {"from": moveInfo[0], "to": squareName, "promotion": value});
-              model.refreshBoard();
+                model.game.move(
+                    {
+                      "from": moveInfo[0],
+                      "to": squareName,
+                      "promotion": value
+                    });
+                model.refreshBoard();
             });
           } else {
             model.game.move({"from": moveInfo[0], "to": squareName});
@@ -71,6 +75,7 @@ class BoardSquare extends StatelessWidget {
 
   /// Show dialog when pawn reaches last square
   Future<String> _promotionDialog(BuildContext context) async {
+
     return showDialog<String>(
       context: context,
       barrierDismissible: false,
