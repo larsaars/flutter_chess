@@ -39,7 +39,7 @@ class ChessController {
     final saveFile = File('$root/game.json');
     if(await saveFile.exists()) {
       String json = await saveFile.readAsString();
-      print('json: $json');
+
       Map<String, dynamic> jsonMap = jsonDecode(json);
       //set game object
       game.game = chess.Game.fromJson(jsonMap);
