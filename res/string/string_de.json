@@ -3,5 +3,6 @@
   "close": "schließen",
   "choose_promotion": "Umwandlung wählen",
   "checkmate": "Schachmatt",
-  "draw": "Unentschieden"
+  "draw": "Unentschieden",
+  "error": "Fehler"
 }

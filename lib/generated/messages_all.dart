@@ -16,6 +16,9 @@ class $de extends MessageLookupByLibrary {
 		"app_name" : MessageLookupByLibrary.simpleMessage("Schach"),
 		"close" : MessageLookupByLibrary.simpleMessage("schließen"),
 		"choose_promotion" : MessageLookupByLibrary.simpleMessage("Umwandlung wählen"),
+		"checkmate" : MessageLookupByLibrary.simpleMessage("Schachmatt"),
+		"draw" : MessageLookupByLibrary.simpleMessage("Unentschieden"),
+		"error" : MessageLookupByLibrary.simpleMessage("Fehler"),
 
   };
 }
@@ -29,6 +32,9 @@ class $en extends MessageLookupByLibrary {
 		"app_name" : MessageLookupByLibrary.simpleMessage("Chess"),
 		"close" : MessageLookupByLibrary.simpleMessage("close"),
 		"choose_promotion" : MessageLookupByLibrary.simpleMessage("choose promotion"),
+		"checkmate" : MessageLookupByLibrary.simpleMessage("checkmate"),
+		"draw" : MessageLookupByLibrary.simpleMessage("draw"),
+		"error" : MessageLookupByLibrary.simpleMessage("error"),
 
   };
 }

@@ -97,98 +97,123 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    print('state: $state');
-    if(state == AppLifecycleState.paused)
-      _chessController.onSaveGame();
+    switch(state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        _chessController.saveOldGame();
+        break;
+      default:
+        break;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     //set strings object
-    strings = S.of(context);
+    strings ??= S.of(context);
     //init the context singleton object
     ContextSingleton(context);
-    //build the chess controller
-    _chessController = ChessController(context);
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-        body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: ChessBoard(
-          boardType: BoardType.darkBrown,
-          size: MediaQuery
-              .of(context)
-              .size
-              .width,
-          onGame: (game) {
-            _chessController.game = game;
-            _chessController.onReloadLastGame();
-          },
-          onChessBoardController: (chessBoardController) =>
-          _chessController.controller = chessBoardController,
-          onCheckMate: (color) => _chessController.onCheckMate(color),
-          onDraw: () => _chessController.onDraw(),
-          onMove: (move) => _chessController.onMove(move),
-          onCheck: (color) => _chessController.onCheckMate(color),
-          chessBoardController: ChessBoardController(),
-        ),
-      ),
-      bottomNavigationBar: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              FancyButton(
-                onPressed: () => print('pressed'),
-                icon: Icons.add,
+    //build the chess controller,
+    //if needed set context newly
+    if(_chessController == null)
+      _chessController = ChessController(context);
+    else
+      _chessController.context = context;
+    //future builder: load old screen and show here on start the loading screen,
+    //when the future is finished,
+    //with setState show the real scaffold
+    //return the view
+    return FutureBuilder(
+      future: _chessController.loadOldGame(),
+      builder: (context, snapshot) {
+        if(snapshot.connectionState == ConnectionState.done) {
+          if(snapshot.hasError) {
+            var error = snapshot.error;
+            print('$error');
+            return Center(
+                child: Text(
+                    strings.error,
+                )
+            );
+          }
+          return Scaffold(
+            body: Center(
+              // Center is a layout widget. It takes a single child and positions it
+              // in the middle of the parent.
+              child: ChessBoard(
+                boardType: BoardType.darkBrown,
+                size: MediaQuery
+                    .of(context)
+                    .size
+                    .width,
+                onGame: (game) => _chessController.game = game,
+                onChessBoardController: (chessBoardController) => _chessController.controller = chessBoardController,
+                onCheckMate: (color) => _chessController.onCheckMate(color),
+                onDraw: () => _chessController.onDraw(),
+                onMove: (move) => _chessController.onMove(move),
+                onCheck: (color) => _chessController.onCheckMate(color),
+                chessBoardController: ChessBoardController(),
+                //set data from future as game state
+                gameState: snapshot.data,
               ),
-              SizedBox(
-                width: 8.0,
+            ),
+            bottomNavigationBar: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FancyButton(
+                      onPressed: () => print('pressed'),
+                      icon: Icons.add,
+                    ),
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    FancyButton(
+                      onPressed: () => print('pressed'),
+                      icon: Icons.add,
+                    ),
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    FancyButton(
+                      onPressed: () => print('pressed'),
+                      icon: Icons.add,
+                    ),
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    FancyButton(
+                      onPressed: () => print('pressed'),
+                      icon: Icons.add,
+                    ),
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    FancyButton(
+                      onPressed: () => print('pressed'),
+                      icon: Icons.add,
+                    ),
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    FancyButton(
+                      onPressed: () => _chessController.resetBoard(),
+                      icon: Icons.autorenew,
+                    )
+                  ],
+                ),
               ),
-              FancyButton(
-                onPressed: () => print('pressed'),
-                icon: Icons.add,
-              ),
-              SizedBox(
-                width: 8.0,
-              ),
-              FancyButton(
-                onPressed: () => print('pressed'),
-                icon: Icons.add,
-              ),
-              SizedBox(
-                width: 8.0,
-              ),
-              FancyButton(
-                onPressed: () => print('pressed'),
-                icon: Icons.add,
-              ),
-              SizedBox(
-                width: 8.0,
-              ),
-              FancyButton(
-                onPressed: () => print('pressed'),
-                icon: Icons.add,
-              ),
-              SizedBox(
-                width: 8.0,
-              ),
-              FancyButton(
-                onPressed: () => _chessController.resetBoard(),
-                icon: Icons.autorenew,
-              )
-            ],
-          ),
-        ),
-      ),
+            ),
+          );
+        }else {
+          return Center(child: CircularProgressIndicator());
+        }
+      },
     );
+
+
   }
 }
