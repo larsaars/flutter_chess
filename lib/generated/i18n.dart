@@ -30,8 +30,8 @@ class S {
     return Intl.message("Chess", name: 'app_name');
   }
 
-  String get close {
-    return Intl.message("close", name: 'close');
+  String get cancel {
+    return Intl.message("cancel", name: 'cancel');
   }
 
   String get choose_promotion {
@@ -48,6 +48,30 @@ class S {
 
   String get error {
     return Intl.message("error", name: 'error');
+  }
+
+  String get draw_desc {
+    return Intl.message("The game finished with a draw!", name: 'draw_desc');
+  }
+
+  String get replay {
+    return Intl.message("replay", name: 'replay');
+  }
+
+  String get ok {
+    return Intl.message("ok", name: 'ok');
+  }
+
+  String get white {
+    return Intl.message("white", name: 'white');
+  }
+
+  String get black {
+    return Intl.message("black", name: 'black');
+  }
+
+  String check_mate_desc(loser, winner) {
+    return Intl.message("${loser} is in checkmate. ${winner} won.", name: 'check_mate_desc', args: [loser, winner]);
   }
 
 

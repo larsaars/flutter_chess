@@ -19,6 +19,12 @@ class $de extends MessageLookupByLibrary {
 		"checkmate" : MessageLookupByLibrary.simpleMessage("Schachmatt"),
 		"draw" : MessageLookupByLibrary.simpleMessage("Unentschieden"),
 		"error" : MessageLookupByLibrary.simpleMessage("Fehler"),
+		"draw_desc" : MessageLookupByLibrary.simpleMessage("Das Spiel wurde mit einem Unentschieden beendet!"),
+		"replay" : MessageLookupByLibrary.simpleMessage("neu spielen"),
+		"ok" : MessageLookupByLibrary.simpleMessage("ok"),
+		"white" : MessageLookupByLibrary.simpleMessage("weiß"),
+		"black" : MessageLookupByLibrary.simpleMessage("schwarz"),
+		"check_mate_desc" : (loser, winner) => "${loser} ist Schachmatt. ${winner} hat gewonnen.",
 
   };
 }
@@ -30,11 +36,17 @@ class $en extends MessageLookupByLibrary {
   
   final messages = {
 		"app_name" : MessageLookupByLibrary.simpleMessage("Chess"),
-		"close" : MessageLookupByLibrary.simpleMessage("close"),
+		"cancel" : MessageLookupByLibrary.simpleMessage("cancel"),
 		"choose_promotion" : MessageLookupByLibrary.simpleMessage("choose promotion"),
 		"checkmate" : MessageLookupByLibrary.simpleMessage("checkmate"),
 		"draw" : MessageLookupByLibrary.simpleMessage("draw"),
 		"error" : MessageLookupByLibrary.simpleMessage("error"),
+		"draw_desc" : MessageLookupByLibrary.simpleMessage("The game finished with a draw!"),
+		"replay" : MessageLookupByLibrary.simpleMessage("replay"),
+		"ok" : MessageLookupByLibrary.simpleMessage("ok"),
+		"white" : MessageLookupByLibrary.simpleMessage("white"),
+		"black" : MessageLookupByLibrary.simpleMessage("black"),
+		"check_mate_desc" : (loser, winner) => "${loser} is in checkmate. ${winner} won.",
 
   };
 }

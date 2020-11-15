@@ -4,5 +4,11 @@
   "choose_promotion": "Umwandlung wählen",
   "checkmate": "Schachmatt",
   "draw": "Unentschieden",
-  "error": "Fehler"
+  "error": "Fehler",
+  "draw_desc": "Das Spiel wurde mit einem Unentschieden beendet!",
+  "replay": "neu spielen",
+  "ok": "ok",
+  "white": "weiß",
+  "black": "schwarz",
+  "check_mate_desc": "${loser} ist Schachmatt. ${winner} hat gewonnen."
 }
