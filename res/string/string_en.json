@@ -1,8 +1,14 @@
 {
   "app_name": "Chess",
-  "close": "close",
+  "cancel": "cancel",
   "choose_promotion": "choose promotion",
   "checkmate": "checkmate",
   "draw": "draw",
-  "error": "error"
+  "error": "error",
+  "draw_desc": "The game finished with a draw!",
+  "replay": "replay",
+  "ok": "ok",
+  "white": "white",
+  "black": "black",
+  "check_mate_desc": "${loser} is in checkmate. ${winner} won."
 }
