@@ -43,6 +43,8 @@ class BoardModel extends Model {
   /// Creates a logical game
   Chess game = Chess();
 
+  chess.Game gameState;
+
   /// Refreshes board
   void refreshBoard() {
     if (game.in_checkmate) {
@@ -67,9 +69,13 @@ class BoardModel extends Model {
       this.onChessBoardController,
       this.whiteSideTowardsUser,
       this.chessBoardController,
-      this.enableUserMoves) {
+      this.enableUserMoves,
+      this.gameState,) {
     chessBoardController?.game = game;
     chessBoardController?.refreshBoard = refreshBoard;
+    //set the gameState
+    if(gameState != null)
+      game.game = gameState;
     //return controller and game
     onChessBoardController(chessBoardController);
     onGame(game);

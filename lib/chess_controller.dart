@@ -34,22 +34,34 @@ class ChessController {
     print('onCheck');
   }
 
-  void onReloadLastGame() async {
+  Future<chess.Game> loadOldGame() async {
     final root = await rootDir;
     final saveFile = File('$root/game.json');
     if(await saveFile.exists()) {
       String json = await saveFile.readAsString();
       if(json.length < 15)
-        return;
+        return chess.Game();
       Map<String, dynamic> jsonMap = jsonDecode(json);
-      //set game object
-      game.game = chess.Game.fromJson(jsonMap);
-      //after sync reload game view
-      controller.refreshBoard();
+
+      /*int b = 0, w = 0, n = 0;
+      for(var piece in game.game.board) {
+        if(piece == null)
+          n++;
+        else if(piece.color.value == 1)
+          b++;
+        else if(piece.color.value == 0)
+          w++;
+      }
+
+      print('comp: w=$w; b=$b; n=$n');*/
+
+      return chess.Game.fromJson(jsonMap);
     }
+
+    return chess.Game();
   }
 
-  void onSaveGame() async {
+  void saveOldGame() async {
     final root = await rootDir;
     final saveFile = File('$root/game.json');
     if(!await saveFile.exists())

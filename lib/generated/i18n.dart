@@ -25,7 +25,7 @@ class S {
       return new S();
     });
   }
-
+  
   String get app_name {
     return Intl.message("Chess", name: 'app_name');
   }
@@ -36,6 +36,18 @@ class S {
 
   String get choose_promotion {
     return Intl.message("choose promotion", name: 'choose_promotion');
+  }
+
+  String get checkmate {
+    return Intl.message("checkmate", name: 'checkmate');
+  }
+
+  String get draw {
+    return Intl.message("draw", name: 'draw');
+  }
+
+  String get error {
+    return Intl.message("error", name: 'error');
   }
 
 

@@ -3,5 +3,6 @@
   "close": "close",
   "choose_promotion": "choose promotion",
   "checkmate": "checkmate",
-  "draw": "draw"
+  "draw": "draw",
+  "error": "error"
 }
