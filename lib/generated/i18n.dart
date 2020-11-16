@@ -82,6 +82,22 @@ class S {
     return Intl.message("Are you sure to restart the game and reset the board?", name: 'replay_desc');
   }
 
+  String get undo_impossible {
+    return Intl.message("can't perform undo", name: 'undo_impossible');
+  }
+
+  String get undo {
+    return Intl.message("undo", name: 'undo');
+  }
+
+  String get switch_colors {
+    return Intl.message("switch colors", name: 'switch_colors');
+  }
+
+  String get switch_colors_desc {
+    return Intl.message("Switch colors (turn the board) and reset game?", name: 'switch_colors_desc');
+  }
+
 
 }
 

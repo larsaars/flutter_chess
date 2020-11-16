@@ -63,18 +63,19 @@ void showTextDialog(title, text, onDoneText, onDone) async {
             ),
             actions: <Widget>[
               FlatButton(
-                  child: Text(strings.cancel),
+                  child: Text(onDone == null ? strings.ok : strings.cancel),
                   onPressed: () {
                     _showing = false;
                     Navigator.of(context).pop();
                   }),
-              FlatButton(
+              onDone != null ? FlatButton(
                   child: Text(onDoneText),
                   onPressed: () {
                     _showing = false;
                     Navigator.of(context).pop();
-                    if (onDone != null) onDone();
+                    onDone();
                   })
+                  : null
             ],
           ),
         ),

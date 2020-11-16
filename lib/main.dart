@@ -183,7 +183,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
               // Center is a layout widget. It takes a single child and positions it
               // in the middle of the parent.
               child: ChessBoard(
-                boardType: BoardType.darkBrown,
+                boardType: _chessController.boardType,
                 size: MediaQuery.of(context).size.width,
                 onCheckMate: (color) => _chessController.onCheckMate(color),
                 onDraw: () => _chessController.onDraw(),
@@ -191,6 +191,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                 onCheck: (color) => _chessController.onCheck(color),
                 chessBoardController: _chessController.controller,
                 chess: _chessController.game,
+                whiteSideTowardsUser: _chessController.whiteSideTowardsUser,
               ),
             ),
           ],
@@ -224,21 +225,21 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                   width: 8.0,
                 ),
                 FancyButton(
-                  onPressed: () => print('pressed'),
-                  icon: Icons.add,
+                  onPressed: _chessController.switchColors,
+                  icon: Icons.switch_left,
                 ),
                 SizedBox(
                   width: 8.0,
                 ),
                 FancyButton(
-                  onPressed: () => print('pressed'),
-                  icon: Icons.add,
+                  onPressed: _chessController.undo,
+                  icon: Icons.undo,
                 ),
                 SizedBox(
                   width: 8.0,
                 ),
                 FancyButton(
-                  onPressed: () => _chessController.resetBoard(),
+                  onPressed: _chessController.resetBoard,
                   icon: Icons.autorenew,
                 )
               ],

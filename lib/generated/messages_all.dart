@@ -27,6 +27,10 @@ class $de extends MessageLookupByLibrary {
 		"check_mate_desc" : (loser, winner) => "${loser} ist Schachmatt. ${winner} hat gewonnen.",
 		"turn_of_x" : (turn) => "${turn} ist dran",
 		"replay_desc" : MessageLookupByLibrary.simpleMessage("Bist du dir sicher, dass du das Spiel neustarten willst?"),
+		"undo_impossible" : MessageLookupByLibrary.simpleMessage("Zug kann nicht rückgänig gemacht werden"),
+		"undo" : MessageLookupByLibrary.simpleMessage("rückgängig"),
+		"switch_colors" : MessageLookupByLibrary.simpleMessage("Farben wechseln"),
+		"switch_colors_desc" : MessageLookupByLibrary.simpleMessage("Farben wecheln (Brett drehen) und Spiel zurücksetzen?"),
 
   };
 }
@@ -51,6 +55,10 @@ class $en extends MessageLookupByLibrary {
 		"check_mate_desc" : (loser, winner) => "${loser} is in checkmate. ${winner} won.",
 		"turn_of_x" : (turn) => "turn of ${turn}",
 		"replay_desc" : MessageLookupByLibrary.simpleMessage("Are you sure to restart the game and reset the board?"),
+		"undo_impossible" : MessageLookupByLibrary.simpleMessage("can't perform undo"),
+		"undo" : MessageLookupByLibrary.simpleMessage("undo"),
+		"switch_colors" : MessageLookupByLibrary.simpleMessage("switch colors"),
+		"switch_colors_desc" : MessageLookupByLibrary.simpleMessage("Switch colors (turn the board) and reset game?"),
 
   };
 }
