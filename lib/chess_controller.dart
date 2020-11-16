@@ -90,4 +90,8 @@ class ChessController {
     whiteSideTowardsUser = !whiteSideTowardsUser;
     update();
   }
+
+  void changeBoardStyle() {
+
+  }
 }
