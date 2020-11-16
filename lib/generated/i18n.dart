@@ -74,6 +74,14 @@ class S {
     return Intl.message("${loser} is in checkmate. ${winner} won.", name: 'check_mate_desc', args: [loser, winner]);
   }
 
+  String turn_of_x(turn) {
+    return Intl.message("turn of ${turn}", name: 'turn_of_x', args: [turn]);
+  }
+
+  String get replay_desc {
+    return Intl.message("Are you sure to restart the game and reset the board?", name: 'replay_desc');
+  }
+
 
 }
 

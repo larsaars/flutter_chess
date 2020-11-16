@@ -14,7 +14,6 @@ class ChessController {
   Chess game;
   BuildContext context;
 
-  bool _showing = false;
   bool hasReadGameState = false;
 
   ChessController(this.context);
@@ -33,59 +32,26 @@ class ChessController {
   }
 
   void onDraw() {
-    print('onDraw');
-
+    //show the dialog
+    showTextDialog(
+        strings.draw,
+        strings.draw_desc,
+        strings.replay,
+        resetBoard
+    );
   }
 
-  void onCheckMate(color) async {
-    if(_showing)
-      return;
-
+  void onCheckMate(color) {
     //determine winner and loser
     var winner = color == PieceColor.White ? strings.black : strings.white;
     var loser = color == PieceColor.White ? strings.white : strings.black;
-    //show dialog
-    (await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Center(
-              child: Text(
-                  strings.checkmate,
-                  style: Theme.of(context).textTheme.subtitle1,
-                  textAlign: Alignment.centerLeft,
-              )
-          ),
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children : <Widget>[
-              Expanded(
-                child: Text(
-                  strings.check_mate_desc(loser, winner),
-                  textAlign: TextAlign.center,
-                  style: Theme.of(context).textTheme.subtitle2,
-                ),
-              )
-            ],
-          ),
-          actions: <Widget>[
-            FlatButton(
-                child: Text(strings.cancel),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                }),
-            FlatButton(
-                child: Text(strings.replay),
-                onPressed: () {
-                  resetBoard();
-                  Navigator.of(context).pop();
-                })
-          ],
-        );
-      },
-    )).then((value) => _showing = false);
+    //show the dialog
+    showTextDialog(
+        strings.checkmate,
+        strings.check_mate_desc(loser, winner),
+        strings.replay,
+        resetBoard
+    );
   }
 
   void onCheck(color) {
@@ -122,6 +88,11 @@ class ChessController {
   }
 
   void resetBoard() {
-
+    showTextDialog(
+        strings.replay,
+        strings.replay_desc,
+        strings.ok,
+        controller.resetBoard
+    );
   }
 }

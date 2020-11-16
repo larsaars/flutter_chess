@@ -10,5 +10,7 @@
   "ok": "ok",
   "white": "white",
   "black": "black",
-  "check_mate_desc": "${loser} is in checkmate. ${winner} won."
+  "check_mate_desc": "${loser} is in checkmate. ${winner} won.",
+  "turn_of_x": "turn of ${turn}",
+  "replay_desc": "Are you sure to restart the game and reset the board?"
 }

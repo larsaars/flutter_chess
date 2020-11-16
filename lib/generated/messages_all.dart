@@ -25,6 +25,8 @@ class $de extends MessageLookupByLibrary {
 		"white" : MessageLookupByLibrary.simpleMessage("weiß"),
 		"black" : MessageLookupByLibrary.simpleMessage("schwarz"),
 		"check_mate_desc" : (loser, winner) => "${loser} ist Schachmatt. ${winner} hat gewonnen.",
+		"turn_of_x" : (turn) => "${turn} ist dran",
+		"replay_desc" : MessageLookupByLibrary.simpleMessage("Bist du dir sicher, dass du das Spiel neustarten willst?"),
 
   };
 }
@@ -47,6 +49,8 @@ class $en extends MessageLookupByLibrary {
 		"white" : MessageLookupByLibrary.simpleMessage("white"),
 		"black" : MessageLookupByLibrary.simpleMessage("black"),
 		"check_mate_desc" : (loser, winner) => "${loser} is in checkmate. ${winner} won.",
+		"turn_of_x" : (turn) => "turn of ${turn}",
+		"replay_desc" : MessageLookupByLibrary.simpleMessage("Are you sure to restart the game and reset the board?"),
 
   };
 }

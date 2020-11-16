@@ -10,5 +10,7 @@
   "ok": "ok",
   "white": "weiß",
   "black": "schwarz",
-  "check_mate_desc": "${loser} ist Schachmatt. ${winner} hat gewonnen."
+  "check_mate_desc": "${loser} ist Schachmatt. ${winner} hat gewonnen.",
+  "turn_of_x": "${turn} ist dran",
+  "replay_desc": "Bist du dir sicher, dass du das Spiel neustarten willst?"
 }
