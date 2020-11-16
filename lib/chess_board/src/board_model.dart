@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:chess_bot/chess_board/chess.dart';
+import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 import 'package:scoped_model/scoped_model.dart';
 
 import 'chess_board_controller.dart';
@@ -46,13 +47,13 @@ class BoardModel extends Model {
   /// Refreshes board
   void refreshBoard() {
     if (game.in_checkmate) {
-      onCheckMate(game.game.turn);
+      onCheckMate(game.game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
     }
     else if (game.in_draw || game.in_stalemate || game.in_threefold_repetition || game.insufficient_material) {
       onDraw();
     }
     else if (game.in_check) {
-      onCheck(game.game.turn);
+      onCheck(game.game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
     }
     notifyListeners();
   }
