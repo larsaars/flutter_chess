@@ -166,16 +166,19 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-                (_chessController?.game?.game?.turn == chess_sub.Color.BLACK)
-                    ? strings.black
-                    : strings.white,
-                style: Theme.of(context).textTheme.subtitle1.copyWith(
-                      inherit: true,
-                      color: (_chessController?.game?.in_check ?? false)
-                          ? Colors.red
-                          : Colors.black,
-                    )),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                  strings.turn_of_x((_chessController?.game?.game?.turn == chess_sub.Color.BLACK)
+                      ? strings.black
+                      : strings.white),
+                  style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        inherit: true,
+                        color: (_chessController?.game?.in_check ?? false)
+                            ? Colors.red
+                            : Colors.black,
+                      )),
+            ),
             Center(
               // Center is a layout widget. It takes a single child and positions it
               // in the middle of the parent.
