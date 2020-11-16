@@ -144,7 +144,7 @@ class Chess {
   static const int SQUARES_H1 = 119;
   static const int SQUARES_H8 = 7;
 
-  static final Map<int, List> ROOKS = {
+  static final Map<Color, List> ROOKS = {
     WHITE: [ {'square': SQUARES_A1, 'flag': BITS_QSIDE_CASTLE},
              {'square': SQUARES_H1, 'flag': BITS_KSIDE_CASTLE} ],
     BLACK: [ {'square': SQUARES_A8, 'flag': BITS_QSIDE_CASTLE},
@@ -210,7 +210,7 @@ class Chess {
       } else if (is_digit(piece)) {
         square += int.parse(piece);
       } else {
-        int color = (piece == piece.toUpperCase()) ? WHITE : BLACK;
+        Color color = (piece == piece.toUpperCase()) ? WHITE : BLACK;
         PieceType type = PIECE_TYPES[piece.toLowerCase()];
         put(new Piece(type, color), algebraic(square));
         square++;
@@ -413,7 +413,7 @@ class Chess {
           fen += empty.toString();
           empty = 0;
         }
-        int color = game.board[i].color;
+        Color color = game.board[i].color;
         PieceType type = game.board[i].type;
 
         fen += (color == WHITE) ? type.toUpperCase() : type.toLowerCase();
@@ -730,7 +730,7 @@ class Chess {
     return output;
   }
 
-  bool attacked(int color, int square) {
+  bool attacked(Color color, int square) {
     for (int i = SQUARES_A8; i <= SQUARES_H1; i++) {
       /* did we run off the end of the board */
       if ((i & 0x88) != 0) {
@@ -778,7 +778,7 @@ class Chess {
     return false;
   }
 
-  bool king_attacked(int color) {
+  bool king_attacked(Color color) {
     return attacked(swap_color(color), game.kings[color]);
   }
 
@@ -881,8 +881,8 @@ class Chess {
   }
 
   make_move(Move move) {
-    int us = game.turn;
-    int them = swap_color(us);
+    Color us = game.turn;
+    Color them = swap_color(us);
     push(move);
 
     game.board[move.to] = game.board[move.from];
@@ -989,8 +989,8 @@ class Chess {
     game.half_moves = old.half_moves;
     game.move_number = old.move_number;
 
-    int us = game.turn;
-    int them = swap_color(game.turn);
+    Color us = game.turn;
+    Color them = swap_color(game.turn);
 
     game.board[move.from] = game.board[move.to];
     game.board[move.from].type = move.piece; // to undo any promotions
@@ -1095,7 +1095,7 @@ class Chess {
         s += ' . ';
       } else {
         PieceType type = game.board[i].type;
-        int color = game.board[i].color;
+        Color color = game.board[i].color;
         var symbol = (color == WHITE) ? type.toUpperCase() : type.toLowerCase();
         s += ' ' + symbol + ' ';
       }
@@ -1126,7 +1126,7 @@ class Chess {
     return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1);
   }
 
-  static int swap_color(int c) {
+  static Color swap_color(Color c) {
     return c == WHITE ? BLACK : WHITE;
   }
 

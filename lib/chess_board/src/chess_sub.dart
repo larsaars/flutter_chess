@@ -7,7 +7,7 @@ class Game {
 
   List<Piece> board = List(128);
   ColorMap kings = ColorMap.of(-1);
-  int turn = WHITE;
+  Color turn = Color.WHITE;
   ColorMap castling = ColorMap.of(0);
   int ep_square = -1;
   int half_moves = 0;
@@ -17,7 +17,7 @@ class Game {
 }
 
 class Move {
-  final int color;
+  final Color color;
   final int from;
   final int to;
   final int flags;
@@ -38,7 +38,7 @@ class Move {
 class State {
   final Move move;
   final ColorMap kings;
-  final int turn;
+  final Color turn;
   final ColorMap castling;
   final int ep_square;
   final int half_moves;
@@ -48,7 +48,7 @@ class State {
 
 class Piece {
   PieceType type;
-  int color;
+  final Color color;
   Piece(this.type, this.color);
 }
 
@@ -71,9 +71,6 @@ class PieceType {
   String toLowerCase() => name;
   String toUpperCase() => name.toUpperCase();
 }
-
-const int WHITE = 0;
-const int BLACK = 1;
 
 @JsonSerializable()
 class Color {
@@ -102,12 +99,12 @@ class ColorMap {
 
   ColorMap();
 
-  int operator [](int color) {
-    return (color == WHITE) ? white : black;
+  int operator [](Color color) {
+    return (color == Color.WHITE) ? white : black;
   }
 
-  void operator []=(int color, int value) {
-    if (color == WHITE) {
+  void operator []=(Color color, int value) {
+    if (color == Color.WHITE) {
       white = value;
     } else {
       black = value;
