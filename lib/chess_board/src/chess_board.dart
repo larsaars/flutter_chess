@@ -129,18 +129,17 @@ class ChessBoard extends StatefulWidget {
   /// The color type of the board
   final BoardType boardType;
 
-  ChessBoard({
-    this.size = 200.0,
-    this.whiteSideTowardsUser = true,
-    @required this.onMove,
-    @required this.onCheckMate,
-    @required this.onCheck,
-    @required this.onDraw,
-    this.chessBoardController,
-    this.enableUserMoves = true,
-    this.boardType = BoardType.brown,
-    this.chess
-  });
+  ChessBoard(
+      {this.size = 200.0,
+      this.whiteSideTowardsUser = true,
+      @required this.onMove,
+      @required this.onCheckMate,
+      @required this.onCheck,
+      @required this.onDraw,
+      this.chessBoardController,
+      this.enableUserMoves = true,
+      this.boardType = BoardType.brown,
+      this.chess});
 
   @override
   _ChessBoardState createState() => _ChessBoardState();

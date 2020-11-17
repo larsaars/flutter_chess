@@ -29,8 +29,7 @@ class $de extends MessageLookupByLibrary {
 		"replay_desc" : MessageLookupByLibrary.simpleMessage("Bist du dir sicher, dass du das Spiel neustarten willst?"),
 		"undo_impossible" : MessageLookupByLibrary.simpleMessage("Zug kann nicht rückgänig gemacht werden"),
 		"undo" : MessageLookupByLibrary.simpleMessage("rückgängig"),
-		"switch_colors" : MessageLookupByLibrary.simpleMessage("Farben wechseln"),
-		"switch_colors_desc" : MessageLookupByLibrary.simpleMessage("Farben wecheln (Brett drehen) und Spiel zurücksetzen?"),
+		"choose_style" : MessageLookupByLibrary.simpleMessage("Brett-Stil wählen"),
 
   };
 }
@@ -57,8 +56,7 @@ class $en extends MessageLookupByLibrary {
 		"replay_desc" : MessageLookupByLibrary.simpleMessage("Are you sure to restart the game and reset the board?"),
 		"undo_impossible" : MessageLookupByLibrary.simpleMessage("can't perform undo"),
 		"undo" : MessageLookupByLibrary.simpleMessage("undo"),
-		"switch_colors" : MessageLookupByLibrary.simpleMessage("switch colors"),
-		"switch_colors_desc" : MessageLookupByLibrary.simpleMessage("Switch colors (turn the board) and reset game?"),
+		"choose_style" : MessageLookupByLibrary.simpleMessage("choose board style"),
 
   };
 }

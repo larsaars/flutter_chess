@@ -32,6 +32,8 @@ void showTextDialog(title, text, onDoneText, onDone) async {
   //show dialog
   await showGeneralDialog(
     context: ContextSingleton.context,
+    barrierDismissible: true,
+    barrierLabel: "showTextDialog",
     pageBuilder: (context, animation1, animation2) {
       return Container();
     },
@@ -42,12 +44,12 @@ void showTextDialog(title, text, onDoneText, onDone) async {
         child: Opacity(
           opacity: a1.value,
           child: AlertDialog(
-            title: Center(
+            title: Padding(
+                padding: EdgeInsets.all(8.0),
                 child: Text(
-              title,
-              style: Theme.of(context).textTheme.subtitle1,
-              textAlign: TextAlign.start,
-            )),
+                  title,
+                  style: Theme.of(context).textTheme.subtitle1,
+                )),
             content: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -68,13 +70,14 @@ void showTextDialog(title, text, onDoneText, onDone) async {
                     _showing = false;
                     Navigator.of(context).pop();
                   }),
-              onDone != null ? FlatButton(
-                  child: Text(onDoneText),
-                  onPressed: () {
-                    _showing = false;
-                    Navigator.of(context).pop();
-                    onDone();
-                  })
+              onDone != null
+                  ? FlatButton(
+                      child: Text(onDoneText),
+                      onPressed: () {
+                        _showing = false;
+                        Navigator.of(context).pop();
+                        onDone();
+                      })
                   : null
             ],
           ),

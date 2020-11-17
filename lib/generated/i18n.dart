@@ -90,12 +90,8 @@ class S {
     return Intl.message("undo", name: 'undo');
   }
 
-  String get switch_colors {
-    return Intl.message("switch colors", name: 'switch_colors');
-  }
-
-  String get switch_colors_desc {
-    return Intl.message("Switch colors (turn the board) and reset game?", name: 'switch_colors_desc');
+  String get choose_style {
+    return Intl.message("choose board style", name: 'choose_style');
   }
 
 
