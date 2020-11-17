@@ -36,9 +36,6 @@ class BoardModel extends Model {
   /// The controller for programmatically making moves
   ChessBoardController chessBoardController;
 
-  /// User moves can be enabled or disabled by this property
-  bool enableUserMoves;
-
   /// Creates a logical game
   Chess game;
 
@@ -66,9 +63,10 @@ class BoardModel extends Model {
       this.onDraw,
       this.whiteSideTowardsUser,
       this.chessBoardController,
-      this.enableUserMoves,
+      bool userCanMakeMoves,
       this.game) {
     chessBoardController?.game = game;
     chessBoardController?.refreshBoard = refreshBoard;
+    chessBoardController?.userCanMakeMoves = userCanMakeMoves;
   }
 }
