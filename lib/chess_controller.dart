@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:chess_bot/ai.dart';
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
+import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,6 +15,8 @@ class ChessController {
   ChessBoardController controller = ChessBoardController();
   Chess game;
   BuildContext context;
+
+  ChessAI _ai;
 
   bool whiteSideTowardsUser = true, _showing = false;
 
@@ -82,6 +86,14 @@ class ChessController {
   }
 
   void undo() {
+    if(prefs.getBool('bot')) {
+      _undo();
+    }
+
+    _undo();
+  }
+
+  void _undo() {
     game.undo_move() != null
         ? controller.refreshBoard()
         : showTextDialog(strings.undo, strings.undo_impossible, null, null);
@@ -192,13 +204,16 @@ class ChessController {
     });
   }
 
-  void findMove() {
+  Future<void> findMove() async {
+    //init ai if null
+    _ai ??= ChessAI(this);
     //set player cannot change anything
     controller.userCanMakeMoves = false;
     //generate the move
-    
-    //make the move
-    controller.makeMove(from, to)
+    Move move = await _ai.find();
+    //make the move, if there is one
+    if(move != null)
+      game.make_move(move);
     //now set user can make moves true again
     controller.userCanMakeMoves = true;
     //and update the board
