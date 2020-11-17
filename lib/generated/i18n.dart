@@ -94,6 +94,14 @@ class S {
     return Intl.message("choose board style", name: 'choose_style');
   }
 
+  String get bot_on {
+    return Intl.message("bot on", name: 'bot_on');
+  }
+
+  String get bot_off {
+    return Intl.message("bot off", name: 'bot_off');
+  }
+
 
 }
 

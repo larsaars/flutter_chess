@@ -17,9 +17,9 @@ class FancyButton extends StatefulWidget {
       @required this.onPressed,
       this.text = "",
       this.icon,
-      this.splashColor = Colors.orange,
+      this.splashColor = Colors.white60,
       this.fillColor = Colors.brown,
-      this.iconColor = Colors.amber,
+      this.iconColor = Colors.white60,
       this.animation = FancyButtonAnimation.rotate_right})
       : super(key: key);
 
@@ -82,7 +82,7 @@ class _FancyButtonState extends State<FancyButton>
     return RawMaterialButton(
       onPressed: onTapped,
       splashColor: widget.splashColor,
-      fillColor: Colors.brown,
+      fillColor: widget.fillColor,
       shape: StadiumBorder(),
       child: Padding(
         padding: const EdgeInsets.symmetric(

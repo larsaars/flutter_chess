@@ -97,6 +97,19 @@ enum BoardType {
   green,
 }
 
+BoardType boardTypeFromString(String type) {
+  switch (type) {
+    case 'b':
+      return BoardType.brown;
+    case 'o':
+      return BoardType.orange;
+    case 'g':
+      return BoardType.green;
+    default:
+      return BoardType.darkBrown;
+  }
+}
+
 /// The Chessboard Widget
 class ChessBoard extends StatefulWidget {
   /// Size of chessboard

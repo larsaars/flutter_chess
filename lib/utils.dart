@@ -84,7 +84,7 @@ void showTextDialog(title, text, onDoneText, onDone) async {
         ),
       );
     },
-    transitionDuration: Duration(milliseconds: 200),
+    transitionDuration: Duration(milliseconds: 300),
   ).then((value) {
     _showing = false;
   });
