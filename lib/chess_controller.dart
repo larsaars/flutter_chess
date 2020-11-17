@@ -24,9 +24,12 @@ class ChessController {
   void onMove(move) {
     //update text
     if (update != null) update();
+    //print the move
     print('onMove: $move');
-    //the piece
-    //if(move[])
+    //check if bot should make a move
+    if(move['color'] == PieceColor.White && prefs.getBool('bot')) {
+      findMove();
+    }
   }
 
   void onDraw() {
@@ -190,6 +193,15 @@ class ChessController {
   }
 
   void findMove() {
-    //set player can play
+    //set player cannot change anything
+    controller.userCanMakeMoves = false;
+    //generate the move
+    
+    //make the move
+    controller.makeMove(from, to)
+    //now set user can make moves true again
+    controller.userCanMakeMoves = true;
+    //and update the board
+    controller.refreshBoard();
   }
 }

@@ -1,7 +1,14 @@
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 
-enum PieceType { Pawn, Rook, Knight, Bishop, Queen, King }
+enum PieceType {
+  Pawn,
+  Rook,
+  Knight,
+  Bishop,
+  Queen,
+  King,
+}
 
 enum PieceColor {
   White,
@@ -15,6 +22,8 @@ class ChessBoardController {
 
   /// Function from the ScopedModel to refresh board
   Function refreshBoard;
+
+  bool userCanMakeMoves = true;
 
   /// Makes move on the board
   void makeMove(String from, String to) {
