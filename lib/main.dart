@@ -219,8 +219,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                     width: 8.0,
                   ),
                   FancyButton(
-                    onPressed: () => print('pressed'),
-                    icon: Icons.add,
+                    onPressed: _chessController.changeBoardStyle,
+                    icon: Icons.style,
                   ),
                   SizedBox(
                     width: 8.0,
@@ -234,6 +234,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                   ),
                   FancyButton(
                     onPressed: _chessController.undo,
+                    animation: FancyButtonAnimation.pulse,
                     icon: Icons.undo,
                   ),
                   SizedBox(

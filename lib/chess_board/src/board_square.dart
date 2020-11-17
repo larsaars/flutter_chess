@@ -76,7 +76,7 @@ class BoardSquare extends StatelessWidget {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return new AlertDialog(
-          title: new Text(strings.choose_promotion),
+          title: Text(strings.choose_promotion),
           content: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[

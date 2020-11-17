@@ -91,7 +91,83 @@ class ChessController {
     update();
   }
 
-  void changeBoardStyle() {
-
+  void changeBoardStyle() async {
+    await showDialog<String>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return new AlertDialog(
+          title: Text(strings.choose_style),
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      InkWell(
+                        child: Image.asset(
+                          "res/chess_board/brown_board.png",
+                          height: 100,
+                          width: 100,
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop(BoardType.brown);
+                        },
+                      ),
+                      InkWell(
+                        child: Image.asset(
+                          "res/chess_board/dark_brown_board.png",
+                          height: 100,
+                          width: 100,
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop(BoardType.darkBrown);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      InkWell(
+                        child: Image.asset(
+                          "res/chess_board/green_board.png",
+                          height: 100,
+                          width: 100,
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop(BoardType.green);
+                        },
+                      ),
+                      InkWell(
+                        child: Image.asset(
+                          "res/chess_board/orange_board.png",
+                          height: 100,
+                          width: 100,
+                        ),
+                        onTap: () {
+                          Navigator.of(context).pop(BoardType.orange);
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    ).then((value) {
+      print('$value');
+    });
   }
 }
