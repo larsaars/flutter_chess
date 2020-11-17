@@ -8,11 +8,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'chess_board/src/chess_board.dart';
 
 S strings;
 ChessController _chessController;
+SharedPreferences prefs;
 
 void main() {
   runApp(MyApp());
@@ -71,6 +74,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomepageState extends State<MyHomePage> {
+  Future<void> _loadEverythingUp() async {
+    await _chessController.loadOldGame();
+    prefs = await SharedPreferences.getInstance();
+  }
+
   @override
   Widget build(BuildContext context) {
     //set strings object
@@ -89,7 +97,7 @@ class _MyHomepageState extends State<MyHomePage> {
     //return the view
     return (_chessController.game == null)
         ? FutureBuilder(
-            future: _chessController.loadOldGame(),
+            future: _loadEverythingUp(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.hasError) {
@@ -100,10 +108,7 @@ class _MyHomepageState extends State<MyHomePage> {
 
                 return MyHomePageAfterLoading();
               } else {
-                return Center(
-                    child: CircularProgressIndicator(
-                  backgroundColor: Colors.brown,
-                ));
+                return Center(child: CircularProgressIndicator());
               }
             },
           )
@@ -158,94 +163,102 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
     //set the update method
     _chessController.update = update;
     //the default scaffold
-    return Container(
-      color: Colors.white30,
-      child: WillPopScope(
-        onWillPop: _onWillPop,
-        child: Scaffold(
-          body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
+    return WillPopScope(
+      onWillPop: _onWillPop,
+      child: Scaffold(
+        backgroundColor: Colors.brown[50],
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                    strings.turn_of_x((_chessController?.game?.game?.turn == chess_sub.Color.BLACK)
-                        ? strings.black
-                        : strings.white),
-                    style: Theme.of(context).textTheme.subtitle1.copyWith(
-                          inherit: true,
-                          color: (_chessController?.game?.in_check ?? false)
-                              ? Colors.red
-                              : Colors.black,
-                        )),
-              ),
-              Center(
-                // Center is a layout widget. It takes a single child and positions it
-                // in the middle of the parent.
-                child: ChessBoard(
-                  boardType: _chessController.boardType,
-                  size: MediaQuery.of(context).size.width,
-                  onCheckMate: (color) => _chessController.onCheckMate(color),
-                  onDraw: () => _chessController.onDraw(),
-                  onMove: (move) => _chessController.onMove(move),
-                  onCheck: (color) => _chessController.onCheck(color),
-                  chessBoardController: _chessController.controller,
-                  chess: _chessController.game,
-                  whiteSideTowardsUser: _chessController.whiteSideTowardsUser,
+                child: LiteRollingSwitch(
+                  value: (prefs.getBool("bot") ?? false),
+                  onChanged: (pos) {
+                    prefs.setBool("bot", pos);
+                    //change player can play if it is blacks turn
+                    if((_chessController?.game?.game?.turn ?? chess_sub.Color.WHITE) == chess_sub.Color.BLACK) {
+                      _chessController.findMove();
+                    }
+                  },
+                  iconOn: Icons.done,
+                  iconOff: Icons.close,
+                  textOff: strings.bot_off,
+                  textOn: strings.bot_on,
+                  colorOff: Colors.red[800],
+                  colorOn: Colors.green[800],
                 ),
               ),
-            ],
-          ),
-          bottomNavigationBar: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
+            ),
+            Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FancyButton(
-                    onPressed: () => print('pressed'),
-                    icon: Icons.add,
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  FancyButton(
-                    onPressed: () => print('pressed'),
-                    icon: Icons.add,
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  FancyButton(
-                    onPressed: _chessController.changeBoardStyle,
-                    icon: Icons.style,
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  FancyButton(
-                    onPressed: _chessController.switchColors,
-                    icon: Icons.switch_left,
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  FancyButton(
-                    onPressed: _chessController.undo,
-                    animation: FancyButtonAnimation.pulse,
-                    icon: Icons.undo,
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  FancyButton(
-                    onPressed: _chessController.resetBoard,
-                    icon: Icons.autorenew,
-                  )
-                ],
+              child: Text(
+                  strings.turn_of_x((_chessController?.game?.game?.turn ==
+                          chess_sub.Color.BLACK)
+                      ? strings.black
+                      : strings.white),
+                  style: Theme.of(context).textTheme.subtitle1.copyWith(
+                        inherit: true,
+                        color: (_chessController?.game?.in_check ?? false)
+                            ? Colors.red
+                            : Colors.black,
+                      )),
+            ),
+            Center(
+              // Center is a layout widget. It takes a single child and positions it
+              // in the middle of the parent.
+              child: ChessBoard(
+                boardType: boardTypeFromString(prefs.getString('board_style') ?? 'd'),
+                size: MediaQuery.of(context).size.width,
+                onCheckMate: (color) => _chessController.onCheckMate(color),
+                onDraw: () => _chessController.onDraw(),
+                onMove: (move) => _chessController.onMove(move),
+                onCheck: (color) => _chessController.onCheck(color),
+                chessBoardController: _chessController.controller,
+                chess: _chessController.game,
+                whiteSideTowardsUser: _chessController.whiteSideTowardsUser,
               ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FancyButton(
+                  onPressed: _chessController.undo,
+                  animation: FancyButtonAnimation.pulse,
+                  icon: Icons.undo,
+                ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                FancyButton(
+                  onPressed: _chessController.resetBoard,
+                  icon: Icons.autorenew,
+                ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                FancyButton(
+                  onPressed: _chessController.switchColors,
+                  icon: Icons.switch_left,
+                ),
+                SizedBox(
+                  width: 8.0,
+                ),
+                FancyButton(
+                  onPressed: _chessController.changeBoardStyle,
+                  icon: Icons.style,
+                  animation: FancyButtonAnimation.pulse,
+                ),
+              ],
             ),
           ),
         ),

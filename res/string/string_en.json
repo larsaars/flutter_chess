@@ -15,5 +15,7 @@
   "replay_desc": "Are you sure to restart the game and reset the board?",
   "undo_impossible": "can't perform undo",
   "undo": "undo",
-  "choose_style": "choose board style"
+  "choose_style": "choose board style",
+  "bot_on": "bot on",
+  "bot_off": "bot off"
 }

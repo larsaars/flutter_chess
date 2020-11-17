@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
-import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,8 +14,7 @@ class ChessController {
   Chess game;
   BuildContext context;
 
-  BoardType boardType = BoardType.darkBrown;
-  bool whiteSideTowardsUser = true;
+  bool whiteSideTowardsUser = true, _showing = false;
 
   ChessController(this.context);
 
@@ -28,7 +26,7 @@ class ChessController {
     if (update != null) update();
     print('onMove: $move');
     //the piece
-    chess.Piece piece = game.get(move['square']);
+    //if(move[])
   }
 
   void onDraw() {
@@ -92,82 +90,106 @@ class ChessController {
   }
 
   void changeBoardStyle() async {
-    await showDialog<String>(
+    if (_showing) return;
+
+    _showing = true;
+
+    await showGeneralDialog<String>(
       context: context,
       barrierDismissible: true,
-      builder: (BuildContext context) {
-        return new AlertDialog(
-          title: Text(strings.choose_style),
-          content: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: Row(
+      barrierLabel: "changeBoardStyle",
+      pageBuilder: (context, animation1, animation2) {
+        return Container();
+      },
+      transitionDuration: Duration(milliseconds: 300),
+      transitionBuilder: (context, a1, a2, widget) {
+        final curvedValue = Curves.easeInOutBack.transform(a1.value) - 1.0;
+        return Transform(
+            transform: Matrix4.translationValues(0.0, curvedValue * 200, 0.0),
+            child: Opacity(
+                opacity: a1.value,
+                child: AlertDialog(
+                  title: Text(strings.choose_style),
+                  content: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      InkWell(
-                        child: Image.asset(
-                          "res/chess_board/brown_board.png",
-                          height: 100,
-                          width: 100,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              InkWell(
+                                child: Image.asset(
+                                  "res/chess_board/brown_board.png",
+                                  height: 100,
+                                  width: 100,
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).pop('b');
+                                },
+                              ),
+                              InkWell(
+                                child: Image.asset(
+                                  "res/chess_board/dark_brown_board.png",
+                                  height: 100,
+                                  width: 100,
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).pop('d');
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        onTap: () {
-                          Navigator.of(context).pop(BoardType.brown);
-                        },
                       ),
-                      InkWell(
-                        child: Image.asset(
-                          "res/chess_board/dark_brown_board.png",
-                          height: 100,
-                          width: 100,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              InkWell(
+                                child: Image.asset(
+                                  "res/chess_board/green_board.png",
+                                  height: 100,
+                                  width: 100,
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).pop('g');
+                                },
+                              ),
+                              InkWell(
+                                child: Image.asset(
+                                  "res/chess_board/orange_board.png",
+                                  height: 100,
+                                  width: 100,
+                                ),
+                                onTap: () {
+                                  Navigator.of(context).pop('o');
+                                },
+                              ),
+                            ],
+                          ),
                         ),
-                        onTap: () {
-                          Navigator.of(context).pop(BoardType.darkBrown);
-                        },
                       ),
                     ],
                   ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: <Widget>[
-                      InkWell(
-                        child: Image.asset(
-                          "res/chess_board/green_board.png",
-                          height: 100,
-                          width: 100,
-                        ),
-                        onTap: () {
-                          Navigator.of(context).pop(BoardType.green);
-                        },
-                      ),
-                      InkWell(
-                        child: Image.asset(
-                          "res/chess_board/orange_board.png",
-                          height: 100,
-                          width: 100,
-                        ),
-                        onTap: () {
-                          Navigator.of(context).pop(BoardType.orange);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
+                )));
       },
     ).then((value) {
-      print('$value');
+      //save the value to the prefs
+      prefs
+          .setString("board_style", value ?? prefs.getString("board_style"))
+          .then((value) => update());
+      //then set the board image and refresh the view
+      //set showing false
+      _showing = false;
     });
+  }
+
+  void findMove() {
+    //set player can play
   }
 }

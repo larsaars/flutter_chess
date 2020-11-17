@@ -30,6 +30,8 @@ class $de extends MessageLookupByLibrary {
 		"undo_impossible" : MessageLookupByLibrary.simpleMessage("Zug kann nicht rückgänig gemacht werden"),
 		"undo" : MessageLookupByLibrary.simpleMessage("rückgängig"),
 		"choose_style" : MessageLookupByLibrary.simpleMessage("Brett-Stil wählen"),
+		"bot_on" : MessageLookupByLibrary.simpleMessage("bot an"),
+		"bot_off" : MessageLookupByLibrary.simpleMessage("bot aus"),
 
   };
 }
@@ -57,6 +59,8 @@ class $en extends MessageLookupByLibrary {
 		"undo_impossible" : MessageLookupByLibrary.simpleMessage("can't perform undo"),
 		"undo" : MessageLookupByLibrary.simpleMessage("undo"),
 		"choose_style" : MessageLookupByLibrary.simpleMessage("choose board style"),
+		"bot_on" : MessageLookupByLibrary.simpleMessage("bot on"),
+		"bot_off" : MessageLookupByLibrary.simpleMessage("bot off"),
 
   };
 }
