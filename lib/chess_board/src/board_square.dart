@@ -56,6 +56,9 @@ class BoardSquare extends StatelessWidget {
           } else {
             model.game.move({"from": moveInfo[0], "to": squareName});
           }
+
+          model.refreshBoard();
+
           if (model.game.game.turn != moveColor) {
             model.onMove({
                 'piece': moveInfo[1],
@@ -63,7 +66,6 @@ class BoardSquare extends StatelessWidget {
                 'color': moveInfo[2] == chess.Color.BLACK ? PieceColor.Black : PieceColor.White,
             });
           }
-          model.refreshBoard();
         }),
       );
     });
