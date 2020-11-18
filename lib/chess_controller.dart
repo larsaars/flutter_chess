@@ -1,9 +1,9 @@
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:chess_bot/ai.dart';
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
-import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -18,7 +18,7 @@ class ChessController {
 
   ChessAI _ai;
 
-  bool whiteSideTowardsUser = true, _showing = false;
+  bool whiteSideTowardsUser = true, _showing = false, loadingBotMoves = false;
 
   ChessController(this.context);
 
@@ -30,9 +30,55 @@ class ChessController {
     if (update != null) update();
     //print the move
     print('onMove: $move');
+    //and then update the ui
+    update();
+    print(Isolate.current.debugName);
     //check if bot should make a move
     if (move['color'] == PieceColor.White && prefs.getBool('bot')) {
       findMove();
+    }
+  }
+
+  void findMove() async {
+    print(Isolate.current.debugName);
+    //loading bot moves shall be true
+    loadingBotMoves = true;
+    //init ai if null
+    _ai ??= ChessAI(this);
+    //set player cannot change anything
+    controller.userCanMakeMoves = false;
+    //for the method _ai.find a new thread (isolate)
+    //is spawned
+    ReceivePort receivePort =
+        ReceivePort(); //port for this main isolate to receive messages
+    //send the game to the isolate
+    //generated from fen string, so that the history list is empty and
+    //the move generation algorithm can work faster (lightweight)
+    Isolate isolate = await Isolate.spawn(
+      _ai.entryPointMoveFinderIsolate,
+      [receivePort.sendPort, Chess.fromFEN(controller.game.fen)],
+      debugName: 'chess_move_generator',
+    );
+    //listen at the receive port for the game (exit point)
+    receivePort.listen((message) {
+      //execute exitPointMoveFinderIsolate
+      _ai.exitPointMoveFinderIsolate(message);
+      //kill the isolate
+      isolate.kill();
+    });
+  }
+
+  // Entry point for your Isolate
+  void entryPoint(List args) async {
+    // Open the ReceivePort to listen for incoming messages (optional)
+    var port = new ReceivePort();
+
+    // Send messages to other Isolates
+    args[0].send('yeye');
+
+    // Listen for messages (optional)
+    await for (var data in port) {
+      // `data` is the message received.
     }
   }
 
@@ -204,20 +250,5 @@ class ChessController {
       //set showing false
       _showing = false;
     });
-  }
-
-  Future<void> findMove() async {
-    //init ai if null
-    _ai ??= ChessAI(this);
-    //set player cannot change anything
-    controller.userCanMakeMoves = false;
-    //generate the move
-    Move move = await _ai.find();
-    //make the move, if there is one
-    if (move != null) game.make_move(move);
-    //now set user can make moves true again
-    controller.userCanMakeMoves = true;
-    //and update the board
-    controller.refreshBoard();
   }
 }
