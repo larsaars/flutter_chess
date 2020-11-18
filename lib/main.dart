@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'chess_board/src/chess_board.dart';
@@ -23,6 +24,8 @@ SharedPreferences prefs;
 void main() async {
   //run the app
   runApp(MyApp());
+  //add all licenses
+  addLicenses();
 }
 
 class MyApp extends StatelessWidget {
@@ -113,7 +116,8 @@ class _MyHomepageState extends State<MyHomePage> {
 
                 return MyHomePageAfterLoading();
               } else {
-                return Center(child: ModalProgressHUD(
+                return Center(
+                    child: ModalProgressHUD(
                   child: Container(),
                   inAsyncCall: true,
                 ));
@@ -166,6 +170,19 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
     return false;
   }
 
+  void _onAbout() async {
+    //load the package info
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    //show the about dialog
+    showAboutDialog(
+      context: context,
+      applicationVersion: packageInfo.version,
+      applicationIcon: Image.asset('res/drawable/ic_launcher.png'),
+      applicationLegalese: strings.legal,
+      children: [],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     //set the update method
@@ -190,7 +207,9 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                     onChanged: (pos) {
                       prefs.setBool("bot", pos);
                       //change player can play if it is blacks turn
-                      if((_chessController?.game?.game?.turn ?? chess_sub.Color.WHITE) == chess_sub.Color.BLACK) {
+                      if ((_chessController?.game?.game?.turn ??
+                              chess_sub.Color.WHITE) ==
+                          chess_sub.Color.BLACK) {
                         _chessController.findMove();
                       }
                     },
@@ -221,8 +240,10 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                 // Center is a layout widget. It takes a single child and positions it
                 // in the middle of the parent.
                 child: ChessBoard(
-                  boardType: boardTypeFromString(prefs.getString('board_style') ?? 'd'),
-                  size: min(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height),
+                  boardType: boardTypeFromString(
+                      prefs.getString('board_style') ?? 'd'),
+                  size: min(MediaQuery.of(context).size.width,
+                      MediaQuery.of(context).size.height),
                   onCheckMate: _chessController.onCheckMate,
                   onDraw: _chessController.onDraw,
                   onMove: _chessController.onMove,
@@ -267,6 +288,13 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                     onPressed: _chessController.changeBoardStyle,
                     icon: Icons.style,
                     animation: FancyButtonAnimation.pulse,
+                  ),
+                  SizedBox(
+                    width: 8.0,
+                  ),
+                  FancyButton(
+                    onPressed: _onAbout,
+                    icon: Icons.info,
                   ),
                 ],
               ),

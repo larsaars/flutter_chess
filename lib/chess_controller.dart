@@ -16,8 +16,6 @@ class ChessController {
   Chess game;
   BuildContext context;
 
-  ChessAI _ai;
-
   bool whiteSideTowardsUser = true, _showing = false, loadingBotMoves = false;
 
   ChessController(this.context);
@@ -43,8 +41,6 @@ class ChessController {
     print(Isolate.current.debugName);
     //loading bot moves shall be true
     loadingBotMoves = true;
-    //init ai if null
-    _ai ??= ChessAI(this);
     //set player cannot change anything
     controller.userCanMakeMoves = false;
     //for the method _ai.find a new thread (isolate)
@@ -55,14 +51,22 @@ class ChessController {
     //generated from fen string, so that the history list is empty and
     //the move generation algorithm can work faster (lightweight)
     Isolate isolate = await Isolate.spawn(
-      _ai.entryPointMoveFinderIsolate,
-      [receivePort.sendPort, Chess.fromFEN(controller.game.fen)],
+      ChessAI.entryPointMoveFinderIsolate,
+      [receivePort.sendPort, controller.game.fen],
       debugName: 'chess_move_generator',
     );
     //listen at the receive port for the game (exit point)
-    receivePort.listen((message) {
+    receivePort.listen((move) {
       //execute exitPointMoveFinderIsolate
-      _ai.exitPointMoveFinderIsolate(message);
+      //in the main thread again, manage the move object
+      //make the move, if there is one
+      if (move != null) controller.game.make_move(move);
+      //now set user can make moves true again
+      controller.userCanMakeMoves = true;
+      //set loading false
+      loadingBotMoves = false;
+      //update the board
+      update();
       //kill the isolate
       isolate.kill();
     });

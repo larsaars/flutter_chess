@@ -32,6 +32,7 @@ class $de extends MessageLookupByLibrary {
 		"choose_style" : MessageLookupByLibrary.simpleMessage("Brett-Stil wählen"),
 		"bot_on" : MessageLookupByLibrary.simpleMessage("bot an"),
 		"bot_off" : MessageLookupByLibrary.simpleMessage("bot aus"),
+		"legal" : MessageLookupByLibrary.simpleMessage("von Lurzapps"),
 
   };
 }
@@ -61,6 +62,7 @@ class $en extends MessageLookupByLibrary {
 		"choose_style" : MessageLookupByLibrary.simpleMessage("choose board style"),
 		"bot_on" : MessageLookupByLibrary.simpleMessage("bot on"),
 		"bot_off" : MessageLookupByLibrary.simpleMessage("bot off"),
+		"legal" : MessageLookupByLibrary.simpleMessage("by Lurzapps"),
 
   };
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -87,5 +88,11 @@ void showTextDialog(title, text, onDoneText, onDone) async {
     transitionDuration: Duration(milliseconds: 300),
   ).then((value) {
     _showing = false;
+  });
+}
+
+void addLicenses() {
+  LicenseRegistry.addLicense(() async* {
+    yield LicenseEntryWithLineBreaks(['flutter_chess_board'], text);
   });
 }

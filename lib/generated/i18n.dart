@@ -102,6 +102,10 @@ class S {
     return Intl.message("bot off", name: 'bot_off');
   }
 
+  String get legal {
+    return Intl.message("by Lurzapps", name: 'legal');
+  }
+
 
 }
 
