@@ -31,7 +31,7 @@ class ChessController {
     //print the move
     print('onMove: $move');
     //check if bot should make a move
-    if(move['color'] == PieceColor.White && prefs.getBool('bot')) {
+    if (move['color'] == PieceColor.White && prefs.getBool('bot')) {
       findMove();
     }
   }
@@ -81,12 +81,14 @@ class ChessController {
   }
 
   void resetBoard() {
-    showTextDialog(
-        strings.replay, strings.replay_desc, strings.ok, controller.resetBoard);
+    showTextDialog(strings.replay, strings.replay_desc, strings.ok, () {
+      game.reset();
+      update();
+    });
   }
 
   void undo() {
-    if(prefs.getBool('bot')) {
+    if (prefs.getBool('bot')) {
       _undo();
     }
 
@@ -212,8 +214,7 @@ class ChessController {
     //generate the move
     Move move = await _ai.find();
     //make the move, if there is one
-    if(move != null)
-      game.make_move(move);
+    if (move != null) game.make_move(move);
     //now set user can make moves true again
     controller.userCanMakeMoves = true;
     //and update the board

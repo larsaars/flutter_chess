@@ -36,7 +36,7 @@ class BoardSquare extends StatelessWidget {
                 )
               : Container();
         }, onWillAccept: (willAccept) {
-          return (model?.chessBoardController?.userCanMakeMoves ?? false) ? true : false;
+          return (model?.chessBoardController?.userCanMakeMoves ?? false);
         }, onAccept: (List moveInfo) {
           // A way to check if move occurred.
           chess.Color moveColor = model.game.game.turn;
@@ -51,7 +51,6 @@ class BoardSquare extends StatelessWidget {
             _promotionDialog(context).then((value) {
               model.game.move(
                   {"from": moveInfo[0], "to": squareName, "promotion": value});
-              model.refreshBoard();
             });
           } else {
             model.game.move({"from": moveInfo[0], "to": squareName});
