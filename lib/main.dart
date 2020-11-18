@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess_sub;
 import 'package:chess_bot/chess_controller.dart';
@@ -9,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
+import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'chess_board/src/chess_board.dart';
@@ -108,7 +111,10 @@ class _MyHomepageState extends State<MyHomePage> {
 
                 return MyHomePageAfterLoading();
               } else {
-                return Center(child: CircularProgressIndicator());
+                return Center(child: ModalProgressHUD(
+                  child: Container(),
+                  inAsyncCall: true,
+                ));
               }
             },
           )
@@ -212,7 +218,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
               // in the middle of the parent.
               child: ChessBoard(
                 boardType: boardTypeFromString(prefs.getString('board_style') ?? 'd'),
-                size: MediaQuery.of(context).size.width,
+                size: min(MediaQuery.of(context).size.width, MediaQuery.of(context).size.height),
                 onCheckMate: _chessController.onCheckMate,
                 onDraw: _chessController.onDraw,
                 onMove: _chessController.onMove,

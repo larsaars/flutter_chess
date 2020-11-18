@@ -25,7 +25,7 @@ class $de extends MessageLookupByLibrary {
 		"white" : MessageLookupByLibrary.simpleMessage("weiß"),
 		"black" : MessageLookupByLibrary.simpleMessage("schwarz"),
 		"check_mate_desc" : (loser, winner) => "${loser} ist Schachmatt. ${winner} hat gewonnen.",
-		"turn_of_x" : (turn) => "${turn} ist dran",
+		"turn_of_x" : (turn) => "${turn} ist am Zug",
 		"replay_desc" : MessageLookupByLibrary.simpleMessage("Bist du dir sicher, dass du das Spiel neustarten willst?"),
 		"undo_impossible" : MessageLookupByLibrary.simpleMessage("Zug kann nicht rückgänig gemacht werden"),
 		"undo" : MessageLookupByLibrary.simpleMessage("rückgängig"),
