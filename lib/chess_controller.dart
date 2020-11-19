@@ -3,6 +3,7 @@ import 'dart:isolate';
 
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
+import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +18,7 @@ class ChessController {
   BuildContext context;
 
   bool whiteSideTowardsUser = true, _showing = false, loadingBotMoves = false;
+  int progress = 0;
 
   ChessController(this.context);
 
@@ -55,21 +57,32 @@ class ChessController {
       debugName: 'chess_move_generator',
     );
     //listen at the receive port for the game (exit point)
-    receivePort.listen((move) {
-      //execute exitPointMoveFinderIsolate
-      //in the main thread again, manage the move object
-      //make the move, if there is one
-      if (move != null) controller.game.make_move(move);
-      //now set user can make moves true again
-      controller.userCanMakeMoves = true;
-      //set loading false
-      loadingBotMoves = false;
-      //for the listeners to be called in case
-      controller.refreshBoard();
-      //update the text etc
-      update();
-      //kill the isolate
-      isolate.kill();
+    receivePort.listen((message) {
+      //if message is the move, execute further actions
+      if(message is Move) {
+        //execute exitPointMoveFinderIsolate
+        //in the main thread again, manage the move object
+        //make the move, if there is one
+        if (message != null) controller.game.make_move(message);
+        //now set user can make moves true again
+        controller.userCanMakeMoves = true;
+        //set loading false
+        loadingBotMoves = false;
+        //for the listeners to be called in case
+        controller.refreshBoard();
+        //update the text etc
+        update();
+        //kill the isolate
+        isolate.kill();
+        //reset progress
+        progress = 0;
+        //if the message is an int, it is the progress
+      }else if(message is int) {
+        //set progress
+        progress = message;
+        //call update to update the text
+        update();
+      }
     });
   }
 
@@ -125,6 +138,7 @@ class ChessController {
   }
 
   void undo() {
+    //undo two times if the bot is moving, too
     if (prefs.getBool('bot')) {
       _undo();
     }

@@ -34,7 +34,8 @@ class MyApp extends StatelessWidget {
     //set fullscreen
     SystemChrome.setEnabledSystemUIOverlays([]);
     //and portrait only
-    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
     //create the material app
     return MaterialApp(
@@ -189,113 +190,136 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
       onWillPop: _onWillPop,
       child: ModalProgressHUD(
         inAsyncCall: _chessController.loadingBotMoves,
+        progressIndicator: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            Text(
+              strings.moves_done(_chessController.progress),
+              style: Theme.of(context).textTheme.bodyText1,
+            ),
+          ],
+        ),
         child: Scaffold(
           backgroundColor: Colors.brown[50],
           body: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Align(
-                alignment: Alignment.topRight,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: LiteRollingSwitch(
-                    value: (prefs.getBool("bot") ?? false),
-                    onChanged: (pos) {
-                      prefs.setBool("bot", pos);
-                      //change player can play if it is blacks turn
-                      if ((_chessController?.game?.game?.turn ??
-                              chess_sub.Color.WHITE) ==
-                          chess_sub.Color.BLACK) {
-                        _chessController.findMove();
-                      }
-                    },
-                    iconOn: Icons.done,
-                    iconOff: Icons.close,
-                    textOff: strings.bot_off,
-                    textOn: strings.bot_on,
-                    colorOff: Colors.red[800],
-                    colorOn: Colors.green[800],
-                  ),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: LiteRollingSwitch(
+                          value: (prefs.getBool("bot") ?? false),
+                          onChanged: (pos) {
+                            prefs.setBool("bot", pos);
+                            //change player can play if it is blacks turn
+                            if ((_chessController?.game?.game?.turn ??
+                                    chess_sub.Color.WHITE) ==
+                                chess_sub.Color.BLACK) {
+                              _chessController.findMove();
+                            }
+                          },
+                          iconOn: Icons.done,
+                          iconOff: Icons.close,
+                          textOff: strings.bot_off,
+                          textOn: strings.bot_on,
+                          colorOff: Colors.red[800],
+                          colorOn: Colors.green[800],
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                          strings.turn_of_x(
+                              (_chessController?.game?.game?.turn ==
+                                      chess_sub.Color.BLACK)
+                                  ? strings.black
+                                  : strings.white),
+                          style: Theme.of(context).textTheme.subtitle1.copyWith(
+                                inherit: true,
+                                color:
+                                    (_chessController?.game?.in_check ?? false)
+                                        ? Colors.red
+                                        : Colors.black,
+                              )),
+                    ),
+                    Center(
+                      // Center is a layout widget. It takes a single child and positions it
+                      // in the middle of the parent.
+                      child: ChessBoard(
+                        boardType: boardTypeFromString(
+                            prefs.getString('board_style') ?? 'd'),
+                        size: min(MediaQuery.of(context).size.width,
+                            MediaQuery.of(context).size.height),
+                        onCheckMate: _chessController.onCheckMate,
+                        onDraw: _chessController.onDraw,
+                        onMove: _chessController.onMove,
+                        onCheck: _chessController.onCheck,
+                        chessBoardController: _chessController.controller,
+                        chess: _chessController.game,
+                        whiteSideTowardsUser:
+                            _chessController.whiteSideTowardsUser,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                    strings.turn_of_x((_chessController?.game?.game?.turn ==
-                            chess_sub.Color.BLACK)
-                        ? strings.black
-                        : strings.white),
-                    style: Theme.of(context).textTheme.subtitle1.copyWith(
-                          inherit: true,
-                          color: (_chessController?.game?.in_check ?? false)
-                              ? Colors.red
-                              : Colors.black,
-                        )),
-              ),
-              Center(
-                // Center is a layout widget. It takes a single child and positions it
-                // in the middle of the parent.
-                child: ChessBoard(
-                  boardType: boardTypeFromString(
-                      prefs.getString('board_style') ?? 'd'),
-                  size: min(MediaQuery.of(context).size.width,
-                      MediaQuery.of(context).size.height),
-                  onCheckMate: _chessController.onCheckMate,
-                  onDraw: _chessController.onDraw,
-                  onMove: _chessController.onMove,
-                  onCheck: _chessController.onCheck,
-                  chessBoardController: _chessController.controller,
-                  chess: _chessController.game,
-                  whiteSideTowardsUser: _chessController.whiteSideTowardsUser,
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        FancyButton(
+                          onPressed: _chessController.undo,
+                          animation: FancyButtonAnimation.pulse,
+                          icon: Icons.undo,
+                        ),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        FancyButton(
+                          onPressed: _chessController.resetBoard,
+                          icon: Icons.autorenew,
+                        ),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        FancyButton(
+                          onPressed: _chessController.switchColors,
+                          icon: Icons.switch_left,
+                        ),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        FancyButton(
+                          onPressed: _chessController.changeBoardStyle,
+                          icon: Icons.style,
+                          animation: FancyButtonAnimation.pulse,
+                        ),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        FancyButton(
+                          onPressed: _onAbout,
+                          icon: Icons.info,
+                          animation: FancyButtonAnimation.pulse,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ],
-          ),
-          bottomNavigationBar: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FancyButton(
-                    onPressed: _chessController.undo,
-                    animation: FancyButtonAnimation.pulse,
-                    icon: Icons.undo,
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  FancyButton(
-                    onPressed: _chessController.resetBoard,
-                    icon: Icons.autorenew,
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  FancyButton(
-                    onPressed: _chessController.switchColors,
-                    icon: Icons.switch_left,
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  FancyButton(
-                    onPressed: _chessController.changeBoardStyle,
-                    icon: Icons.style,
-                    animation: FancyButtonAnimation.pulse,
-                  ),
-                  SizedBox(
-                    width: 8.0,
-                  ),
-                  FancyButton(
-                    onPressed: _onAbout,
-                    icon: Icons.info,
-                  ),
-                ],
-              ),
-            ),
           ),
         ),
       ),

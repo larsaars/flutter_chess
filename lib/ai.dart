@@ -48,13 +48,18 @@ class ChessAI {
 
     _idx = 0;
     for (Move m in chess.generate_moves()) {
+      //perform an alpha beta minimax algorithm in the first gen with max to min
       chess.move(m);
       double eval = _alphaBeta(chess, 1, -_INFINITY, _INFINITY, _MIN);
       moveEvalPairs.add([m, eval]);
       chess.undo();
+      //print the progress
       print('m$_idx with $eval');
+      //send a progress via send function
+      messenger.send(_idx);
     }
 
+    //determine the highest eval score
     double highestEval = -_INFINITY;
 
     for (List pair in moveEvalPairs) {
@@ -68,8 +73,10 @@ class ChessAI {
       if (pair[1] == highestEval) bestMoves.add(pair[0]);
     }
 
+    //random one of the same scores
     var bestMove = bestMoves[Random().nextInt(bestMoves.length)];
 
+    //print
     print('selected: $bestMove with $highestEval');
 
     //send the best move up again, even if it is null
@@ -79,8 +86,10 @@ class ChessAI {
   // implements a simple alpha beta algorithm
   static double _alphaBeta(
       Chess c, int depth, double alpha, double beta, Color whoNow) {
+    //update idx
     _idx++;
 
+    //is leaf
     if (depth >= _MAX_DEPTH || c.game_over) {
       return _evaluatePosition(c, depth);
     }
@@ -89,14 +98,20 @@ class ChessAI {
     if (whoNow == _MAX) {
       // go through all legal moves
       for (Move m in c.generate_moves()) {
+        //move to be able to generate future moves
         c.move(m);
+        //recursive execute of alpha beta
         alpha = max(alpha, _alphaBeta(c, depth + 1, alpha, beta, _MIN));
+        //undo after alpha beta
         c.undo();
+        //cut of branches
         if (alpha >= beta) {
           break;
         }
       }
+      //return the alpha
       return alpha;
+      //the same of min
     } else {
       // opponent ist he player (MIN)
       for (Move m in c.generate_moves()) {

@@ -75,7 +75,7 @@ class S {
   }
 
   String turn_of_x(turn) {
-    return Intl.message("turn of ${turn}", name: 'turn_of_x', args: [turn]);
+    return Intl.message("it's ${turn}'s turn", name: 'turn_of_x', args: [turn]);
   }
 
   String get replay_desc {
@@ -102,8 +102,8 @@ class S {
     return Intl.message("bot off", name: 'bot_off');
   }
 
-  String get legal {
-    return Intl.message("by Lurzapps", name: 'legal');
+  String moves_done(progress) {
+    return Intl.message("${progress} boards processed", name: 'moves_done', args: [progress]);
   }
 
 

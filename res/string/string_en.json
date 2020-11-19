@@ -11,12 +11,12 @@
   "white": "white",
   "black": "black",
   "check_mate_desc": "${loser} is in checkmate. ${winner} won.",
-  "turn_of_x": "turn of ${turn}",
+  "turn_of_x": "it's ${turn}'s turn",
   "replay_desc": "Are you sure to restart the game and reset the board?",
   "undo_impossible": "can't perform undo",
   "undo": "undo",
   "choose_style": "choose board style",
   "bot_on": "bot on",
   "bot_off": "bot off",
-  "legal": "by Lurzapps"
+  "moves_done": "${progress} boards processed"
 }
