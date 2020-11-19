@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
-import 'package:package_info/package_info.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'chess_board/src/chess_board.dart';
@@ -32,14 +31,10 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    //the app name
-    const appName = 'chess';
-
     //set fullscreen
     SystemChrome.setEnabledSystemUIOverlays([]);
     //and portrait only
-    SystemChrome.setPreferredOrientations(
-        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
     //create the material app
     return MaterialApp(
@@ -51,7 +46,7 @@ class MyApp extends StatelessWidget {
       ],
       supportedLocales: S.delegate.supportedLocales,
       //define title etc.
-      title: appName,
+      title: app_name,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -171,13 +166,15 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
   }
 
   void _onAbout() async {
-    //load the package info
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
     //show the about dialog
     showAboutDialog(
       context: context,
-      applicationVersion: packageInfo.version,
-      applicationIcon: Image.asset('res/drawable/ic_launcher.png'),
+      applicationVersion: version,
+      applicationIcon: Image.asset(
+        'res/drawable/ic_launcher.png',
+        width: 50,
+        height: 50,
+      ),
       applicationLegalese: strings.legal,
       children: [],
     );

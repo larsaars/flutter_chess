@@ -84,6 +84,11 @@ class Color {
 
   int get hashCode => value;
   String toString() => (this == WHITE) ? 'w' : 'b';
+
+  @override
+  bool operator ==(Object other) {
+    return (other is Color) && (this.value == other.value);
+  }
 }
 
 @JsonSerializable()

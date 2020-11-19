@@ -51,6 +51,18 @@ class BoardSquare extends StatelessWidget {
             _promotionDialog(context).then((value) {
               model.game.move(
                   {"from": moveInfo[0], "to": squareName, "promotion": value});
+              //refresh the board
+              model.refreshBoard();
+              //after the promotion refresh the board and call on move
+              if (model.game.game.turn != moveColor) {
+                model.onMove({
+                  'piece': moveInfo[1],
+                  'square': squareName,
+                  'color': moveInfo[2] == chess.Color.BLACK
+                      ? PieceColor.Black
+                      : PieceColor.White,
+                });
+              }
             });
           } else {
             model.game.move({"from": moveInfo[0], "to": squareName});
@@ -60,9 +72,11 @@ class BoardSquare extends StatelessWidget {
 
           if (model.game.game.turn != moveColor) {
             model.onMove({
-                'piece': moveInfo[1],
-                'square': squareName,
-                'color': moveInfo[2] == chess.Color.BLACK ? PieceColor.Black : PieceColor.White,
+              'piece': moveInfo[1],
+              'square': squareName,
+              'color': moveInfo[2] == chess.Color.BLACK
+                  ? PieceColor.Black
+                  : PieceColor.White,
             });
           }
         }),
