@@ -18,5 +18,6 @@
   "choose_style": "choose board style",
   "bot_on": "bot on",
   "bot_off": "bot off",
-  "moves_done": "${progress} boards processed"
+  "moves_done": "${progress} boards processed",
+
 }

@@ -29,7 +29,8 @@ class ContextSingleton {
 
 bool _showing = false;
 
-void showTextDialog(title, text, onDoneText, onDone) async {
+void showTextDialog(String title, String text,
+    {String onDoneText, List<Widget> children, var onDone}) async {
   if (_showing) return;
 
   _showing = true;
@@ -55,7 +56,7 @@ void showTextDialog(title, text, onDoneText, onDone) async {
                   title,
                   style: Theme.of(context).textTheme.subtitle1,
                 )),
-            content: Row(
+            content: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
@@ -65,6 +66,9 @@ void showTextDialog(title, text, onDoneText, onDone) async {
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.subtitle2,
                   ),
+                ),
+                Column(
+                  children: children,
                 )
               ],
             ),
@@ -97,8 +101,11 @@ void showTextDialog(title, text, onDoneText, onDone) async {
 
 void addLicenses() {
   LicenseRegistry.addLicense(() async* {
-    yield LicenseEntryWithLineBreaks(['flutter_chess_board'], await rootBundle.loadString('res/licenses/flutter_chess_board'));
-    yield LicenseEntryWithLineBreaks(['chess'], await rootBundle.loadString('res/licenses/chess'));
-    yield LicenseEntryWithLineBreaks(['modal_progress_hud'], await rootBundle.loadString('res/licenses/modal_progress_hud'));
+    yield LicenseEntryWithLineBreaks(['flutter_chess_board'],
+        await rootBundle.loadString('res/licenses/flutter_chess_board'));
+    yield LicenseEntryWithLineBreaks(
+        ['chess'], await rootBundle.loadString('res/licenses/chess'));
+    yield LicenseEntryWithLineBreaks(['modal_progress_hud'],
+        await rootBundle.loadString('res/licenses/modal_progress_hud'));
   });
 }
