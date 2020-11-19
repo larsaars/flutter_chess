@@ -59,7 +59,7 @@ class ChessController {
     //listen at the receive port for the game (exit point)
     receivePort.listen((message) {
       //if message is the move, execute further actions
-      if(message is Move) {
+      if (message is Move) {
         //execute exitPointMoveFinderIsolate
         //in the main thread again, manage the move object
         //make the move, if there is one
@@ -77,7 +77,7 @@ class ChessController {
         //reset progress
         progress = 0;
         //if the message is an int, it is the progress
-      }else if(message is int) {
+      } else if (message is int) {
         //set progress
         progress = message;
         //call update to update the text
@@ -88,7 +88,7 @@ class ChessController {
 
   void onDraw() {
     //show the dialog
-    showTextDialog(strings.draw, strings.draw_desc, strings.replay, resetBoard);
+    showTextDialog(strings.draw, strings.draw_desc, onDoneText: strings.replay, onDone: resetBoard);
   }
 
   void onCheckMate(color) {
@@ -97,7 +97,7 @@ class ChessController {
     var loser = color == PieceColor.White ? strings.white : strings.black;
     //show the dialog
     showTextDialog(strings.checkmate, strings.check_mate_desc(loser, winner),
-        strings.replay, resetBoard);
+        onDoneText: strings.replay, onDone: resetBoard);
   }
 
   void onCheck(color) {
@@ -131,7 +131,8 @@ class ChessController {
   }
 
   void resetBoard() {
-    showTextDialog(strings.replay, strings.replay_desc, strings.ok, () {
+    showTextDialog(strings.replay, strings.replay_desc, onDoneText: strings.ok,
+        onDone: () {
       game.reset();
       update();
     });
@@ -149,7 +150,7 @@ class ChessController {
   void _undo() {
     game.undo_move() != null
         ? controller.refreshBoard()
-        : showTextDialog(strings.undo, strings.undo_impossible, null, null);
+        : showTextDialog(strings.undo, strings.undo_impossible);
   }
 
   void switchColors() {
@@ -255,5 +256,9 @@ class ChessController {
       //set showing false
       _showing = false;
     });
+  }
+
+  void onHardnessChange() {
+    showTextDialog(strings., text);
   }
 }
