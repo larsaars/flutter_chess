@@ -150,4 +150,126 @@ class ChessAI {
       return evaluation;
     }
   }
+
+  // the evaluation function for minimax
+  static int _evaluateBoard(board) {
+    int totalEvaluation = 0;
+
+    for (var i = 0; i < 8; i++) {
+      for (var j = 0; j < 8; j++) {
+        totalEvaluation = totalEvaluation + _getPieceValue(board[i][j], i, j);
+      }
+    }
+    return totalEvaluation;
+  }
+
+  static List _reverseList(List list) {
+    return [...list].reversed;
+  }
+
+  static const _whitePawnEval = [
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
+    [1.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 1.0],
+    [0.5, 0.5, 1.0, 2.5, 2.5, 1.0, 0.5, 0.5],
+    [0.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 0.0],
+    [0.5, -0.5, -1.0, 0.0, 0.0, -1.0, -0.5, 0.5],
+    [0.5, 1.0, 1.0, -2.0, -2.0, 1.0, 1.0, 0.5],
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  ];
+
+  static final _blackPawnEval = _reverseList(_whitePawnEval);
+
+  static const _knightEval = [
+    [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
+    [-4.0, -2.0, 0.0, 0.0, 0.0, 0.0, -2.0, -4.0],
+    [-3.0, 0.0, 1.0, 1.5, 1.5, 1.0, 0.0, -3.0],
+    [-3.0, 0.5, 1.5, 2.0, 2.0, 1.5, 0.5, -3.0],
+    [-3.0, 0.0, 1.5, 2.0, 2.0, 1.5, 0.0, -3.0],
+    [-3.0, 0.5, 1.0, 1.5, 1.5, 1.0, 0.5, -3.0],
+    [-4.0, -2.0, 0.0, 0.5, 0.5, 0.0, -2.0, -4.0],
+    [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
+  ];
+
+  static const _whiteBishopEval = [
+    [-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
+    [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0],
+    [-1.0, 0.0, 0.5, 1.0, 1.0, 0.5, 0.0, -1.0],
+    [-1.0, 0.5, 0.5, 1.0, 1.0, 0.5, 0.5, -1.0],
+    [-1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0],
+    [-1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0],
+    [-1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, -1.0],
+    [-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0]
+  ];
+
+  static final _blackBishopEval = _reverseList(_whiteBishopEval);
+
+  static const _whiteRookEval = [
+    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    [0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5],
+    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
+    [0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0]
+  ];
+
+  static final _blackRookEval = _reverseList(_whiteRookEval);
+
+  static const _evalQueen = [
+    [-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
+    [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0],
+    [-1.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -1.0],
+    [-0.5, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -0.5],
+    [0.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -0.5],
+    [-1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.0, -1.0],
+    [-1.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, -1.0],
+    [-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0]
+  ];
+
+  static const _whiteKingEval = [
+    [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+    [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+    [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+    [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
+    [-2.0, -3.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0],
+    [-1.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.0],
+    [2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0],
+    [2.0, 3.0, 1.0, 0.0, 0.0, 1.0, 3.0, 2.0]
+  ];
+
+  static final _blackKingEval = _reverseList(_whiteKingEval);
+
+  static _getPieceValue(piece, x, y) {
+    if (piece == null) {
+      return 0;
+    }
+
+    var absoluteValue = _getAbsoluteValue(piece, piece.color == 'w', x, y);
+
+    if (piece.color == 'w') {
+      return absoluteValue;
+    } else {
+      return -absoluteValue;
+    }
+  }
+
+  static double _getAbsoluteValue(piece, isWhite, x, y) {
+    if (piece.type == 'p') {
+      return 10 + (isWhite ? _whitePawnEval[y][x] : _blackPawnEval[y][x]);
+    } else if (piece.type == 'r') {
+      return 50 + (isWhite ? _whiteRookEval[y][x] : _blackRookEval[y][x]);
+    } else if (piece.type == 'n') {
+      return 30 + _knightEval[y][x];
+    } else if (piece.type == 'b') {
+      return 30 + (isWhite ? _whiteBishopEval[y][x] : _blackBishopEval[y][x]);
+    } else if (piece.type == 'q') {
+      return 90 + _evalQueen[y][x];
+    } else if (piece.type == 'k') {
+      return 900 + (isWhite ? _whiteKingEval[y][x] : _blackKingEval[y][x]);
+    }
+
+    return 0;
+  }
 }

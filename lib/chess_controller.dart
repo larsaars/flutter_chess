@@ -1,7 +1,6 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:chess_bot/ai.dart';
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/main.dart';
@@ -9,6 +8,7 @@ import 'package:chess_bot/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'ai.dart';
 import 'chess_board/src/chess_board_controller.dart';
 
 class ChessController {
