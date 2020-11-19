@@ -38,7 +38,6 @@ class ChessController {
   }
 
   void findMove() async {
-    print(Isolate.current.debugName);
     //loading bot moves shall be true
     loadingBotMoves = true;
     //set player cannot change anything

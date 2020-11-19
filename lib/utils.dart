@@ -1,8 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 
 import 'main.dart';
+
+const version = '1.0';
+const app_name = 'chess';
 
 Future<String> get rootDir async {
   final directory = await getApplicationDocumentsDirectory();
@@ -93,6 +97,8 @@ void showTextDialog(title, text, onDoneText, onDone) async {
 
 void addLicenses() {
   LicenseRegistry.addLicense(() async* {
-    yield LicenseEntryWithLineBreaks(['flutter_chess_board'], text);
+    yield LicenseEntryWithLineBreaks(['flutter_chess_board'], await rootBundle.loadString('res/licenses/flutter_chess_board'));
+    yield LicenseEntryWithLineBreaks(['chess'], await rootBundle.loadString('res/licenses/chess'));
+    yield LicenseEntryWithLineBreaks(['modal_progress_hud'], await rootBundle.loadString('res/licenses/modal_progress_hud'));
   });
 }
