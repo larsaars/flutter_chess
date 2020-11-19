@@ -64,9 +64,8 @@ class ChessAI {
     }
 
     var bestMoves = [];
-    for(List pair in moveEvalPairs) {
-      if(pair[1] == highestEval)
-        bestMoves.add(pair[0]);
+    for (List pair in moveEvalPairs) {
+      if (pair[1] == highestEval) bestMoves.add(pair[0]);
     }
 
     var bestMove = bestMoves[Random().nextInt(bestMoves.length)];
@@ -122,19 +121,19 @@ class ChessAI {
       } else {
         // otherwise must be a mate
         if (c.game.turn == _MAX) {
-          // avoid mates
-          return -10000.0 + depth;
+          // avoid mates loss, the deeper the better
+          //(earlier is worse)
+          return -10000.0 - depth;
         } else {
-          // go for mating
+          // go for the loss of the other one, the deeper the worse
+          //(earlier is better)
           return 10000.0 - depth;
         }
       }
     } else {
       // otherwise do a simple material evaluation
       double evaluation = 0.0;
-      var sqColor = 0;
       for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
-        sqColor = (sqColor + 1) % 2;
         if ((i & 0x88) != 0) {
           i += 7;
           continue;

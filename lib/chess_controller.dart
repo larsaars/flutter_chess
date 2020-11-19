@@ -64,25 +64,13 @@ class ChessController {
       controller.userCanMakeMoves = true;
       //set loading false
       loadingBotMoves = false;
-      //update the board
+      //for the listeners to be called in case
+      controller.refreshBoard();
+      //update the text etc
       update();
       //kill the isolate
       isolate.kill();
     });
-  }
-
-  // Entry point for your Isolate
-  void entryPoint(List args) async {
-    // Open the ReceivePort to listen for incoming messages (optional)
-    var port = new ReceivePort();
-
-    // Send messages to other Isolates
-    args[0].send('yeye');
-
-    // Listen for messages (optional)
-    await for (var data in port) {
-      // `data` is the message received.
-    }
   }
 
   void onDraw() {
