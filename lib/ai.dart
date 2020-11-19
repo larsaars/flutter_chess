@@ -16,10 +16,15 @@ class ChessAI {
     _findBestMove(Chess.fromFEN(context[1]), messenger);
   }
 
-  static int idx = 0;
+  //the current index for looping
+  static int _idx = 0;
 
   // ignore: non_constant_identifier_names
-  static Color MAX, MIN;
+  static Color _MAX, _MIN;
+
+  //the constant values
+  static const int _MAX_DEPTH = 3;
+  static const double _INFINITY = 9999999.0;
 
   //the piece values
   static const Map _pieceValues = const {
@@ -32,38 +37,41 @@ class ChessAI {
   };
 
   static void _findBestMove(Chess chess, SendPort messenger) {
-    //the constant values
-    const int MAX_DEPTH = 3;
-    const double INFINITY = 9999999.0;
-
     print(Isolate.current.debugName);
 
     //get the MAX and MIN color
-    MAX = chess.game.turn;
-    MIN = (chess.game.turn == Color.BLACK) ? Color.WHITE : Color.BLACK;
+    _MAX = chess.game.turn;
+    _MIN = (chess.game.turn == Color.BLACK) ? Color.WHITE : Color.BLACK;
 
     //execute the first depth of max
     List<List> moveEvalPairs = new List<List>();
 
-    idx = 3;
-    _alphaBeta(chess, MAX_DEPTH, -INFINITY, INFINITY, MAX);
+    _idx = 0;
     for (Move m in chess.generate_moves()) {
       chess.move(m);
-      double eval = _alphaBeta(chess, MAX_DEPTH, -INFINITY, INFINITY, MIN);
+      double eval = _alphaBeta(chess, 1, -_INFINITY, _INFINITY, _MIN);
       moveEvalPairs.add([m, eval]);
       chess.undo();
-      print('m$idx with $eval (eval)');
+      print('m$_idx with $eval');
     }
 
-    double highestEval = -INFINITY;
-    Move bestMove;
+    double highestEval = -_INFINITY;
 
-    for (List l in moveEvalPairs) {
-      if (l[1] > highestEval) {
-        highestEval = l[1];
-        bestMove = l[0];
+    for (List pair in moveEvalPairs) {
+      if (pair[1] > highestEval) {
+        highestEval = pair[1];
       }
     }
+
+    var bestMoves = [];
+    for(List pair in moveEvalPairs) {
+      if(pair[1] == highestEval)
+        bestMoves.add(pair[0]);
+    }
+
+    var bestMove = bestMoves[Random().nextInt(bestMoves.length)];
+
+    print('selected: $bestMove with $highestEval');
 
     //send the best move up again, even if it is null
     messenger.send(bestMove);
@@ -72,18 +80,18 @@ class ChessAI {
   // implements a simple alpha beta algorithm
   static double _alphaBeta(
       Chess c, int depth, double alpha, double beta, Color whoNow) {
-    idx++;
+    _idx++;
 
-    if (depth <= 0 || c.game_over) {
-      return _evaluatePosition(c, whoNow);
+    if (depth >= _MAX_DEPTH || c.game_over) {
+      return _evaluatePosition(c, depth);
     }
 
     // if the computer is the current player (MAX)
-    if (whoNow == MAX) {
+    if (whoNow == _MAX) {
       // go through all legal moves
       for (Move m in c.generate_moves()) {
         c.move(m);
-        alpha = max(alpha, _alphaBeta(c, depth - 1, alpha, beta, MIN)[0]);
+        alpha = max(alpha, _alphaBeta(c, depth + 1, alpha, beta, _MIN));
         c.undo();
         if (alpha >= beta) {
           break;
@@ -94,7 +102,7 @@ class ChessAI {
       // opponent ist he player (MIN)
       for (Move m in c.generate_moves()) {
         c.move(m);
-        beta = min(beta, _alphaBeta(c, depth - 1, alpha, beta, MAX));
+        beta = min(beta, _alphaBeta(c, depth + 1, alpha, beta, _MAX));
         if (alpha >= beta) {
           c.undo();
           break;
@@ -106,27 +114,27 @@ class ChessAI {
   }
 
   // simple material based evaluation
-  static double _evaluatePosition(Chess c, Color player) {
+  static double _evaluatePosition(Chess c, int depth) {
     if (c.game_over) {
       if (c.in_draw) {
         // draw is a neutral outcome
         return 0.0;
       } else {
         // otherwise must be a mate
-        if (c.game.turn == player) {
+        if (c.game.turn == _MAX) {
           // avoid mates
-          return -9999.99;
+          return -10000.0 + depth;
         } else {
           // go for mating
-          return 9999.99;
+          return 10000.0 - depth;
         }
       }
     } else {
       // otherwise do a simple material evaluation
       double evaluation = 0.0;
-      var sq_color = 0;
+      var sqColor = 0;
       for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
-        sq_color = (sq_color + 1) % 2;
+        sqColor = (sqColor + 1) % 2;
         if ((i & 0x88) != 0) {
           i += 7;
           continue;
@@ -134,7 +142,7 @@ class ChessAI {
 
         Piece piece = c.game.board[i];
         if (piece != null) {
-          evaluation += (piece.color == player)
+          evaluation += (piece.color == _MAX)
               ? _pieceValues[piece.type]
               : -_pieceValues[piece.type];
         }
