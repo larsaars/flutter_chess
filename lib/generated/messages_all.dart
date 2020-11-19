@@ -33,6 +33,7 @@ class $de extends MessageLookupByLibrary {
 		"bot_on" : MessageLookupByLibrary.simpleMessage("bot an"),
 		"bot_off" : MessageLookupByLibrary.simpleMessage("bot aus"),
 		"legal" : MessageLookupByLibrary.simpleMessage("von Lurzapps"),
+		"moves_done" : (progress) => "${progress} Bretter verarbeitet",
 
   };
 }
@@ -55,14 +56,14 @@ class $en extends MessageLookupByLibrary {
 		"white" : MessageLookupByLibrary.simpleMessage("white"),
 		"black" : MessageLookupByLibrary.simpleMessage("black"),
 		"check_mate_desc" : (loser, winner) => "${loser} is in checkmate. ${winner} won.",
-		"turn_of_x" : (turn) => "turn of ${turn}",
+		"turn_of_x" : (turn) => "it's ${turn}'s turn",
 		"replay_desc" : MessageLookupByLibrary.simpleMessage("Are you sure to restart the game and reset the board?"),
 		"undo_impossible" : MessageLookupByLibrary.simpleMessage("can't perform undo"),
 		"undo" : MessageLookupByLibrary.simpleMessage("undo"),
 		"choose_style" : MessageLookupByLibrary.simpleMessage("choose board style"),
 		"bot_on" : MessageLookupByLibrary.simpleMessage("bot on"),
 		"bot_off" : MessageLookupByLibrary.simpleMessage("bot off"),
-		"legal" : MessageLookupByLibrary.simpleMessage("by Lurzapps"),
+		"moves_done" : (progress) => "${progress} boards processed",
 
   };
 }
