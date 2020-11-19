@@ -33,6 +33,11 @@ class Move {
   String get toAlgebraic {
     return Chess.algebraic(to);
   }
+
+  @override
+  String toString() {
+    return 'from: $from to $to';
+  }
 }
 
 class State {
