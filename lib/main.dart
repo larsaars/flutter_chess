@@ -175,7 +175,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         width: 50,
         height: 50,
       ),
-      applicationLegalese: strings.legal,
+      applicationLegalese: await rootBundle.loadString('res/licenses/this'),
       children: [],
     );
   }
