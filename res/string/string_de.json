@@ -19,5 +19,7 @@
   "bot_on": "bot an",
   "bot_off": "bot aus",
   "legal": "von Lurzapps",
-  "moves_done": "${progress} Bretter verarbeitet"
+  "moves_done": "${progress} Bretter verarbeitet",
+  "difficulty": "Schwierigkeit",
+  "difficulties": "einfach,medium,schwierig"
 }
