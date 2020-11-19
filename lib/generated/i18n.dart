@@ -106,6 +106,14 @@ class S {
     return Intl.message("${progress} boards processed", name: 'moves_done', args: [progress]);
   }
 
+  String get difficulty {
+    return Intl.message("difficulty", name: 'difficulty');
+  }
+
+  String get difficulties {
+    return Intl.message("easy,medium,hard", name: 'difficulties');
+  }
+
 
 }
 

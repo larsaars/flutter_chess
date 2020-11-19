@@ -88,7 +88,8 @@ class ChessController {
 
   void onDraw() {
     //show the dialog
-    showTextDialog(strings.draw, strings.draw_desc, onDoneText: strings.replay, onDone: resetBoard);
+    showTextDialog(strings.draw, strings.draw_desc,
+        onDoneText: strings.replay, onDone: (value) => resetBoard);
   }
 
   void onCheckMate(color) {
@@ -97,7 +98,7 @@ class ChessController {
     var loser = color == PieceColor.White ? strings.white : strings.black;
     //show the dialog
     showTextDialog(strings.checkmate, strings.check_mate_desc(loser, winner),
-        onDoneText: strings.replay, onDone: resetBoard);
+        onDoneText: strings.replay, onDone: (value) => resetBoard);
   }
 
   void onCheck(color) {
@@ -132,7 +133,7 @@ class ChessController {
 
   void resetBoard() {
     showTextDialog(strings.replay, strings.replay_desc, onDoneText: strings.ok,
-        onDone: () {
+        onDone: (value) {
       game.reset();
       update();
     });
@@ -259,6 +260,36 @@ class ChessController {
   }
 
   void onHardnessChange() {
-    showTextDialog(strings., text);
+    List difficulties = strings.difficulties.split(',');
+
+    showTextDialog(strings.difficulty, null,
+        onDoneText: strings.ok,
+        onDone: (value) {
+          //the idx from Nav.of.pop
+          int idx = value as int;
+          //
+        },
+        children: [
+          SizedBox(
+            height: 200,
+            child: ListView.separated(
+                itemBuilder: (ctx, idx) => GestureDetector(
+                  onTap: () {
+                    Navigator.of(ctx).pop(idx);
+                  },
+                  child: Center(
+                        child: Text(
+                          difficulties[idx],
+                          style: Theme.of(ContextSingleton.context)
+                              .textTheme
+                              .subtitle1,
+                        ),
+                      ),
+                ),
+                separatorBuilder: (_, idx) => Divider(),
+                itemCount: difficulties.length
+            ),
+          )
+        ]);
   }
 }

@@ -29,8 +29,10 @@ class ContextSingleton {
 
 bool _showing = false;
 
+typedef void OnDialogCancelCallback(value);
+
 void showTextDialog(String title, String text,
-    {String onDoneText, List<Widget> children, var onDone}) async {
+    {String onDoneText, List<Widget> children, OnDialogCancelCallback onDone}) async {
   if (_showing) return;
 
   _showing = true;
@@ -60,6 +62,7 @@ void showTextDialog(String title, String text,
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
+                (text == null) ? Container() :
                 Expanded(
                   child: Text(
                     text,
@@ -85,9 +88,8 @@ void showTextDialog(String title, String text,
                       onPressed: () {
                         _showing = false;
                         Navigator.of(context).pop();
-                        onDone();
                       })
-                  : null
+                  : Container()
             ],
           ),
         ),
@@ -95,7 +97,10 @@ void showTextDialog(String title, String text,
     },
     transitionDuration: Duration(milliseconds: 300),
   ).then((value) {
+    //set showing dialog false
     _showing = false;
+    //execute the on done
+    onDone(value);
   });
 }
 
