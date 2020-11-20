@@ -28,16 +28,24 @@ class ChessAI {
   static const double _INFINITY = 9999999.0;
 
   //the maximum depth, will change according to difficulty level
-  static int _MAX_DEPTH = 4;
+  // ignore: non_constant_identifier_names
+  static int _MAX_DEPTH = 3;
 
   //the difficulty level
   //0 - easy
   //1 - medium
-  //2 - hard
+  //2 - normal
+  //3 - hard
   static int _difficulty = 0;
 
   //the actual method starting the alpha beta pruning
   static void _findBestMove(Chess chess, SendPort messenger) {
+    //set the the depth from the difficulty
+    if(_difficulty == 0)
+      _MAX_DEPTH = 1;
+    else if(_difficulty == 1)
+      _MAX_DEPTH = 2;
+
     //get the MAX and MIN color
     _MAX = chess.game.turn;
     _MIN = (chess.game.turn == Color.BLACK) ? Color.WHITE : Color.BLACK;
@@ -49,7 +57,7 @@ class ChessAI {
     for (Move m in chess.generate_moves()) {
       //perform an alpha beta minimax algorithm in the first gen with max to min
       chess.move(m);
-      double eval = _alphaBeta(chess, 2, -_INFINITY, _INFINITY, _MIN);
+      double eval = _alphaBeta(chess, 1, -_INFINITY, _INFINITY, _MIN);
       moveEvalPairs.add([m, eval]);
       chess.undo();
       //print the progress

@@ -20,5 +20,5 @@
   "bot_off": "bot off",
   "moves_done": "${progress} boards processed",
   "difficulty": "difficulty",
-  "difficulties": "easy,medium,hard"
+  "difficulties": "easy,medium,normal,hard"
 }

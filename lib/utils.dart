@@ -95,14 +95,14 @@ void showTextDialog(
                     child: Text(onDone == null ? strings.ok : strings.cancel),
                     onPressed: () {
                       _showing = false;
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pop(onDone == null ? 'ok' : null);
                     }),
                 onDone != null
                     ? FlatButton(
                         child: Text(onDoneText),
                         onPressed: () {
                           _showing = false;
-                          Navigator.of(context).pop();
+                          Navigator.of(context).pop('ok');
                         })
                     : Container()
               ],
@@ -116,7 +116,7 @@ void showTextDialog(
     //set showing dialog false
     _showing = false;
     //execute the on done
-    if (onDone != null) onDone(value);
+    if (onDone != null && value != null) onDone(value);
   });
 }
 

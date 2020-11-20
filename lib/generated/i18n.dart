@@ -111,7 +111,7 @@ class S {
   }
 
   String get difficulties {
-    return Intl.message("easy,medium,hard", name: 'difficulties');
+    return Intl.message("easy,medium,normal,hard", name: 'difficulties');
   }
 
 

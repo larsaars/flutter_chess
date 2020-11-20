@@ -82,7 +82,7 @@ class Color {
   Color();
 
   Color.inverse(Color color) {
-    Color.fromInt((color == WHITE) ? 1 : 0);
+    value = (color == WHITE) ? 1 : 0;
   }
 
   int value;

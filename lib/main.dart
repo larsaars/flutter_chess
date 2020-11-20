@@ -213,24 +213,29 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                       alignment: Alignment.topRight,
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: LiteRollingSwitch(
-                          value: (prefs.getBool("bot") ?? false),
-                          onChanged: (pos) {
-                            prefs.setBool("bot", pos);
-                            //change player can play if it is blacks turn
-                            if ((_chessController?.game?.game?.turn ??
-                                    chess_sub.Color.inverse(
-                                        _chessController.botColor)) ==
-                                _chessController.botColor) {
-                              _chessController.findMove();
-                            }
-                          },
-                          iconOn: Icons.done,
-                          iconOff: Icons.close,
-                          textOff: strings.bot_off,
-                          textOn: strings.bot_on,
-                          colorOff: Colors.red[800],
-                          colorOn: Colors.green[800],
+                        child: Row(
+                          children: [
+                            FlatButton(onPressed: null, child: Text((_chessController.botColor == chess_sub.Color.WHITE) ? strings.white : strings.black)),
+                            LiteRollingSwitch(
+                              value: (prefs.getBool("bot") ?? false),
+                              onChanged: (pos) {
+                                prefs.setBool("bot", pos);
+                                //make move if needed
+                                if ((_chessController?.game?.game?.turn ??
+                                        chess_sub.Color.inverse(
+                                            _chessController.botColor)) ==
+                                    _chessController.botColor) {
+                                  _chessController.findMove();
+                                }
+                              },
+                              iconOn: Icons.done,
+                              iconOff: Icons.close,
+                              textOff: strings.bot_off,
+                              textOn: strings.bot_on,
+                              colorOff: Colors.red[800],
+                              colorOn: Colors.green[800],
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -296,7 +301,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                           width: 8.0,
                         ),
                         FancyButton(
-                          onPressed: _chessController.onHardnessChange,
+                          onPressed: _chessController.onDifficultyChange,
                           icon: Icons.present_to_all_outlined,
                           animation: FancyButtonAnimation.pulse,
                         ),

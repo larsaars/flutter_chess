@@ -36,6 +36,8 @@ class ChessController {
     //and then update the ui
     update();
     //check if bot should make a move
+    var col1 = move['color'], col2 = Color.inverse(botColor);
+    print('col1=$col1, col2=$col2');
     if (move['color'] == Color.inverse(botColor) && prefs.getBool('bot')) {
       //and then find it
       findMove();
@@ -43,6 +45,10 @@ class ChessController {
   }
 
   void findMove() async {
+    //do nothing if controller or game is null
+    if(controller == null || game == null) {
+      return;
+    }
     //loading bot moves shall be true
     loadingBotMoves = true;
     //set player cannot change anything
@@ -56,7 +62,7 @@ class ChessController {
     //the move generation algorithm can work faster (lightweight)
     Isolate isolate = await Isolate.spawn(
       ChessAI.entryPointMoveFinderIsolate,
-      [receivePort.sendPort, controller.game.fen, (prefs.getInt('difficulty') ?? 1)],
+      [receivePort.sendPort, game.fen, (prefs.getInt('difficulty') ?? 1)],
       debugName: 'chess_move_generator',
     );
     //listen at the receive port for the game (exit point)
@@ -67,7 +73,7 @@ class ChessController {
         //execute exitPointMoveFinderIsolate
         //in the main thread again, manage the move object
         //make the move, if there is one
-        if (message != null) controller.game.make_move(message);
+        if (message != null) game.make_move(message);
         //now set user can make moves true again
         controller.userCanMakeMoves = true;
         //set loading false
@@ -263,7 +269,7 @@ class ChessController {
     });
   }
 
-  void onHardnessChange() {
+  void onDifficultyChange() {
     List difficulties = strings.difficulties.split(',');
     BuildContext ctx;
 
@@ -288,7 +294,7 @@ class ChessController {
           groupValue: difficulties[prefs.getInt('difficulty') ?? 1],
           items: difficulties,
           itemBuilder: (item) => RadioButtonBuilder(item,
-              textPosition: RadioButtonTextPosition.left))
+              textPosition: RadioButtonTextPosition.right))
     ]);
   }
 }

@@ -35,7 +35,7 @@ class $de extends MessageLookupByLibrary {
 		"legal" : MessageLookupByLibrary.simpleMessage("von Lurzapps"),
 		"moves_done" : (progress) => "${progress} Bretter verarbeitet",
 		"difficulty" : MessageLookupByLibrary.simpleMessage("Schwierigkeit"),
-		"difficulties" : MessageLookupByLibrary.simpleMessage("einfach,medium,schwierig"),
+		"difficulties" : MessageLookupByLibrary.simpleMessage("einfach,medium,normal,schwierig"),
 
   };
 }
@@ -67,7 +67,7 @@ class $en extends MessageLookupByLibrary {
 		"bot_off" : MessageLookupByLibrary.simpleMessage("bot off"),
 		"moves_done" : (progress) => "${progress} boards processed",
 		"difficulty" : MessageLookupByLibrary.simpleMessage("difficulty"),
-		"difficulties" : MessageLookupByLibrary.simpleMessage("easy,medium,hard"),
+		"difficulties" : MessageLookupByLibrary.simpleMessage("easy,medium,normal,hard"),
 
   };
 }
