@@ -46,7 +46,8 @@ class ChessController {
 
   void findMove() async {
     //do nothing if controller or game is null
-    if(controller == null || game == null) {
+    //also return the method if is already called
+    if(controller == null || game == null || loadingBotMoves) {
       return;
     }
     //loading bot moves shall be true
