@@ -11,6 +11,8 @@ class ChessAI {
   static void entryPointMoveFinderIsolate(List context) {
     //init the messenger, which sends messages back to the main thread
     final SendPort messenger = context[0];
+    //set the difficulty
+    _difficulty = context[2];
     //if the received object is a chess game, start the move generation
     //hand over the messenger and the chess
     _findBestMove(Chess.fromFEN(context[1]), messenger);
@@ -22,25 +24,20 @@ class ChessAI {
   // ignore: non_constant_identifier_names
   static Color _MAX, _MIN;
 
-  //the constant values
-  static const int _MAX_DEPTH = 3;
+  //big enough to be infinity in this case
   static const double _INFINITY = 9999999.0;
 
-  //the difficulity level
+  //the maximum depth, will change according to difficulty level
+  static int _MAX_DEPTH = 4;
 
-  //the piece values
-  static const Map _pieceValues = const {
-    PieceType.PAWN: 1,
-    PieceType.KNIGHT: 3,
-    PieceType.BISHOP: 3.5,
-    PieceType.ROOK: 5,
-    PieceType.QUEEN: 9,
-    PieceType.KING: 10
-  };
+  //the difficulty level
+  //0 - easy
+  //1 - medium
+  //2 - hard
+  static int _difficulty = 0;
 
+  //the actual method starting the alpha beta pruning
   static void _findBestMove(Chess chess, SendPort messenger) {
-    print(Isolate.current.debugName);
-
     //get the MAX and MIN color
     _MAX = chess.game.turn;
     _MIN = (chess.game.turn == Color.BLACK) ? Color.WHITE : Color.BLACK;
@@ -52,7 +49,7 @@ class ChessAI {
     for (Move m in chess.generate_moves()) {
       //perform an alpha beta minimax algorithm in the first gen with max to min
       chess.move(m);
-      double eval = _alphaBeta(chess, 1, -_INFINITY, _INFINITY, _MIN);
+      double eval = _alphaBeta(chess, 2, -_INFINITY, _INFINITY, _MIN);
       moveEvalPairs.add([m, eval]);
       chess.undo();
       //print the progress
@@ -148,35 +145,38 @@ class ChessAI {
         }
       }
     } else {
-      // otherwise do a simple material evaluation
-      /*double evaluation = 0.0;
-      for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
-        if ((i & 0x88) != 0) {
-          i += 7;
-          continue;
-        }
-
-        Piece piece = c.game.board[i];
-        if (piece != null) {
-          evaluation += (piece.color == _MAX)
-              ? _pieceValues[piece.type]
-              : -_pieceValues[piece.type];
-        }
-      }*/
-
+      //the final evaluation to be returned
       double eval = 0.0;
-      for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
-        if ((i & 0x88) != 0) {
-          i += 7;
-          continue;
-        }
+      //if the difficulty is easy, eval material
+      if (_difficulty == 0) {
+        for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
+          if ((i & 0x88) != 0) {
+            i += 7;
+            continue;
+          }
 
-        Piece piece = c.game.board[i];
-        if (piece != null) {
-          //get the x and y from the map
-          final xAndY = _COORDINATES_SQUARES[i];
-          //evaluate the piece at the position
-          eval += _getPieceValue(piece, xAndY[0], xAndY[1]);
+          Piece piece = c.game.board[i];
+          if (piece != null) {
+            eval += (piece.color == _MAX)
+                ? _easyPieceValues[piece.type]
+                : -_easyPieceValues[piece.type];
+          }
+        }
+        //else eval individually piece value in the current position
+      } else {
+        for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
+          if ((i & 0x88) != 0) {
+            i += 7;
+            continue;
+          }
+
+          Piece piece = c.game.board[i];
+          if (piece != null) {
+            //get the x and y from the map
+            final xAndY = _COORDINATES_SQUARES[i];
+            //evaluate the piece at the position
+            eval += _getPieceValue(piece, xAndY[0], xAndY[1]);
+          }
         }
       }
 
@@ -184,15 +184,81 @@ class ChessAI {
     }
   }
 
+  //the piece values
+  static const Map _easyPieceValues = const {
+    PieceType.PAWN: 1,
+    PieceType.KNIGHT: 3,
+    PieceType.BISHOP: 3.5,
+    PieceType.ROOK: 5,
+    PieceType.QUEEN: 9,
+    PieceType.KING: 10
+  };
+
   static const Map _COORDINATES_SQUARES = const {
-    0: [0, 7], 1: [1, 7], 2: [2, 7], 3: [3, 7], 4: [4, 7], 5 : [5, 7], 6 : [6, 7], 7 : [7, 7],
-    16: [0, 6], 17: [1, 6], 18: [2, 6], 19: [3, 6], 20: [4, 6], 21: [5, 6], 22: [6, 6], 23: [7, 6],
-    32: [0, 5], 33: [1, 5], 34: [2, 5], 35: [3, 5], 36: [4, 5], 37: [5, 5], 38: [6, 5], 39: [7, 5],
-    48: [0, 4], 49: [1, 4], 50: [2, 4], 51: [3, 4], 52: [4, 4], 53: [5, 4], 54: [6, 4], 55: [7, 4],
-    64: [0, 3], 65: [1, 3], 66: [2, 3], 67: [3, 3], 68: [4, 3], 69: [5, 3], 70: [6, 3], 71: [7, 3],
-    80: [0, 2], 81: [1, 2], 82: [2, 2], 83: [3, 2], 84: [4, 2], 85: [5, 2], 86: [6, 2], 87: [7, 2],
-    96: [0, 1], 97: [1, 1], 98: [2, 1], 99: [3, 1], 100: [4, 1], 101: [5, 1], 102: [6, 1], 103: [7, 1],
-    112: [0, 0], 113: [1, 0], 114: [2, 0], 115: [3, 0], 116: [4, 0], 117: [5, 0], 118: [6, 0], 119: [7, 0]
+    0: [0, 7],
+    1: [1, 7],
+    2: [2, 7],
+    3: [3, 7],
+    4: [4, 7],
+    5: [5, 7],
+    6: [6, 7],
+    7: [7, 7],
+    16: [0, 6],
+    17: [1, 6],
+    18: [2, 6],
+    19: [3, 6],
+    20: [4, 6],
+    21: [5, 6],
+    22: [6, 6],
+    23: [7, 6],
+    32: [0, 5],
+    33: [1, 5],
+    34: [2, 5],
+    35: [3, 5],
+    36: [4, 5],
+    37: [5, 5],
+    38: [6, 5],
+    39: [7, 5],
+    48: [0, 4],
+    49: [1, 4],
+    50: [2, 4],
+    51: [3, 4],
+    52: [4, 4],
+    53: [5, 4],
+    54: [6, 4],
+    55: [7, 4],
+    64: [0, 3],
+    65: [1, 3],
+    66: [2, 3],
+    67: [3, 3],
+    68: [4, 3],
+    69: [5, 3],
+    70: [6, 3],
+    71: [7, 3],
+    80: [0, 2],
+    81: [1, 2],
+    82: [2, 2],
+    83: [3, 2],
+    84: [4, 2],
+    85: [5, 2],
+    86: [6, 2],
+    87: [7, 2],
+    96: [0, 1],
+    97: [1, 1],
+    98: [2, 1],
+    99: [3, 1],
+    100: [4, 1],
+    101: [5, 1],
+    102: [6, 1],
+    103: [7, 1],
+    112: [0, 0],
+    113: [1, 0],
+    114: [2, 0],
+    115: [3, 0],
+    116: [4, 0],
+    117: [5, 0],
+    118: [6, 0],
+    119: [7, 0]
   };
 
   static List _reverseList(List list) {

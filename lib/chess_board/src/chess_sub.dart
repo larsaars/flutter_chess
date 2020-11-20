@@ -81,11 +81,15 @@ class PieceType {
 class Color {
   Color();
 
-  int value;
-  Color.internal(this.value);
+  Color.inverse(Color color) {
+    Color.fromInt((color == WHITE) ? 1 : 0);
+  }
 
-  static Color WHITE = Color.internal(0);
-  static Color BLACK = Color.internal(1);
+  int value;
+  Color.fromInt(this.value);
+
+  static Color WHITE = Color.fromInt(0);
+  static Color BLACK = Color.fromInt(1);
 
   int get hashCode => value;
   String toString() => (this == WHITE) ? 'w' : 'b';
