@@ -151,6 +151,7 @@ class ChessController {
         onDone: (value) {
       game.reset();
       update();
+      makeBotMoveIfNeeded();
     });
   }
 
@@ -171,6 +172,7 @@ class ChessController {
 
   void switchColors() {
     whiteSideTowardsUser = !whiteSideTowardsUser;
+    prefs.setBool('whiteSideTowardsUser', whiteSideTowardsUser);
     update();
   }
 
