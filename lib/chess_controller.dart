@@ -36,12 +36,9 @@ class ChessController {
     //and then update the ui
     update();
     //check if bot should make a move
-    var col1 = move['color'], col2 = Color.inverse(botColor);
-    print('col1=$col1, col2=$col2');
-    if (move['color'] == Color.inverse(botColor) && prefs.getBool('bot')) {
-      //and then find it
-      findMove();
-    }
+    //and then find it
+    //make move if needed
+    makeBotMoveIfNeeded();
   }
 
   void findMove() async {
@@ -95,6 +92,13 @@ class ChessController {
         update();
       }
     });
+  }
+
+  void makeBotMoveIfNeeded() {
+    //make move if needed
+    if (((game?.game?.turn ?? Color.inverse(botColor)) == botColor) && prefs.getBool('bot')) {
+      findMove();
+    }
   }
 
   void onDraw() {

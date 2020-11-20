@@ -81,6 +81,10 @@ class _MyHomepageState extends State<MyHomePage> {
   Future<void> _loadEverythingUp() async {
     await _chessController.loadOldGame();
     prefs = await SharedPreferences.getInstance();
+    //set the bot color from prefs
+    //the chess controller has already been set here!
+    _chessController.botColor =
+        chess_sub.Color.fromInt(prefs.getInt('bot_color') ?? 1);
   }
 
   @override
@@ -209,34 +213,45 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            FlatButton(onPressed: null, child: Text((_chessController.botColor == chess_sub.Color.WHITE) ? strings.white : strings.black)),
-                            LiteRollingSwitch(
-                              value: (prefs.getBool("bot") ?? false),
-                              onChanged: (pos) {
-                                prefs.setBool("bot", pos);
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          FlatButton(
+                              shape: roundButtonShape,
+                              onPressed: () {
+                                //inverse the bot color and save it
+                                _chessController.botColor =
+                                    chess_sub.Color.inverse(
+                                        _chessController.botColor);
+                                //save value int to prefs
+                                prefs.setInt('bot_color',
+                                    _chessController.botColor.value);
+                                //set state, update the views
+                                setState(() {});
                                 //make move if needed
-                                if ((_chessController?.game?.game?.turn ??
-                                        chess_sub.Color.inverse(
-                                            _chessController.botColor)) ==
-                                    _chessController.botColor) {
-                                  _chessController.findMove();
-                                }
+                                _chessController.makeBotMoveIfNeeded();
                               },
-                              iconOn: Icons.done,
-                              iconOff: Icons.close,
-                              textOff: strings.bot_off,
-                              textOn: strings.bot_on,
-                              colorOff: Colors.red[800],
-                              colorOn: Colors.green[800],
-                            ),
-                          ],
-                        ),
+                              child: Text((_chessController.botColor ==
+                                      chess_sub.Color.WHITE)
+                                  ? strings.white
+                                  : strings.black)),
+                          LiteRollingSwitch(
+                            value: (prefs.getBool("bot") ?? false),
+                            onChanged: (pos) {
+                              prefs.setBool("bot", pos);
+                              //make move if needed
+                              _chessController?.makeBotMoveIfNeeded();
+                            },
+                            iconOn: Icons.done,
+                            iconOff: Icons.close,
+                            textOff: strings.bot_off,
+                            textOn: strings.bot_on,
+                            colorOff: Colors.red[800],
+                            colorOn: Colors.green[800],
+                          ),
+                        ],
                       ),
                     ),
                     Padding(
