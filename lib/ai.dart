@@ -42,8 +42,6 @@ class ChessAI {
   static void _findBestMove(Chess chess, SendPort messenger) {
     //set the the depth from the difficulty
     if(_difficulty == 0)
-      _MAX_DEPTH = 1;
-    else if(_difficulty == 1)
       _MAX_DEPTH = 2;
 
     //get the MAX and MIN color
@@ -156,7 +154,7 @@ class ChessAI {
       //the final evaluation to be returned
       double eval = 0.0;
       //if the difficulty is easy, eval material
-      if (_difficulty == 0) {
+      if (_difficulty == 0 || _difficulty == 1) {
         for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
           if ((i & 0x88) != 0) {
             i += 7;
@@ -185,6 +183,11 @@ class ChessAI {
             //evaluate the piece at the position
             eval += _getPieceValue(piece, xAndY[0], xAndY[1]);
           }
+        }
+
+        if(_difficulty == 3) {
+          //if difficulty is hard make extra checks
+
         }
       }
 
