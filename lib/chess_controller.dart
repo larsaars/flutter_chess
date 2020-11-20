@@ -44,7 +44,7 @@ class ChessController {
   void findMove() async {
     //do nothing if controller or game is null
     //also return the method if is already called
-    if(controller == null || game == null || loadingBotMoves) {
+    if (controller == null || game == null || loadingBotMoves) {
       return;
     }
     //loading bot moves shall be true
@@ -90,21 +90,32 @@ class ChessController {
         progress = message;
         //call update to update the text
         update();
+      } else if (message is String && message == 'no_moves') {
+        //kill the isolate since there are no moves
+        isolate.kill();
+        //and update the board
+        controller.userCanMakeMoves = true;
+        loadingBotMoves = false;
+        update();
       }
     });
   }
 
   void makeBotMoveIfNeeded() {
     //make move if needed
-    if (((game?.game?.turn ?? Color.inverse(botColor)) == botColor) && prefs.getBool('bot')) {
+    if (((game?.game?.turn ?? Color.inverse(botColor)) == botColor) &&
+        prefs.getBool('bot')) {
       findMove();
     }
   }
 
   void onDraw() {
     //show the dialog
-    showTextDialog(strings.draw, strings.draw_desc,
-        onDoneText: strings.replay, onDone: (value) => resetBoard);
+    showTextDialog(strings.draw, strings.draw_desc, onDoneText: strings.replay,
+        onDone: (value) {
+      game.reset();
+      update();
+    });
   }
 
   void onCheckMate(color) {
@@ -113,7 +124,10 @@ class ChessController {
     var loser = color == PieceColor.White ? strings.white : strings.black;
     //show the dialog
     showTextDialog(strings.checkmate, strings.check_mate_desc(loser, winner),
-        onDoneText: strings.replay, onDone: (value) => resetBoard);
+        onDoneText: strings.replay, onDone: (value) {
+      game.reset();
+      update();
+    });
   }
 
   void onCheck(color) {

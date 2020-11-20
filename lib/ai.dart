@@ -80,6 +80,12 @@ class ChessAI {
       if (pair[1] == highestEval) bestMoves.add(pair[0]);
     }
 
+    //if there is no move, send null
+    if(bestMoves.length == 0) {
+      messenger.send('no_moves');
+      return;
+    }
+
     //random one of the same scores
     var bestMove = bestMoves[Random().nextInt(bestMoves.length)];
 
