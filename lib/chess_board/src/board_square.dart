@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
@@ -58,9 +57,7 @@ class BoardSquare extends StatelessWidget {
                 model.onMove({
                   'piece': moveInfo[1],
                   'square': squareName,
-                  'color': moveInfo[2] == chess.Color.BLACK
-                      ? PieceColor.Black
-                      : PieceColor.White,
+                  'color': moveInfo[2],
                 });
               }
             });
@@ -74,9 +71,7 @@ class BoardSquare extends StatelessWidget {
             model.onMove({
               'piece': moveInfo[1],
               'square': squareName,
-              'color': moveInfo[2] == chess.Color.BLACK
-                  ? PieceColor.Black
-                  : PieceColor.White,
+              'color': moveInfo[2],
             });
           }
         }),

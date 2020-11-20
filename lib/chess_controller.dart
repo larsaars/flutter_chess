@@ -21,6 +21,8 @@ class ChessController {
   bool whiteSideTowardsUser = true, _showing = false, loadingBotMoves = false;
   int progress = 0;
 
+  Color botColor = Color.BLACK;
+
   ChessController(this.context);
 
   //update the views
@@ -33,9 +35,9 @@ class ChessController {
     print('onMove: $move');
     //and then update the ui
     update();
-    print(Isolate.current.debugName);
     //check if bot should make a move
-    if (move['color'] == PieceColor.White && prefs.getBool('bot')) {
+    if (move['color'] == Color.inverse(botColor) && prefs.getBool('bot')) {
+      //and then find it
       findMove();
     }
   }
@@ -54,7 +56,7 @@ class ChessController {
     //the move generation algorithm can work faster (lightweight)
     Isolate isolate = await Isolate.spawn(
       ChessAI.entryPointMoveFinderIsolate,
-      [receivePort.sendPort, controller.game.fen, prefs.getInt('difficulty')],
+      [receivePort.sendPort, controller.game.fen, (prefs.getInt('difficulty') ?? 1)],
       debugName: 'chess_move_generator',
     );
     //listen at the receive port for the game (exit point)
@@ -269,7 +271,8 @@ class ChessController {
         onDone: (idx) {
       //the idx from Nav.of.pop, could be null
       if (idx is int) {
-        print('$idx');
+        //save in the prefs
+        prefs.setInt('difficulty', idx);
       }
     }, setStateCallback: (ctx0, setState) {
       ctx = ctx0;
@@ -279,12 +282,10 @@ class ChessController {
           onChanged: (value) {
             //get diff int
             int diff = difficulties.indexOf(value);
-            //save in the prefs
-            prefs.setInt('difficulty', diff);
             //then pop the nav
             Navigator.of(ctx).pop(diff);
           },
-          groupValue: difficulties[prefs.getInt('difficulty') ?? 0],
+          groupValue: difficulties[prefs.getInt('difficulty') ?? 1],
           items: difficulties,
           itemBuilder: (item) => RadioButtonBuilder(item,
               textPosition: RadioButtonTextPosition.left))

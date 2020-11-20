@@ -169,7 +169,7 @@ class Chess {
     return new Chess()
       ..game.board = new List<Piece>.from(this.game.board)
       ..game.kings = new ColorMap.clone(this.game.kings)
-      ..game.turn = new Color.internal(this.game.turn.value)
+      ..game.turn = new Color.fromInt(this.game.turn.value)
       ..game.castling = new ColorMap.clone(this.game.castling)
       ..game.ep_square = this.game.ep_square
       ..game.half_moves = this.game.half_moves

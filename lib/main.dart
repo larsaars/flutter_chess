@@ -101,25 +101,25 @@ class _MyHomepageState extends State<MyHomePage> {
     //return the view
     return (_chessController.game == null)
         ? FutureBuilder(
-      future: _loadEverythingUp(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            var error = snapshot.error;
-            print('$error');
-            return Center(child: Text(strings.error));
-          }
+            future: _loadEverythingUp(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  var error = snapshot.error;
+                  print('$error');
+                  return Center(child: Text(strings.error));
+                }
 
-          return MyHomePageAfterLoading();
-        } else {
-          return Center(
-              child: ModalProgressHUD(
-                child: Container(),
-                inAsyncCall: true,
-              ));
-        }
-      },
-    )
+                return MyHomePageAfterLoading();
+              } else {
+                return Center(
+                    child: ModalProgressHUD(
+                  child: Container(),
+                  inAsyncCall: true,
+                ));
+              }
+            },
+          )
         : MyHomePageAfterLoading();
   }
 }
@@ -196,10 +196,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
             CircularProgressIndicator(),
             Text(
               strings.moves_done(_chessController.progress),
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .bodyText1,
+              style: Theme.of(context).textTheme.bodyText1,
             ),
           ],
         ),
@@ -222,8 +219,9 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             prefs.setBool("bot", pos);
                             //change player can play if it is blacks turn
                             if ((_chessController?.game?.game?.turn ??
-                                chess_sub.Color.WHITE) ==
-                                chess_sub.Color.BLACK) {
+                                    chess_sub.Color.inverse(
+                                        _chessController.botColor)) ==
+                                _chessController.botColor) {
                               _chessController.findMove();
                             }
                           },
@@ -241,20 +239,16 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                       child: Text(
                           strings.turn_of_x(
                               (_chessController?.game?.game?.turn ==
-                                  chess_sub.Color.BLACK)
+                                      chess_sub.Color.BLACK)
                                   ? strings.black
                                   : strings.white),
-                          style: Theme
-                              .of(context)
-                              .textTheme
-                              .subtitle1
-                              .copyWith(
-                            inherit: true,
-                            color:
-                            (_chessController?.game?.in_check ?? false)
-                                ? Colors.red
-                                : Colors.black,
-                          )),
+                          style: Theme.of(context).textTheme.subtitle1.copyWith(
+                                inherit: true,
+                                color:
+                                    (_chessController?.game?.in_check ?? false)
+                                        ? Colors.red
+                                        : Colors.black,
+                              )),
                     ),
                     Center(
                       // Center is a layout widget. It takes a single child and positions it
@@ -262,14 +256,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                       child: ChessBoard(
                         boardType: boardTypeFromString(
                             prefs.getString('board_style') ?? 'd'),
-                        size: min(MediaQuery
-                            .of(context)
-                            .size
-                            .width,
-                            MediaQuery
-                                .of(context)
-                                .size
-                                .height),
+                        size: min(MediaQuery.of(context).size.width,
+                            MediaQuery.of(context).size.height),
                         onCheckMate: _chessController.onCheckMate,
                         onDraw: _chessController.onDraw,
                         onMove: _chessController.onMove,
@@ -277,7 +265,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                         chessBoardController: _chessController.controller,
                         chess: _chessController.game,
                         whiteSideTowardsUser:
-                        _chessController.whiteSideTowardsUser,
+                            _chessController.whiteSideTowardsUser,
                       ),
                     ),
                   ],
