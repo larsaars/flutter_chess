@@ -43,6 +43,8 @@ class ChessAI {
     //set the the depth from the difficulty
     if(_difficulty == 0)
       _MAX_DEPTH = 2;
+    else if(_difficulty == 3)
+      _MAX_DEPTH = 4;
 
     //get the MAX and MIN color
     _MAX = chess.game.turn;

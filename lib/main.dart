@@ -81,10 +81,11 @@ class _MyHomepageState extends State<MyHomePage> {
   Future<void> _loadEverythingUp() async {
     await _chessController.loadOldGame();
     prefs = await SharedPreferences.getInstance();
-    //set the bot color from prefs
+    //load values from prefs
     //the chess controller has already been set here!
     _chessController.botColor =
         chess_sub.Color.fromInt(prefs.getInt('bot_color') ?? 1);
+    _chessController.whiteSideTowardsUser = prefs.getBool('whiteSideTowardsUser') ?? true;
   }
 
   @override
