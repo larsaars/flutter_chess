@@ -60,8 +60,7 @@ void showTextDialog(
           opacity: a1.value,
           child: StatefulBuilder(builder: (context, setState) {
             //call the listener that returns the set state
-            if(setStateCallback != null)
-              setStateCallback(context, setState);
+            if (setStateCallback != null) setStateCallback(context, setState);
             //create the alert dialog object
             return AlertDialog(
               title: Padding(
@@ -92,6 +91,7 @@ void showTextDialog(
               ),
               actions: <Widget>[
                 FlatButton(
+                    shape: roundButtonShape,
                     child: Text(onDone == null ? strings.ok : strings.cancel),
                     onPressed: () {
                       _showing = false;
@@ -99,6 +99,7 @@ void showTextDialog(
                     }),
                 onDone != null
                     ? FlatButton(
+                        shape: roundButtonShape,
                         child: Text(onDoneText),
                         onPressed: () {
                           _showing = false;
@@ -119,6 +120,9 @@ void showTextDialog(
     if (onDone != null && value != null) onDone(value);
   });
 }
+
+RoundedRectangleBorder roundButtonShape =
+    RoundedRectangleBorder(borderRadius: BorderRadius.circular(45));
 
 void addLicenses() {
   LicenseRegistry.addLicense(() async* {
