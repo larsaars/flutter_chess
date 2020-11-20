@@ -262,34 +262,37 @@ class ChessController {
   void onHardnessChange() {
     List difficulties = strings.difficulties.split(',');
 
-    showTextDialog(strings.difficulty, null,
-        onDoneText: strings.ok,
-        onDone: (value) {
-          //the idx from Nav.of.pop
-          int idx = value as int;
-          //
-        },
-        children: [
-          SizedBox(
-            height: 200,
-            child: ListView.separated(
-                itemBuilder: (ctx, idx) => GestureDetector(
+    showTextDialog(strings.difficulty, null, onDoneText: strings.ok,
+        onDone: (idx) {
+      //the idx from Nav.of.pop
+      if(idx is int) {
+        print('$idx');
+      }
+    }, children: [
+      Container(
+        height: 200,
+        width: 9999.0,
+        child: ListView.separated(
+            shrinkWrap: true,
+            itemBuilder: (ctx, idx) => GestureDetector(
                   onTap: () {
                     Navigator.of(ctx).pop(idx);
                   },
-                  child: Center(
-                        child: Text(
-                          difficulties[idx],
-                          style: Theme.of(ContextSingleton.context)
-                              .textTheme
-                              .subtitle1,
-                        ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        difficulties[idx],
+                        style:
+                            Theme.of(ContextSingleton.context).textTheme.subtitle1,
                       ),
+                    ),
+                  ),
                 ),
-                separatorBuilder: (_, idx) => Divider(),
-                itemCount: difficulties.length
-            ),
-          )
-        ]);
+            separatorBuilder: (_, idx) => Divider(),
+            itemCount: difficulties.length),
+      )
+    ]);
   }
 }

@@ -32,7 +32,7 @@ bool _showing = false;
 typedef void OnDialogCancelCallback(value);
 
 void showTextDialog(String title, String text,
-    {String onDoneText, List<Widget> children, OnDialogCancelCallback onDone}) async {
+    {String onDoneText, List<Widget> children = const [], OnDialogCancelCallback onDone}) async {
   if (_showing) return;
 
   _showing = true;
@@ -61,9 +61,10 @@ void showTextDialog(String title, String text,
             content: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                (text == null) ? Container() :
-                Expanded(
+                (text == null) ? SizedBox() :
+                Center(
                   child: Text(
                     text,
                     textAlign: TextAlign.center,
@@ -71,8 +72,9 @@ void showTextDialog(String title, String text,
                   ),
                 ),
                 Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: children,
-                )
+                ),
               ],
             ),
             actions: <Widget>[
@@ -100,7 +102,8 @@ void showTextDialog(String title, String text,
     //set showing dialog false
     _showing = false;
     //execute the on done
-    onDone(value);
+    if(onDone != null)
+      onDone(value);
   });
 }
 
