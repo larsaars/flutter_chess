@@ -30,9 +30,16 @@ class ContextSingleton {
 bool _showing = false;
 
 typedef void OnDialogCancelCallback(value);
+typedef void OnDialogReturnSetStateCallback(BuildContext context, setState);
 
-void showTextDialog(String title, String text,
-    {String onDoneText, List<Widget> children = const [], OnDialogCancelCallback onDone}) async {
+void showTextDialog(
+  String title,
+  String text, {
+  String onDoneText,
+  List<Widget> children = const [],
+  OnDialogCancelCallback onDone,
+  OnDialogReturnSetStateCallback setStateCallback,
+}) async {
   if (_showing) return;
 
   _showing = true;
@@ -51,49 +58,56 @@ void showTextDialog(String title, String text,
         transform: Matrix4.translationValues(0.0, curvedValue * 200, 0.0),
         child: Opacity(
           opacity: a1.value,
-          child: AlertDialog(
-            title: Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Text(
-                  title,
-                  style: Theme.of(context).textTheme.subtitle1,
-                )),
-            content: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                (text == null) ? SizedBox() :
-                Center(
+          child: StatefulBuilder(builder: (context, setState) {
+            //call the listener that returns the set state
+            if(setStateCallback != null)
+              setStateCallback(context, setState);
+            //create the alert dialog object
+            return AlertDialog(
+              title: Padding(
+                  padding: EdgeInsets.all(8.0),
                   child: Text(
-                    text,
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.subtitle2,
+                    title,
+                    style: Theme.of(context).textTheme.subtitle1,
+                  )),
+              content: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  (text == null)
+                      ? SizedBox()
+                      : Center(
+                          child: Text(
+                            text,
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.subtitle2,
+                          ),
+                        ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: children,
                   ),
-                ),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: children,
-                ),
+                ],
+              ),
+              actions: <Widget>[
+                FlatButton(
+                    child: Text(onDone == null ? strings.ok : strings.cancel),
+                    onPressed: () {
+                      _showing = false;
+                      Navigator.of(context).pop();
+                    }),
+                onDone != null
+                    ? FlatButton(
+                        child: Text(onDoneText),
+                        onPressed: () {
+                          _showing = false;
+                          Navigator.of(context).pop();
+                        })
+                    : Container()
               ],
-            ),
-            actions: <Widget>[
-              FlatButton(
-                  child: Text(onDone == null ? strings.ok : strings.cancel),
-                  onPressed: () {
-                    _showing = false;
-                    Navigator.of(context).pop();
-                  }),
-              onDone != null
-                  ? FlatButton(
-                      child: Text(onDoneText),
-                      onPressed: () {
-                        _showing = false;
-                        Navigator.of(context).pop();
-                      })
-                  : Container()
-            ],
-          ),
+            );
+          }),
         ),
       );
     },
@@ -102,8 +116,7 @@ void showTextDialog(String title, String text,
     //set showing dialog false
     _showing = false;
     //execute the on done
-    if(onDone != null)
-      onDone(value);
+    if (onDone != null) onDone(value);
   });
 }
 

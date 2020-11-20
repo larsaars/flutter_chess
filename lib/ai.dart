@@ -26,6 +26,8 @@ class ChessAI {
   static const int _MAX_DEPTH = 3;
   static const double _INFINITY = 9999999.0;
 
+  //the difficulity level
+
   //the piece values
   static const Map _pieceValues = const {
     PieceType.PAWN: 1,

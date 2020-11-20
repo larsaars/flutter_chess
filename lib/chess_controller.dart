@@ -8,6 +8,7 @@ import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:group_radio_button/group_radio_button.dart';
 
 import 'ai.dart';
 import 'chess_board/src/chess_board_controller.dart';
@@ -53,10 +54,11 @@ class ChessController {
     //the move generation algorithm can work faster (lightweight)
     Isolate isolate = await Isolate.spawn(
       ChessAI.entryPointMoveFinderIsolate,
-      [receivePort.sendPort, controller.game.fen],
+      [receivePort.sendPort, controller.game.fen, prefs.getInt('difficulty')],
       debugName: 'chess_move_generator',
     );
     //listen at the receive port for the game (exit point)
+    //or update the progress
     receivePort.listen((message) {
       //if message is the move, execute further actions
       if (message is Move) {
@@ -261,38 +263,31 @@ class ChessController {
 
   void onHardnessChange() {
     List difficulties = strings.difficulties.split(',');
+    BuildContext ctx;
 
     showTextDialog(strings.difficulty, null, onDoneText: strings.ok,
         onDone: (idx) {
-      //the idx from Nav.of.pop
-      if(idx is int) {
+      //the idx from Nav.of.pop, could be null
+      if (idx is int) {
         print('$idx');
       }
+    }, setStateCallback: (ctx0, setState) {
+      ctx = ctx0;
     }, children: [
-      Container(
-        height: 200,
-        width: 9999.0,
-        child: ListView.separated(
-            shrinkWrap: true,
-            itemBuilder: (ctx, idx) => GestureDetector(
-                  onTap: () {
-                    Navigator.of(ctx).pop(idx);
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        difficulties[idx],
-                        style:
-                            Theme.of(ContextSingleton.context).textTheme.subtitle1,
-                      ),
-                    ),
-                  ),
-                ),
-            separatorBuilder: (_, idx) => Divider(),
-            itemCount: difficulties.length),
-      )
+      RadioGroup.builder(
+          direction: Axis.vertical,
+          onChanged: (value) {
+            //get diff int
+            int diff = difficulties.indexOf(value);
+            //save in the prefs
+            prefs.setInt('difficulty', diff);
+            //then pop the nav
+            Navigator.of(ctx).pop(diff);
+          },
+          groupValue: difficulties[prefs.getInt('difficulty') ?? 0],
+          items: difficulties,
+          itemBuilder: (item) => RadioButtonBuilder(item,
+              textPosition: RadioButtonTextPosition.left))
     ]);
   }
 }
