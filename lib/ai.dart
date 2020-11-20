@@ -41,10 +41,9 @@ class ChessAI {
   //the actual method starting the alpha beta pruning
   static void _findBestMove(Chess chess, SendPort messenger) {
     //set the the depth from the difficulty
-    if(_difficulty == 0)
+    if (_difficulty == 0)
       _MAX_DEPTH = 2;
-    else if(_difficulty == 3)
-      _MAX_DEPTH = 4;
+    else if (_difficulty == 3) _MAX_DEPTH = 4;
 
     //get the MAX and MIN color
     _MAX = chess.game.turn;
@@ -81,7 +80,7 @@ class ChessAI {
     }
 
     //if there is no move, send null
-    if(bestMoves.length == 0) {
+    if (bestMoves.length == 0) {
       messenger.send('no_moves');
       return;
     }
@@ -193,7 +192,7 @@ class ChessAI {
           }
         }
 
-        if(_difficulty == 3) {
+        if (_difficulty == 3) {
           //if difficulty is hard make extra checks
 
         }
