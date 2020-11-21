@@ -39,13 +39,14 @@ void showTextDialog(
   List<Widget> children = const [],
   OnDialogCancelCallback onDone,
   OnDialogReturnSetStateCallback setStateCallback,
+  var update,
 }) async {
   if (_showing) return;
 
   _showing = true;
 
   //show dialog
-  await showGeneralDialog(
+  showGeneralDialog(
     context: ContextSingleton.context,
     barrierDismissible: true,
     barrierLabel: "showTextDialog",
@@ -66,7 +67,7 @@ void showTextDialog(
               title: Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Text(
-                    title,
+                    title ?? "",
                     style: Theme.of(context).textTheme.subtitle1,
                   )),
               content: Column(
@@ -78,7 +79,7 @@ void showTextDialog(
                       ? SizedBox()
                       : Center(
                           child: Text(
-                            text,
+                            text ?? "",
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.subtitle2,
                           ),
@@ -100,7 +101,7 @@ void showTextDialog(
                 onDone != null
                     ? FlatButton(
                         shape: roundButtonShape,
-                        child: Text(onDoneText),
+                        child: Text(onDoneText ?? ""),
                         onPressed: () {
                           _showing = false;
                           Navigator.of(context).pop('ok');

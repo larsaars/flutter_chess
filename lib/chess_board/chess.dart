@@ -1524,9 +1524,8 @@ class Chess {
 
   /// Takeback the last half-move, returning a move Map if successful, otherwise null.
   undo() {
-    undo_move();
-    //var move = undo_move();
-    //return (move != null) ? make_pretty(move) : null;
+    var move = undo_move();
+    return (move != null) ? make_pretty(move) : null;
   }
 
   /// Returns the color of the square ('light' or 'dark'), or null if [square] is invalid
