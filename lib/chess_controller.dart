@@ -324,33 +324,40 @@ class ChessController {
     List difficulties = strings.fen_options.split(',');
     BuildContext ctx;
 
-    showTextDialog(strings.difficulty, null,
-        setStateCallback: (ctx0, setState) {
-          ctx = ctx0;
-        },
-        onDone: (value) => update(),
-        children: [
-          RadioGroup.builder(
-              direction: Axis.vertical,
-              onChanged: (value) async {
-                //get the option
-                int idx = difficulties.indexOf(value);
-                //do the action
-                if (idx == 0) {
-                  //copy fen of game to clipboard
-                  Clipboard.setData(new ClipboardData(text: game.fen));
-                } else if (idx == 1) {
-                  //insert fen from clipboard and reload game
-                  Clipboard.getData('text/plain')
-                      .then((value) => game = Chess.fromFEN(value.text));
-                }
-                //then pop the nav
-                Navigator.of(ctx).pop();
-              },
-              groupValue: 0,
-              items: difficulties,
-              itemBuilder: (item) => RadioButtonBuilder(item,
-                  textPosition: RadioButtonTextPosition.right))
-        ]);
+    var fen = game.fen;
+
+    showTextDialog('fen', null, setStateCallback: (ctx0, setState) {
+      ctx = ctx0;
+    }, onDone: (value) {
+      if(value == 'yes')
+        update();
+    }, children: [
+      RadioGroup.builder(
+          direction: Axis.vertical,
+          onChanged: (value) async {
+            //get the option
+            int idx = difficulties.indexOf(value);
+            //do the action
+            if (idx == 0) {
+              //copy fen of game to clipboard
+              Clipboard.setData(new ClipboardData(text: fen));
+              //then pop the nav
+              Navigator.of(ctx).pop('no');
+            } else if (idx == 1) {
+              //insert fen from clipboard and reload game
+              Clipboard.getData('text/plain').then((value) {
+                if (Chess.validate_fen(value.text)['valid']) {
+                  game = Chess.fromFEN(value.text);
+                  Navigator.of(ctx).pop('yes');
+                }else
+                  Navigator.of(ctx).pop('no');
+              });
+            }
+          },
+          groupValue: 0,
+          items: difficulties,
+          itemBuilder: (item) => RadioButtonBuilder(item,
+              textPosition: RadioButtonTextPosition.right))
+    ]);
   }
 }

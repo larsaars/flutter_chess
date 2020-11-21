@@ -121,7 +121,7 @@ class ChessAI {
         //recursive execute of alpha beta
         alpha = max(alpha, _alphaBeta(c, depth + 1, alpha, beta, _MIN));
         //undo after alpha beta
-        c.undo();
+        c.undo_move();
         //cut of branches
         if (alpha >= beta) {
           break;
@@ -138,7 +138,7 @@ class ChessAI {
         //minimize beta from new alpha beta
         beta = min(beta, _alphaBeta(c, depth + 1, alpha, beta, _MAX));
         //undo the moves
-        c.undo();
+        c.undo_move();
         //cut off here as well
         if (alpha >= beta) {
           break;
