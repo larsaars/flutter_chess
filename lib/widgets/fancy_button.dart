@@ -100,7 +100,7 @@ class _FancyButtonState extends State<FancyButton>
             Text(
               widget.text,
               style: TextStyle(
-                color: Colors.white,
+                color: widget.iconColor,
               ),
             ),
           ],
