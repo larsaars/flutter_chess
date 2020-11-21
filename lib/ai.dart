@@ -219,6 +219,11 @@ class ChessAI {
             if (minPawnsInFiles[i] >= 1)
               eval += 0.06 * minPawnsInFiles[i];
           }
+
+          if(c.king_attacked(_MIN))
+            eval += 50;
+          else if(c.king_attacked(_MAX))
+            eval += 50;
         }
       }
 
