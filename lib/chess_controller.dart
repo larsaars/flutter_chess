@@ -20,7 +20,7 @@ class ChessController {
   BuildContext context;
 
   static bool whiteSideTowardsUser = true;
-  bool _showing = false, loadingBotMoves = false;
+  bool _showing = false, loadingBotMoves = false, botBattle = false;
   int progress = 0;
 
   Color botColor = Color.BLACK;
@@ -40,7 +40,7 @@ class ChessController {
     //check if bot should make a move
     //and then find it
     //make move if needed
-    makeBotMoveIfNeeded();
+    makeBotMoveIfRequired();
   }
 
   void findMove() async {
@@ -89,6 +89,16 @@ class ChessController {
         //print how long it took
         num time = message[1];
         print('finished in $time ms');
+        //if botbattle is activated, wait a certain amount of time,
+        //then inverse botColor and
+        //make check if bot move is required
+        if(botBattle) {
+          Future.delayed(Duration(milliseconds: 300)).then((value) {
+            botColor = Color.inverse(botColor);
+            update();
+            makeBotMoveIfRequired();
+          });
+        }
         //if the message is an int, it is the progress
       } else if (message is int) {
         //set progress
@@ -106,7 +116,7 @@ class ChessController {
     });
   }
 
-  void makeBotMoveIfNeeded() {
+  void makeBotMoveIfRequired() {
     //make move if needed
     if (((game?.game?.turn ?? Color.inverse(botColor)) == botColor) &&
         prefs.getBool('bot')) {
@@ -170,7 +180,7 @@ class ChessController {
         onDone: (value) {
       game.reset();
       update();
-      makeBotMoveIfNeeded();
+      makeBotMoveIfRequired();
     });
   }
 

@@ -118,6 +118,10 @@ class S {
     return Intl.message("to clipboard,from clipboard", name: 'fen_options');
   }
 
+  String get bot_vs_bot {
+    return Intl.message("bot vs. bot", name: 'bot_vs_bot');
+  }
+
 
 }
 

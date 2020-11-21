@@ -87,6 +87,7 @@ class _MyHomepageState extends State<MyHomePage> {
         chess_sub.Color.fromInt(prefs.getInt('bot_color') ?? 1);
     ChessController.whiteSideTowardsUser =
         prefs.getBool('whiteSideTowardsUser') ?? true;
+    _chessController.botBattle = prefs.getBool('botbattle');
   }
 
   @override
@@ -233,7 +234,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                 //set state, update the views
                                 setState(() {});
                                 //make move if needed
-                                _chessController.makeBotMoveIfNeeded();
+                                _chessController.makeBotMoveIfRequired();
                               },
                               child: Text((_chessController.botColor ==
                                       chess_sub.Color.WHITE)
@@ -244,7 +245,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             onChanged: (pos) {
                               prefs.setBool("bot", pos);
                               //make move if needed
-                              _chessController?.makeBotMoveIfNeeded();
+                              _chessController?.makeBotMoveIfRequired();
                             },
                             iconOn: Icons.done,
                             iconOff: Icons.close,
@@ -345,6 +346,17 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                         FancyButton(
                           onPressed: _chessController.onFen,
                           text: 'fen',
+                        ),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        CheckboxListTile(
+                          title: Text(strings.bot_vs_bot),
+                          value: _chessController.botBattle,
+                          onChanged: (value) {
+                            prefs.setBool('botbattle', value);
+                            _chessController.botBattle = value;
+                          },
                         ),
                         SizedBox(
                           width: 8.0,

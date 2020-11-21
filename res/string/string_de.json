@@ -22,5 +22,6 @@
   "moves_done": "${progress} Bretter verarbeitet",
   "difficulty": "Schwierigkeit",
   "difficulties": "einfach,medium,normal,schwierig",
-  "fen_options": "in Zwischenablage kopieren,aus Zwischenablage kopieren"
+  "fen_options": "in Zwischenablage kopieren,aus Zwischenablage kopieren",
+  "bot_vs_bot": "bot vs. bot"
 }
