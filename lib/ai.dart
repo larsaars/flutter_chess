@@ -25,7 +25,7 @@ class ChessAI {
   static Color _MAX, _MIN;
 
   //big enough to be infinity in this case
-  static const double _INFINITY = 9999999.0;
+  static const double _INFINITY = 99999999.0;
 
   //the maximum depth, will change according to difficulty level
   // ignore: non_constant_identifier_names
@@ -45,7 +45,6 @@ class ChessAI {
     //set the the depth from the difficulty
     if (_difficulty == 0)
       _MAX_DEPTH = 2;
-    else if (_difficulty == 3) _MAX_DEPTH = 4;
 
     //get the MAX and MIN color
     _MAX = chess.game.turn;
@@ -159,11 +158,11 @@ class ChessAI {
         if (c.game.turn == _MAX) {
           // avoid mates loss, the deeper the better
           //(earlier is worse)
-          return -10000.0 - depth;
+          return -_INFINITY - depth;
         } else {
           // go for the loss of the other one, the deeper the worse
           //(earlier is better)
-          return 10000.0 - depth;
+          return _INFINITY - depth;
         }
       }
     } else {
@@ -186,6 +185,10 @@ class ChessAI {
         }
         //else eval individually piece value in the current position
       } else {
+        //keep track of pawns in columns (files)
+        List<int> maxPawnsInFiles = List.generate(8, (index) => 0),
+            minPawnsInFiles = List.generate(8, (index) => 0);
+        //loop through all squares
         for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
           if ((i & 0x88) != 0) {
             i += 7;
@@ -198,12 +201,24 @@ class ChessAI {
             final xAndY = _COORDINATES_SQUARES[i];
             //evaluate the piece at the position
             eval += _getPieceValue(piece, xAndY[0], xAndY[1]);
+            //add to pawns list
+            if(piece.type == PieceType.PAWN && _difficulty == 3) {
+              if(piece.color == _MAX) maxPawnsInFiles[xAndY[1]]++;
+              else minPawnsInFiles[xAndY[1]]++;
+            }
           }
         }
 
-        if (_difficulty == 3) {
-          //if difficulty is hard make extra checks
-
+        if(_difficulty == 3) {
+          for (int i = 0; i < 8; i++) {
+            int sum = maxPawnsInFiles[i] + minPawnsInFiles[i];
+            if (maxPawnsInFiles[i] >= 1 && minPawnsInFiles[i] >= 1)
+              eval -= 0.05 * sum;
+            if (maxPawnsInFiles[i] >= 1)
+              eval -= 0.06 * maxPawnsInFiles[i];
+            if (minPawnsInFiles[i] >= 1)
+              eval += 0.06 * minPawnsInFiles[i];
+          }
         }
       }
 
@@ -211,14 +226,47 @@ class ChessAI {
     }
   }
 
+  static double _getPieceValue(Piece piece, int x, int y) {
+    if (piece == null) {
+      return 0;
+    }
+
+    var absoluteValue =
+        _getAbsoluteValue(piece.type, piece.color == Color.WHITE, x, y);
+
+    if (piece.color == _MAX) {
+      return absoluteValue;
+    } else {
+      return -absoluteValue;
+    }
+  }
+
+  static double _getAbsoluteValue(PieceType piece, bool isWhite, int x, int y) {
+    if (piece.name == 'p') {
+      return _easyPieceValues[PieceType.PAWN] + (isWhite ? _whitePawnEval[y][x] : _blackPawnEval[y][x]);
+    } else if (piece.name == 'r') {
+      return _easyPieceValues[PieceType.ROOK] + (isWhite ? _whiteRookEval[y][x] : _blackRookEval[y][x]);
+    } else if (piece.name == 'n') {
+      return _easyPieceValues[PieceType.KNIGHT] + _knightEval[y][x];
+    } else if (piece.name == 'b') {
+      return _easyPieceValues[PieceType.BISHOP] + (isWhite ? _whiteBishopEval[y][x] : _blackBishopEval[y][x]);
+    } else if (piece.name == 'q') {
+      return _easyPieceValues[PieceType.QUEEN] + _evalQueen[y][x];
+    } else if (piece.name == 'k') {
+      return _easyPieceValues[PieceType.KING] + (isWhite ? _whiteKingEval[y][x] : _blackKingEval[y][x]);
+    }
+
+    return 0;
+  }
+
   //the piece values
   static const Map _easyPieceValues = const {
-    PieceType.PAWN: 1,
-    PieceType.KNIGHT: 3,
-    PieceType.BISHOP: 3.5,
-    PieceType.ROOK: 5,
-    PieceType.QUEEN: 9,
-    PieceType.KING: 10
+    PieceType.PAWN: 10,
+    PieceType.KNIGHT: 32,
+    PieceType.BISHOP: 33,
+    PieceType.ROOK: 50,
+    PieceType.QUEEN: 90,
+    PieceType.KING: 20000
   };
 
   static const Map _COORDINATES_SQUARES = const {
@@ -365,37 +413,4 @@ class ChessAI {
   ];
 
   static final _blackKingEval = _reverseList(_whiteKingEval);
-
-  static double _getPieceValue(Piece piece, int x, int y) {
-    if (piece == null) {
-      return 0;
-    }
-
-    var absoluteValue =
-        _getAbsoluteValue(piece.type, piece.color == Color.WHITE, x, y);
-
-    if (piece.color == _MAX) {
-      return absoluteValue;
-    } else {
-      return -absoluteValue;
-    }
-  }
-
-  static double _getAbsoluteValue(PieceType piece, bool isWhite, int x, int y) {
-    if (piece.name == 'p') {
-      return 10 + (isWhite ? _whitePawnEval[y][x] : _blackPawnEval[y][x]);
-    } else if (piece.name == 'r') {
-      return 50 + (isWhite ? _whiteRookEval[y][x] : _blackRookEval[y][x]);
-    } else if (piece.name == 'n') {
-      return 30 + _knightEval[y][x];
-    } else if (piece.name == 'b') {
-      return 30 + (isWhite ? _whiteBishopEval[y][x] : _blackBishopEval[y][x]);
-    } else if (piece.name == 'q') {
-      return 90 + _evalQueen[y][x];
-    } else if (piece.name == 'k') {
-      return 900 + (isWhite ? _whiteKingEval[y][x] : _blackKingEval[y][x]);
-    }
-
-    return 0;
-  }
 }
