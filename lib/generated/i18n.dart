@@ -114,6 +114,10 @@ class S {
     return Intl.message("easy,medium,normal,hard", name: 'difficulties');
   }
 
+  String get fen_options {
+    return Intl.message("to clipboard,from clipboard", name: 'fen_options');
+  }
+
 
 }
 

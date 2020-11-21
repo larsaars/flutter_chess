@@ -20,5 +20,6 @@
   "bot_off": "bot off",
   "moves_done": "${progress} boards processed",
   "difficulty": "difficulty",
-  "difficulties": "easy,medium,normal,hard"
+  "difficulties": "easy,medium,normal,hard",
+  "fen_options": "to clipboard,from clipboard"
 }
