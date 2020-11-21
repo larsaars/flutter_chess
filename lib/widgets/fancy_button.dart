@@ -92,10 +92,10 @@ class _FancyButtonState extends State<FancyButton>
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _icon == null ? Container(): _transition,
+            widget.icon == null ? Container(): _transition,
             SizedBox(
               //set the sized box only 8 wide when a text is set
-              width: widget.text.length == 0 ? 0.0 : 8.0,
+              width: widget.text.length == 0 || widget.icon == null ? 0.0 : 8.0,
             ),
             Text(
               widget.text,

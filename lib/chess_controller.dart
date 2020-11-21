@@ -20,8 +20,7 @@ class ChessController {
   BuildContext context;
 
   static bool whiteSideTowardsUser = true;
-  bool _showing = false,
-      loadingBotMoves = false;
+  bool _showing = false, loadingBotMoves = false;
   int progress = 0;
 
   Color botColor = Color.BLACK;
@@ -57,7 +56,7 @@ class ChessController {
     //for the method _ai.find a new thread (isolate)
     //is spawned
     ReceivePort receivePort =
-    ReceivePort(); //port for this main isolate to receive messages
+        ReceivePort(); //port for this main isolate to receive messages
     //send the game to the isolate
     //generated from fen string, so that the history list is empty and
     //the move generation algorithm can work faster (lightweight)
@@ -119,9 +118,9 @@ class ChessController {
     //show the dialog
     showTextDialog(strings.draw, strings.draw_desc, onDoneText: strings.replay,
         onDone: (value) {
-          game.reset();
-          update();
-        });
+      game.reset();
+      update();
+    });
   }
 
   void onCheckMate(color) {
@@ -131,9 +130,9 @@ class ChessController {
     //show the dialog
     showTextDialog(strings.checkmate, strings.check_mate_desc(loser, winner),
         onDoneText: strings.replay, onDone: (value) {
-          game.reset();
-          update();
-        });
+      game.reset();
+      update();
+    });
   }
 
   void onCheck(color) {
@@ -169,10 +168,10 @@ class ChessController {
   void resetBoard() {
     showTextDialog(strings.replay, strings.replay_desc, onDoneText: strings.ok,
         onDone: (value) {
-          game.reset();
-          update();
-          makeBotMoveIfNeeded();
-        });
+      game.reset();
+      update();
+      makeBotMoveIfNeeded();
+    });
   }
 
   void undo() {
@@ -302,55 +301,56 @@ class ChessController {
 
     showTextDialog(strings.difficulty, null,
         setStateCallback: (ctx0, setState) {
-          ctx = ctx0;
-        }, children: [
-          RadioGroup.builder(
-              direction: Axis.vertical,
-              onChanged: (value) {
-                //get diff int
-                int diff = difficulties.indexOf(value);
-                //save in the prefs
-                prefs.setInt('difficulty', diff);
-                //then pop the nav
-                Navigator.of(ctx).pop();
-              },
-              groupValue: difficulties[prefs.getInt('difficulty') ?? 1],
-              items: difficulties,
-              itemBuilder: (item) =>
-                  RadioButtonBuilder(item,
-                      textPosition: RadioButtonTextPosition.right))
-        ]);
+      ctx = ctx0;
+    }, children: [
+      RadioGroup.builder(
+          direction: Axis.vertical,
+          onChanged: (value) {
+            //get diff int
+            int diff = difficulties.indexOf(value);
+            //save in the prefs
+            prefs.setInt('difficulty', diff);
+            //then pop the nav
+            Navigator.of(ctx).pop();
+          },
+          groupValue: difficulties[prefs.getInt('difficulty') ?? 1],
+          items: difficulties,
+          itemBuilder: (item) => RadioButtonBuilder(item,
+              textPosition: RadioButtonTextPosition.right))
+    ]);
   }
 
-  void onFen(){
+  void onFen() {
     List difficulties = strings.fen_options.split(',');
     BuildContext ctx;
 
     showTextDialog(strings.difficulty, null,
         setStateCallback: (ctx0, setState) {
           ctx = ctx0;
-        }, children: [
+        },
+        onDone: (value) => update(),
+        children: [
           RadioGroup.builder(
               direction: Axis.vertical,
               onChanged: (value) async {
                 //get the option
                 int idx = difficulties.indexOf(value);
                 //do the action
-                if(idx == 0) {
+                if (idx == 0) {
                   //copy fen of game to clipboard
                   Clipboard.setData(new ClipboardData(text: game.fen));
-                }else if(idx == 1) {
+                } else if (idx == 1) {
                   //insert fen from clipboard and reload game
-                  Clipboard.getData('text/plain').then((value) => game = Chess.fromFEN(value.text));
+                  Clipboard.getData('text/plain')
+                      .then((value) => game = Chess.fromFEN(value.text));
                 }
                 //then pop the nav
                 Navigator.of(ctx).pop();
               },
               groupValue: 0,
               items: difficulties,
-              itemBuilder: (item) =>
-                  RadioButtonBuilder(item,
-                      textPosition: RadioButtonTextPosition.right))
+              itemBuilder: (item) => RadioButtonBuilder(item,
+                  textPosition: RadioButtonTextPosition.right))
         ]);
   }
 }
