@@ -18,7 +18,8 @@ class ChessController {
   Chess game;
   BuildContext context;
 
-  bool whiteSideTowardsUser = true, _showing = false, loadingBotMoves = false;
+  static bool whiteSideTowardsUser = true;
+  bool _showing = false, loadingBotMoves = false;
   int progress = 0;
 
   Color botColor = Color.BLACK;
@@ -67,11 +68,11 @@ class ChessController {
     //or update the progress
     receivePort.listen((message) {
       //if message is the move, execute further actions
-      if (message is Move) {
+      if (message is List) {
         //execute exitPointMoveFinderIsolate
         //in the main thread again, manage the move object
         //make the move, if there is one
-        if (message != null) game.make_move(message);
+        if (message != null) game.make_move(message[0]);
         //now set user can make moves true again
         controller.userCanMakeMoves = true;
         //set loading false
@@ -84,6 +85,9 @@ class ChessController {
         isolate.kill();
         //reset progress
         progress = 0;
+        //print how long it took
+        num time = message[1];
+        print('finished in $time ms');
         //if the message is an int, it is the progress
       } else if (message is int) {
         //set progress

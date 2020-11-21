@@ -40,6 +40,8 @@ class ChessAI {
 
   //the actual method starting the alpha beta pruning
   static void _findBestMove(Chess chess, SendPort messenger) {
+    //get the start time
+    num startTime = DateTime.now().millisecondsSinceEpoch;
     //set the the depth from the difficulty
     if (_difficulty == 0)
       _MAX_DEPTH = 2;
@@ -91,8 +93,12 @@ class ChessAI {
     //print
     print('selected: $bestMove with $highestEval');
 
-    //send the best move up again, even if it is null
-    messenger.send(bestMove);
+    //get the end time
+    num endTime = DateTime.now().millisecondsSinceEpoch;
+
+    //send the best move up again
+    //also return as second argument the time needed
+    messenger.send([bestMove, (endTime - startTime)]);
   }
 
   // implements a simple alpha beta algorithm
@@ -111,7 +117,7 @@ class ChessAI {
       // go through all legal moves
       for (Move m in c.generate_moves()) {
         //move to be able to generate future moves
-        c.move(m);
+        c.make_move(m);
         //recursive execute of alpha beta
         alpha = max(alpha, _alphaBeta(c, depth + 1, alpha, beta, _MIN));
         //undo after alpha beta
@@ -127,13 +133,16 @@ class ChessAI {
     } else {
       // opponent ist he player (MIN)
       for (Move m in c.generate_moves()) {
+        //try move
         c.move(m);
+        //minimize beta from new alpha beta
         beta = min(beta, _alphaBeta(c, depth + 1, alpha, beta, _MAX));
+        //undo the moves
+        c.undo();
+        //cut off here as well
         if (alpha >= beta) {
-          c.undo();
           break;
         }
-        c.undo();
       }
       return beta;
     }

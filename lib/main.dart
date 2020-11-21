@@ -85,7 +85,8 @@ class _MyHomepageState extends State<MyHomePage> {
     //the chess controller has already been set here!
     _chessController.botColor =
         chess_sub.Color.fromInt(prefs.getInt('bot_color') ?? 1);
-    _chessController.whiteSideTowardsUser = prefs.getBool('whiteSideTowardsUser') ?? true;
+    ChessController.whiteSideTowardsUser =
+        prefs.getBool('whiteSideTowardsUser') ?? true;
   }
 
   @override
@@ -267,7 +268,9 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                 inherit: true,
                                 color:
                                     (_chessController?.game?.in_check ?? false)
-                                        ? ((_chessController.game.in_checkmate) ? Colors.purple : Colors.red)
+                                        ? ((_chessController.game.in_checkmate)
+                                            ? Colors.purple
+                                            : Colors.red)
                                         : Colors.black,
                               )),
                     ),
@@ -286,7 +289,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                         chessBoardController: _chessController.controller,
                         chess: _chessController.game,
                         whiteSideTowardsUser:
-                            _chessController.whiteSideTowardsUser,
+                            ChessController.whiteSideTowardsUser,
                       ),
                     ),
                   ],
@@ -336,6 +339,13 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                           icon: Icons.style,
                           animation: FancyButtonAnimation.pulse,
                         ),
+                        SizedBox(
+                          width: 8.0,
+                        ),
+                        /*FancyButton(
+                          onPressed: null,
+                          icon: ImageIcon(),
+                        ),*/
                         SizedBox(
                           width: 8.0,
                         ),
