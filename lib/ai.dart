@@ -210,6 +210,7 @@ class ChessAI {
         }
 
         if(_difficulty == 3) {
+          //duplicate pawns
           for (int i = 0; i < 8; i++) {
             int sum = maxPawnsInFiles[i] + minPawnsInFiles[i];
             if (maxPawnsInFiles[i] >= 1 && minPawnsInFiles[i] >= 1)
@@ -220,10 +221,11 @@ class ChessAI {
               eval += 0.06 * minPawnsInFiles[i];
           }
 
+          //king safety
           if(c.king_attacked(_MIN))
-            eval += 50;
+            eval += 9;
           else if(c.king_attacked(_MAX))
-            eval += 50;
+            eval -= 9;
         }
       }
 

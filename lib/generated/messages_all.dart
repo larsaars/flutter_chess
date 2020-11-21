@@ -37,6 +37,7 @@ class $de extends MessageLookupByLibrary {
 		"difficulty" : MessageLookupByLibrary.simpleMessage("Schwierigkeit"),
 		"difficulties" : MessageLookupByLibrary.simpleMessage("einfach,medium,normal,schwierig"),
 		"fen_options" : MessageLookupByLibrary.simpleMessage("in Zwischenablage kopieren,aus Zwischenablage kopieren"),
+		"bot_vs_bot" : MessageLookupByLibrary.simpleMessage("bot vs. bot"),
 
   };
 }
@@ -70,6 +71,7 @@ class $en extends MessageLookupByLibrary {
 		"difficulty" : MessageLookupByLibrary.simpleMessage("difficulty"),
 		"difficulties" : MessageLookupByLibrary.simpleMessage("easy,medium,normal,hard"),
 		"fen_options" : MessageLookupByLibrary.simpleMessage("to clipboard,from clipboard"),
+		"bot_vs_bot" : MessageLookupByLibrary.simpleMessage("bot vs. bot"),
 
   };
 }
