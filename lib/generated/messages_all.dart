@@ -36,6 +36,7 @@ class $de extends MessageLookupByLibrary {
 		"moves_done" : (progress) => "${progress} Bretter verarbeitet",
 		"difficulty" : MessageLookupByLibrary.simpleMessage("Schwierigkeit"),
 		"difficulties" : MessageLookupByLibrary.simpleMessage("einfach,medium,normal,schwierig"),
+		"fen_options" : MessageLookupByLibrary.simpleMessage("in Zwischenablage kopieren,aus Zwischenablage kopieren"),
 
   };
 }
@@ -68,6 +69,7 @@ class $en extends MessageLookupByLibrary {
 		"moves_done" : (progress) => "${progress} boards processed",
 		"difficulty" : MessageLookupByLibrary.simpleMessage("difficulty"),
 		"difficulties" : MessageLookupByLibrary.simpleMessage("easy,medium,normal,hard"),
+		"fen_options" : MessageLookupByLibrary.simpleMessage("to clipboard,from clipboard"),
 
   };
 }

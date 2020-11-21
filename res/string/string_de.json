@@ -21,5 +21,6 @@
   "legal": "von Lurzapps",
   "moves_done": "${progress} Bretter verarbeitet",
   "difficulty": "Schwierigkeit",
-  "difficulties": "einfach,medium,normal,schwierig"
+  "difficulties": "einfach,medium,normal,schwierig",
+  "fen_options": "in Zwischenablage kopieren,aus Zwischenablage kopieren"
 }

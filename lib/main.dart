@@ -342,10 +342,10 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                         SizedBox(
                           width: 8.0,
                         ),
-                        /*FancyButton(
-                          onPressed: null,
-                          icon: ImageIcon(),
-                        ),*/
+                        FancyButton(
+                          onPressed: _chessController.onFen,
+                          text: 'fen',
+                        ),
                         SizedBox(
                           width: 8.0,
                         ),
