@@ -131,12 +131,8 @@ class BoardSquare extends StatelessWidget {
       return Container();
     }
 
-    String piece = model.game
-            .get(squareName)
-            .color
-            .toString()
-            .substring(0, 1)
-            .toUpperCase() +
+    var piece0 = model.game.get(squareName);
+    String piece = piece0.color.toString().substring(0, 1).toUpperCase() +
         model.game.get(squareName).type.toUpperCase();
 
     switch (piece) {
@@ -179,6 +175,16 @@ class BoardSquare extends StatelessWidget {
       default:
         imageToDisplay = WhitePawn(size: size);
     }
+
+    /*//turn the image in if is needed
+    if ((ChessController.whiteSideTowardsUser &&
+            piece0.color == chess.Color.BLACK) ||
+        (!ChessController.whiteSideTowardsUser &&
+            piece0.color == chess.Color.WHITE))
+      return Transform.rotate(
+        angle: pi,
+        child: imageToDisplay,
+      );*/
 
     return imageToDisplay;
   }
