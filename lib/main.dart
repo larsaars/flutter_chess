@@ -87,7 +87,7 @@ class _MyHomepageState extends State<MyHomePage> {
         chess_sub.Color.fromInt(prefs.getInt('bot_color') ?? 1);
     ChessController.whiteSideTowardsUser =
         prefs.getBool('whiteSideTowardsUser') ?? true;
-    _chessController.botBattle = prefs.getBool('botbattle');
+    _chessController.botBattle = prefs.getBool('botbattle') ?? false;
   }
 
   @override
@@ -350,13 +350,17 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                         SizedBox(
                           width: 8.0,
                         ),
-                        CheckboxListTile(
-                          title: Text(strings.bot_vs_bot),
-                          value: _chessController.botBattle,
-                          onChanged: (value) {
-                            prefs.setBool('botbattle', value);
-                            _chessController.botBattle = value;
-                          },
+                        Container(
+                          width: 150,
+                          child: CheckboxListTile(
+                            title: Text(strings.bot_vs_bot),
+                            value: _chessController.botBattle,
+                            onChanged: (value) {
+                              prefs.setBool('botbattle', value);
+                              _chessController.botBattle = value;
+                              setState(() {});
+                            },
+                          ),
                         ),
                         SizedBox(
                           width: 8.0,

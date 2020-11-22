@@ -36,7 +36,7 @@ class $de extends MessageLookupByLibrary {
 		"moves_done" : (progress) => "${progress} Bretter verarbeitet",
 		"difficulty" : MessageLookupByLibrary.simpleMessage("Schwierigkeit"),
 		"difficulties" : MessageLookupByLibrary.simpleMessage("einfach,medium,normal,schwierig"),
-		"fen_options" : MessageLookupByLibrary.simpleMessage("in Zwischenablage kopieren,aus Zwischenablage kopieren"),
+		"fen_options" : MessageLookupByLibrary.simpleMessage("in Zwischenablage,aus Zwischenablage"),
 		"bot_vs_bot" : MessageLookupByLibrary.simpleMessage("bot vs. bot"),
 
   };
