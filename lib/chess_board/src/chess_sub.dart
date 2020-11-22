@@ -24,7 +24,9 @@ class Move {
   final PieceType piece;
   final PieceType captured;
   final PieceType promotion;
-  const Move(this.color, this.from, this.to, this.flags, this.piece, this.captured, this.promotion);
+
+  const Move(this.color, this.from, this.to, this.flags, this.piece,
+      this.captured, this.promotion);
 
   String get fromAlgebraic {
     return Chess.algebraic(from);
@@ -48,12 +50,15 @@ class State {
   final int ep_square;
   final int half_moves;
   final int move_number;
-  State(this.move, this.kings, this.turn, this.castling, this.ep_square, this.half_moves, this.move_number);
+
+  State(this.move, this.kings, this.turn, this.castling, this.ep_square,
+      this.half_moves, this.move_number);
 }
 
 class Piece {
   PieceType type;
   final Color color;
+
   Piece(this.type, this.color);
 }
 
@@ -62,6 +67,7 @@ class PieceType {
 
   final int shift;
   final String name;
+
   const PieceType._internal(this.shift, this.name);
 
   static const PieceType PAWN = const PieceType._internal(0, 'p');
@@ -72,31 +78,37 @@ class PieceType {
   static const PieceType KING = const PieceType._internal(5, 'k');
 
   int get hashCode => shift;
+
   String toString() => name;
+
   String toLowerCase() => name;
+
   String toUpperCase() => name.toUpperCase();
 }
 
 @JsonSerializable()
 class Color {
-  Color();
-
-  Color.inverse(Color color) {
-    value = (color == WHITE) ? 1 : 0;
+  static Color inverse(Color color) {
+    return (color == WHITE) ? BLACK : WHITE;
   }
 
-  int value;
+  final int value;
+
   Color.fromInt(this.value);
 
-  static Color WHITE = Color.fromInt(0);
-  static Color BLACK = Color.fromInt(1);
+  const Color._internal(this.value);
+
+  static const Color WHITE = Color._internal(0);
+  static const Color BLACK = Color._internal(1);
 
   int get hashCode => value;
+
   String toString() => (this == WHITE) ? 'w' : 'b';
 
   @override
   bool operator ==(Object other) {
-    return (other is Color) && (this.value == other.value);
+    return ((other is Color) && (this.value == other.value)) ||
+        ((other is String) && (other == toString()));
   }
 }
 
@@ -104,9 +116,11 @@ class Color {
 class ColorMap {
   int white;
   int black;
+
   ColorMap.of(int value)
       : white = value,
         black = value;
+
   ColorMap.clone(ColorMap other)
       : white = other.white,
         black = other.black;
