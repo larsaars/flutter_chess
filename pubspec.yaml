@@ -22,6 +22,7 @@ dependencies:
   lite_rolling_switch: ^0.1.1
   shared_preferences: ^0.5.12+4
   group_radio_button: ^1.0.1
+  quiver: ^2.1.5
   #json serialization
   json_annotation: ^3.1.1
 
