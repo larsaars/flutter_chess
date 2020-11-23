@@ -1112,10 +1112,12 @@ class Chess {
   }
 
   // Utility Functions
+  //the y, but strangely inverted, so (87654321)
   static int rank(int i) {
     return i >> 4;
   }
 
+  //the x, so (abcdefg)
   static int file(int i) {
     return i & 15;
   }
