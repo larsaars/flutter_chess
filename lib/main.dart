@@ -359,6 +359,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                               prefs.setBool('botbattle', value);
                               _chessController.botBattle = value;
                               setState(() {});
+                              //check if has to make bot move
+                              _chessController?.makeBotMoveIfRequired();
                             },
                           ),
                         ),

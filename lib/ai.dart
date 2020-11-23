@@ -2,6 +2,7 @@ import 'dart:isolate';
 import 'dart:math';
 
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'chess_board/chess.dart';
@@ -16,6 +17,9 @@ class ChessAI {
     _findBestMove(Chess.fromFEN(context[1]), messenger);
   }
 
+  //the random
+  static Random _random;
+
   //the current index for looping
   static int _idx = 0;
 
@@ -23,7 +27,7 @@ class ChessAI {
   static Color _MAX, _MIN;
 
   //big enough to be infinity in this case
-  static const double _INFINITY = 99999999.0;
+  static const double _INFINITY = 99999999.0, _LARGE = 9999999;
 
   //the maximum depth, will change according to difficulty level
   // ignore: non_constant_identifier_names
@@ -34,9 +38,15 @@ class ChessAI {
     //get the start time
     num startTime = DateTime.now().millisecondsSinceEpoch;
 
+    //set the random
+    _random = Random();
+
+    //calc the max depth
+    _calcMaxDepth(chess);
+
     //get the MAX and MIN color
     _MAX = chess.game.turn;
-    _MIN = (chess.game.turn == Color.BLACK) ? Color.WHITE : Color.BLACK;
+    _MIN = Chess.swap_color(chess.game.turn);
 
     //execute the first depth of max
     List<List> moveEvalPairs = new List<List>();
@@ -75,7 +85,7 @@ class ChessAI {
     }
 
     //random one of the same scores
-    var bestMove = bestMoves[Random().nextInt(bestMoves.length)];
+    var bestMove = bestMoves[_random.nextInt(bestMoves.length)];
 
     //print
     print('selected: $bestMove with $highestEval');
@@ -146,11 +156,11 @@ class ChessAI {
         if (c.game.turn == _MAX) {
           // avoid mates loss, the deeper the better
           //(earlier is worse)
-          return -_INFINITY - depth;
+          return -_LARGE - depth;
         } else {
           // go for the loss of the other one, the deeper the worse
           //(earlier is better)
-          return _INFINITY - depth;
+          return _LARGE - depth;
         }
       }
     } else {
@@ -184,18 +194,12 @@ class ChessAI {
       }
 
       //duplicate pawns
-      for (int i = 0; i < 8; i++) {
+      /*for (int i = 0; i < 8; i++) {
         int sum = maxPawnsInY[i] + minPawnsInY[i];
-        if (maxPawnsInY[i] >= 1 && minPawnsInY[i] >= 1)
-          eval -= 0.05 * sum;
+        if (maxPawnsInY[i] >= 1 && minPawnsInY[i] >= 1) eval -= 0.05 * sum;
         if (maxPawnsInY[i] >= 1) eval -= 0.06 * maxPawnsInY[i];
         if (minPawnsInY[i] >= 1) eval += 0.06 * minPawnsInY[i];
-      }
-
-      //king safety
-      if (c.king_attacked(_MIN))
-        eval += 9;
-      else if (c.king_attacked(_MAX)) eval -= 9;
+      }*/
 
       return eval;
     }
@@ -238,7 +242,58 @@ class ChessAI {
     return 0;
   }
 
-//the piece values
+  static void _calcMaxDepth(Chess chess) {
+    //calc the expected time expenditure in a sub function
+    num expectedTimeExpenditure(int depth) {
+      //always generate the first move if possible, then check how many moves there are
+      num prod = 1;
+      void addNumRecursive(Chess root, int thisDepth) {
+        //check for not hitting too deep
+        if(thisDepth > depth)
+          return;
+        //list of moves
+        List moves = root.generate_moves();
+        if(moves.length > 0) {
+          //create the product
+          prod *= moves.length;
+          //make one of them randomly, always selecting 0 move could be wrong
+          root.make_move(moves[_random.nextInt(moves.length)]);
+          //call this one recursive
+          addNumRecursive(root, thisDepth + 1);
+          //then undo it
+          root.undo_move();
+        }
+      }
+      //call the recursive counter
+      addNumRecursive(chess, 1);
+      //calc prod * 3/4 because of pruning
+      return prod * 0.75;
+    }
+    //WE DON'T USE THE SHANNON NUMBER
+    //first calculate the number of pieces on the board,
+    //from that calculate the time expenditure for alpha beta pruning:
+    //b^(3/4)
+    //based on that then decide how deep we want to go with alpha beta pruning
+    //depth, pm
+    //minimizing loop
+    bool changed = false;
+    for(int depth = _MAX_CALC_DEPTH; depth >= _MIN_CALC_DEPTH; depth--) {
+      num exp = expectedTimeExpenditure(depth);
+      print('expected: $exp');
+      if(exp < _MAX_CALC_ESTIMATED_MOVES) {
+        _MAX_DEPTH = depth;
+        changed = true;
+        break;
+      }
+    }
+
+    if(!changed)
+      _MAX_DEPTH = _MIN_CALC_DEPTH;
+
+    print('set max depth to $_MAX_DEPTH');
+  }
+
+  //the piece values
   static const Map _easyPieceValues = const {
     PieceType.PAWN: 10,
     PieceType.KNIGHT: 32,
@@ -326,5 +381,5 @@ class ChessAI {
 
   static final _blackKingEval = _reverseList(_whiteKingEval);
 
-  static const _CALC_MIN_DEPTH = 3, _CALC_MAX_DEPTH = 6;
+  static const _MIN_CALC_DEPTH = 3, _MAX_CALC_DEPTH = 6, _MAX_CALC_ESTIMATED_MOVES = 50000;
 }
