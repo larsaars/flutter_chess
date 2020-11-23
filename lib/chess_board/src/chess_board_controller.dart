@@ -1,14 +1,7 @@
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 
-enum PieceType {
-  Pawn,
-  Rook,
-  Knight,
-  Bishop,
-  Queen,
-  King,
-}
+import 'chess_sub.dart';
 
 enum PieceColor {
   White,
@@ -74,17 +67,17 @@ class ChessBoardController {
     }
 
     switch (piece) {
-      case PieceType.Bishop:
+      case PieceType.BISHOP:
         return chess.Piece(chess.PieceType.BISHOP, _getColor(color));
-      case PieceType.Queen:
+      case PieceType.QUEEN:
         return chess.Piece(chess.PieceType.QUEEN, _getColor(color));
-      case PieceType.King:
+      case PieceType.KING:
         return chess.Piece(chess.PieceType.KING, _getColor(color));
-      case PieceType.Knight:
+      case PieceType.KNIGHT:
         return chess.Piece(chess.PieceType.KNIGHT, _getColor(color));
-      case PieceType.Pawn:
+      case PieceType.PAWN:
         return chess.Piece(chess.PieceType.PAWN, _getColor(color));
-      case PieceType.Rook:
+      case PieceType.ROOK:
         return chess.Piece(chess.PieceType.ROOK, _getColor(color));
     }
 

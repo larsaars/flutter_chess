@@ -12,11 +12,12 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
  *  https://github.com/jhlywa/chess.js/blob/master/LICENSE
  */
 
-class Chess {
+typedef void ForEachPieceCallback(Piece piece);
 
+class Chess {
   // Constants/Class Variables
-  static Color BLACK = Color.BLACK;
-  static Color WHITE = Color.WHITE;
+  static const Color BLACK = Color.BLACK;
+  static const Color WHITE = Color.WHITE;
 
   static const int EMPTY = -1;
 
@@ -38,7 +39,8 @@ class Chess {
 
   static const String SYMBOLS = 'pnbrqkPNBRQK';
 
-  static const String DEFAULT_POSITION = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+  static const String DEFAULT_POSITION =
+      'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 
   static const List POSSIBLE_RESULTS = const ['1-0', '0-1', '1/2-1/2', '*'];
 
@@ -48,47 +50,495 @@ class Chess {
   };
 
   static const Map<PieceType, List> PIECE_OFFSETS = const {
-    KNIGHT: const [-18, -33, -31, -14,  18, 33, 31,  14],
-    BISHOP: const [-17, -15,  17,  15],
-    ROOK: const [-16,   1,  16,  -1],
-    QUEEN: const [-17, -16, -15,   1,  17, 16, 15,  -1],
-    KING: const [-17, -16, -15,   1,  17, 16, 15,  -1]
+    KNIGHT: const [-18, -33, -31, -14, 18, 33, 31, 14],
+    BISHOP: const [-17, -15, 17, 15],
+    ROOK: const [-16, 1, 16, -1],
+    QUEEN: const [-17, -16, -15, 1, 17, 16, 15, -1],
+    KING: const [-17, -16, -15, 1, 17, 16, 15, -1]
   };
 
   static const List ATTACKS = const [
-    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20, 0,
-     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
-     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
-     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
-     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
-    24,24,24,24,24,24,56,  0, 56,24,24,24,24,24,24, 0,
-     0, 0, 0, 0, 0, 2,53, 56, 53, 2, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0,20, 2, 24,  2,20, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0,20, 0, 0, 24,  0, 0,20, 0, 0, 0, 0, 0,
-     0, 0, 0,20, 0, 0, 0, 24,  0, 0, 0,20, 0, 0, 0, 0,
-     0, 0,20, 0, 0, 0, 0, 24,  0, 0, 0, 0,20, 0, 0, 0,
-     0,20, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0,20, 0, 0,
-    20, 0, 0, 0, 0, 0, 0, 24,  0, 0, 0, 0, 0, 0,20
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    24,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    24,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    2,
+    24,
+    2,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    2,
+    53,
+    56,
+    53,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    24,
+    24,
+    24,
+    24,
+    24,
+    24,
+    56,
+    0,
+    56,
+    24,
+    24,
+    24,
+    24,
+    24,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    2,
+    53,
+    56,
+    53,
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    2,
+    24,
+    2,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    24,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    24,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20,
+    0,
+    0,
+    20,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    24,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    20
   ];
 
   static const List RAYS = const [
-     17,  0,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0,  0, 15, 0,
-      0, 17,  0,  0,  0,  0,  0, 16,  0,  0,  0,  0,  0, 15,  0, 0,
-      0,  0, 17,  0,  0,  0,  0, 16,  0,  0,  0,  0, 15,  0,  0, 0,
-      0,  0,  0, 17,  0,  0,  0, 16,  0,  0,  0, 15,  0,  0,  0, 0,
-      0,  0,  0,  0, 17,  0,  0, 16,  0,  0, 15,  0,  0,  0,  0, 0,
-      0,  0,  0,  0,  0, 17,  0, 16,  0, 15,  0,  0,  0,  0,  0, 0,
-      0,  0,  0,  0,  0,  0, 17, 16, 15,  0,  0,  0,  0,  0,  0, 0,
-      1,  1,  1,  1,  1,  1,  1,  0, -1, -1,  -1,-1, -1, -1, -1, 0,
-      0,  0,  0,  0,  0,  0,-15,-16,-17,  0,  0,  0,  0,  0,  0, 0,
-      0,  0,  0,  0,  0,-15,  0,-16,  0,-17,  0,  0,  0,  0,  0, 0,
-      0,  0,  0,  0,-15,  0,  0,-16,  0,  0,-17,  0,  0,  0,  0, 0,
-      0,  0,  0,-15,  0,  0,  0,-16,  0,  0,  0,-17,  0,  0,  0, 0,
-      0,  0,-15,  0,  0,  0,  0,-16,  0,  0,  0,  0,-17,  0,  0, 0,
-      0,-15,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,-17,  0, 0,
-    -15,  0,  0,  0,  0,  0,  0,-16,  0,  0,  0,  0,  0,  0,-17
+    17,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    16,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    15,
+    0,
+    0,
+    17,
+    0,
+    0,
+    0,
+    0,
+    0,
+    16,
+    0,
+    0,
+    0,
+    0,
+    0,
+    15,
+    0,
+    0,
+    0,
+    0,
+    17,
+    0,
+    0,
+    0,
+    0,
+    16,
+    0,
+    0,
+    0,
+    0,
+    15,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    17,
+    0,
+    0,
+    0,
+    16,
+    0,
+    0,
+    0,
+    15,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    17,
+    0,
+    0,
+    16,
+    0,
+    0,
+    15,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    17,
+    0,
+    16,
+    0,
+    15,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    17,
+    16,
+    15,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -15,
+    -16,
+    -17,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -15,
+    0,
+    -16,
+    0,
+    -17,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -15,
+    0,
+    0,
+    -16,
+    0,
+    0,
+    -17,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -15,
+    0,
+    0,
+    0,
+    -16,
+    0,
+    0,
+    0,
+    -17,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -15,
+    0,
+    0,
+    0,
+    0,
+    -16,
+    0,
+    0,
+    0,
+    0,
+    -17,
+    0,
+    0,
+    0,
+    0,
+    -15,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -16,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -17,
+    0,
+    0,
+    -15,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -16,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    -17
   ];
 
   static const Map<String, String> FLAGS = const {
@@ -129,14 +579,70 @@ class Chess {
   static const int RANK_8 = 0;
 
   static const Map SQUARES = const {
-    'a8':   0, 'b8':   1, 'c8':   2, 'd8':   3, 'e8':   4, 'f8':   5, 'g8':   6, 'h8':   7,
-    'a7':  16, 'b7':  17, 'c7':  18, 'd7':  19, 'e7':  20, 'f7':  21, 'g7':  22, 'h7':  23,
-    'a6':  32, 'b6':  33, 'c6':  34, 'd6':  35, 'e6':  36, 'f6':  37, 'g6':  38, 'h6':  39,
-    'a5':  48, 'b5':  49, 'c5':  50, 'd5':  51, 'e5':  52, 'f5':  53, 'g5':  54, 'h5':  55,
-    'a4':  64, 'b4':  65, 'c4':  66, 'd4':  67, 'e4':  68, 'f4':  69, 'g4':  70, 'h4':  71,
-    'a3':  80, 'b3':  81, 'c3':  82, 'd3':  83, 'e3':  84, 'f3':  85, 'g3':  86, 'h3':  87,
-    'a2':  96, 'b2':  97, 'c2':  98, 'd2':  99, 'e2': 100, 'f2': 101, 'g2': 102, 'h2': 103,
-    'a1': 112, 'b1': 113, 'c1': 114, 'd1': 115, 'e1': 116, 'f1': 117, 'g1': 118, 'h1': 119
+    'a8': 0,
+    'b8': 1,
+    'c8': 2,
+    'd8': 3,
+    'e8': 4,
+    'f8': 5,
+    'g8': 6,
+    'h8': 7,
+    'a7': 16,
+    'b7': 17,
+    'c7': 18,
+    'd7': 19,
+    'e7': 20,
+    'f7': 21,
+    'g7': 22,
+    'h7': 23,
+    'a6': 32,
+    'b6': 33,
+    'c6': 34,
+    'd6': 35,
+    'e6': 36,
+    'f6': 37,
+    'g6': 38,
+    'h6': 39,
+    'a5': 48,
+    'b5': 49,
+    'c5': 50,
+    'd5': 51,
+    'e5': 52,
+    'f5': 53,
+    'g5': 54,
+    'h5': 55,
+    'a4': 64,
+    'b4': 65,
+    'c4': 66,
+    'd4': 67,
+    'e4': 68,
+    'f4': 69,
+    'g4': 70,
+    'h4': 71,
+    'a3': 80,
+    'b3': 81,
+    'c3': 82,
+    'd3': 83,
+    'e3': 84,
+    'f3': 85,
+    'g3': 86,
+    'h3': 87,
+    'a2': 96,
+    'b2': 97,
+    'c2': 98,
+    'd2': 99,
+    'e2': 100,
+    'f2': 101,
+    'g2': 102,
+    'h2': 103,
+    'a1': 112,
+    'b1': 113,
+    'c1': 114,
+    'd1': 115,
+    'e1': 116,
+    'f1': 117,
+    'g1': 118,
+    'h1': 119
   };
 
   static const int SQUARES_A1 = 112;
@@ -145,10 +651,14 @@ class Chess {
   static const int SQUARES_H8 = 7;
 
   static final Map<Color, List> ROOKS = {
-    WHITE: [ {'square': SQUARES_A1, 'flag': BITS_QSIDE_CASTLE},
-             {'square': SQUARES_H1, 'flag': BITS_KSIDE_CASTLE} ],
-    BLACK: [ {'square': SQUARES_A8, 'flag': BITS_QSIDE_CASTLE},
-             {'square': SQUARES_H8, 'flag': BITS_KSIDE_CASTLE} ]
+    WHITE: [
+      {'square': SQUARES_A1, 'flag': BITS_QSIDE_CASTLE},
+      {'square': SQUARES_H1, 'flag': BITS_KSIDE_CASTLE}
+    ],
+    BLACK: [
+      {'square': SQUARES_A8, 'flag': BITS_QSIDE_CASTLE},
+      {'square': SQUARES_H8, 'flag': BITS_KSIDE_CASTLE}
+    ]
   };
 
   // Instance Variables
@@ -266,87 +776,51 @@ class Chess {
     /* 1st criterion: 6 space-seperated fields? */
     List tokens = fen.split(new RegExp(r"\s+"));
     if (tokens.length != 6) {
-      return {
-        'valid': false,
-        'error_number': 1,
-        'error': errors[1]
-      };
+      return {'valid': false, 'error_number': 1, 'error': errors[1]};
     }
 
     /* 2nd criterion: move number field is a integer value > 0? */
     int temp = int.parse(tokens[5], onError: (String) => null);
     if (temp != null) {
       if (temp <= 0) {
-        return {
-          'valid': false,
-          'error_number': 2,
-          'error': errors[2]
-        };
+        return {'valid': false, 'error_number': 2, 'error': errors[2]};
       }
     } else {
-      return {
-        'valid': false,
-        'error_number': 2,
-        'error': errors[2]
-      };
+      return {'valid': false, 'error_number': 2, 'error': errors[2]};
     }
 
     /* 3rd criterion: half move counter is an integer >= 0? */
     temp = int.parse(tokens[4], onError: (String) => null);
     if (temp != null) {
       if (temp < 0) {
-        return {
-          'valid': false,
-          'error_number': 3,
-          'error': errors[3]
-        };
+        return {'valid': false, 'error_number': 3, 'error': errors[3]};
       }
     } else {
-      return {
-        'valid': false,
-        'error_number': 3,
-        'error': errors[3]
-      };
+      return {'valid': false, 'error_number': 3, 'error': errors[3]};
     }
 
     /* 4th criterion: 4th field is a valid e.p.-string? */
     RegExp check4 = new RegExp(r"^(-|[abcdefgh][36])$");
     if (check4.firstMatch(tokens[3]) == null) {
-      return {
-        'valid': false,
-        'error_number': 4,
-        'error': errors[4]
-      };
+      return {'valid': false, 'error_number': 4, 'error': errors[4]};
     }
 
     /* 5th criterion: 3th field is a valid castle-string? */
     RegExp check5 = new RegExp(r"^(KQ?k?q?|Qk?q?|kq?|q|-)$");
     if (check5.firstMatch(tokens[2]) == null) {
-      return {
-        'valid': false,
-        'error_number': 5,
-        'error': errors[5]
-      };
+      return {'valid': false, 'error_number': 5, 'error': errors[5]};
     }
 
     /* 6th criterion: 2nd field is "w" (white) or "b" (black)? */
     RegExp check6 = new RegExp(r"^(w|b)$");
     if (check6.firstMatch(tokens[1]) == null) {
-      return {
-        'valid': false,
-        'error_number': 6,
-        'error': errors[6]
-      };
+      return {'valid': false, 'error_number': 6, 'error': errors[6]};
     }
 
     /* 7th criterion: 1st field contains 8 rows? */
     List rows = tokens[0].split('/');
     if (rows.length != 8) {
-      return {
-        'valid': false,
-        'error_number': 7,
-        'error': errors[7]
-      };
+      return {'valid': false, 'error_number': 7, 'error': errors[7]};
     }
 
     /* 8th criterion: every row is valid? */
@@ -356,48 +830,30 @@ class Chess {
       bool previous_was_number = false;
 
       for (int k = 0; k < rows[i].length; k++) {
-
         int temp2 = int.parse(rows[i][k], onError: (String) => null);
         if (temp2 != null) {
           if (previous_was_number) {
-            return {
-              'valid': false,
-              'error_number': 8,
-              'error': errors[8]
-            };
+            return {'valid': false, 'error_number': 8, 'error': errors[8]};
           }
           sum_fields += temp2;
           previous_was_number = true;
         } else {
           RegExp checkOM = new RegExp(r"^[prnbqkPRNBQK]$");
           if (checkOM.firstMatch(rows[i][k]) == null) {
-            return {
-              'valid': false,
-              'error_number': 9,
-              'error': errors[9]
-            };
+            return {'valid': false, 'error_number': 9, 'error': errors[9]};
           }
           sum_fields += 1;
           previous_was_number = false;
         }
-
       }
 
       if (sum_fields != 8) {
-        return {
-          'valid': false,
-          'error_number': 10,
-          'error': errors[10]
-        };
+        return {'valid': false, 'error_number': 10, 'error': errors[10]};
       }
     }
 
     /* everything's okay! */
-    return {
-      'valid': true,
-      'error_number': 0,
-      'error': errors[0]
-    };
+    return {'valid': true, 'error_number': 0, 'error': errors[0]};
   }
 
   /// Returns a FEN String representing the current position
@@ -451,9 +907,11 @@ class Chess {
     if (cflags == "") {
       cflags = '-';
     }
-    String epflags = (game.ep_square == EMPTY) ? '-' : algebraic(game.ep_square);
+    String epflags =
+        (game.ep_square == EMPTY) ? '-' : algebraic(game.ep_square);
 
-    return [fen, game.turn, cflags, epflags, game.half_moves, game.move_number].join(' ');
+    return [fen, game.turn, cflags, epflags, game.half_moves, game.move_number]
+        .join(' ');
   }
 
   /// Updates [header] with the List of args and returns it
@@ -538,16 +996,17 @@ class Chess {
     } else if ((flags & BITS_EP_CAPTURE) != 0) {
       captured = PAWN;
     }
-    return new Move(game.turn, from, to, flags, board[from].type, captured, promotion);
+    return new Move(
+        game.turn, from, to, flags, board[from].type, captured, promotion);
   }
 
   List<Move> generate_moves([Map options]) {
-    add_move(List<Piece> board, List<Move> moves, from, to, flags) {
+    void add_move(List<Piece> board, List<Move> moves, from, to, flags) {
       /* if pawn promotion */
-      if (board[from].type == PAWN && (rank(to) == RANK_8 || rank(to) == RANK_1)) {
+      if (board[from].type == PAWN &&
+          (rank(to) == RANK_8 || rank(to) == RANK_1)) {
         List pieces = [QUEEN, ROOK, BISHOP, KNIGHT];
-        for (var i = 0,
-            len = pieces.length; i < len; i++) {
+        for (var i = 0, len = pieces.length; i < len; i++) {
           moves.add(build_move(board, from, to, flags, pieces[i]));
         }
       } else {
@@ -567,7 +1026,9 @@ class Chess {
     bool single_square = false;
 
     /* do we want legal moves? */
-    var legal = (options != null && options.containsKey('legal')) ? options['legal'] : true;
+    var legal = (options != null && options.containsKey('legal'))
+        ? options['legal']
+        : true;
 
     /* are we generating moves for a single square? */
     if (options != null && options.containsKey('square')) {
@@ -617,8 +1078,7 @@ class Chess {
           }
         }
       } else {
-        for (int j = 0,
-            len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
+        for (int j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
           var offset = PIECE_OFFSETS[piece.type][j];
           var square = i;
 
@@ -651,8 +1111,13 @@ class Chess {
         var castling_from = game.kings[us];
         var castling_to = castling_from + 2;
 
-        if (game.board[castling_from + 1] == null && game.board[castling_to] == null && !attacked(them, game.kings[us]) && !attacked(them, castling_from + 1) && !attacked(them, castling_to)) {
-          add_move(game.board, moves, game.kings[us], castling_to, BITS_KSIDE_CASTLE);
+        if (game.board[castling_from + 1] == null &&
+            game.board[castling_to] == null &&
+            !attacked(them, game.kings[us]) &&
+            !attacked(them, castling_from + 1) &&
+            !attacked(them, castling_to)) {
+          add_move(game.board, moves, game.kings[us], castling_to,
+              BITS_KSIDE_CASTLE);
         }
       }
 
@@ -661,8 +1126,14 @@ class Chess {
         var castling_from = game.kings[us];
         var castling_to = castling_from - 2;
 
-        if (game.board[castling_from - 1] == null && game.board[castling_from - 2] == null && game.board[castling_from - 3] == null && !attacked(them, game.kings[us]) && !attacked(them, castling_from - 1) && !attacked(them, castling_to)) {
-          add_move(game.board, moves, game.kings[us], castling_to, BITS_QSIDE_CASTLE);
+        if (game.board[castling_from - 1] == null &&
+            game.board[castling_from - 2] == null &&
+            game.board[castling_from - 3] == null &&
+            !attacked(them, game.kings[us]) &&
+            !attacked(them, castling_from - 1) &&
+            !attacked(them, castling_to)) {
+          add_move(game.board, moves, game.kings[us], castling_to,
+              BITS_QSIDE_CASTLE);
         }
       }
     }
@@ -676,8 +1147,7 @@ class Chess {
 
     /* filter out illegal moves */
     List<Move> legal_moves = [];
-    for (int i = 0,
-        len = moves.length; i < len; i++) {
+    for (int i = 0, len = moves.length; i < len; i++) {
       make_move(moves[i]);
       if (!king_attacked(us)) {
         legal_moves.add(moves[i]);
@@ -809,7 +1279,8 @@ class Chess {
 
       var piece = game.board[i];
       if (piece != null) {
-        pieces[piece.type] = (pieces.containsKey(piece.type)) ? pieces[piece.type] + 1 : 1;
+        pieces[piece.type] =
+            (pieces.containsKey(piece.type)) ? pieces[piece.type] + 1 : 1;
         if (piece.type == BISHOP) {
           bishops.add(sq_color);
         }
@@ -820,10 +1291,12 @@ class Chess {
     /* k vs. k */
     if (num_pieces == 2) {
       return true;
-    } /* k vs. kn .... or .... k vs. kb */
+    }
+    /* k vs. kn .... or .... k vs. kb */
     else if (num_pieces == 3 && (pieces[BISHOP] == 1 || pieces[KNIGHT] == 1)) {
       return true;
-    } /* kb vs. kb where any number of bishops are all on the same color */
+    }
+    /* kb vs. kb where any number of bishops are all on the same color */
     else if (pieces.containsKey(BISHOP) && num_pieces == (pieces[BISHOP] + 2)) {
       var sum = 0;
       var len = bishops.length;
@@ -877,7 +1350,14 @@ class Chess {
   }
 
   void push(Move move) {
-    game.history.add(new State(move, new ColorMap.clone(game.kings), game.turn, new ColorMap.clone(game.castling), game.ep_square, game.half_moves, game.move_number));
+    game.history.add(new State(
+        move,
+        new ColorMap.clone(game.kings),
+        game.turn,
+        new ColorMap.clone(game.castling),
+        game.ep_square,
+        game.half_moves,
+        game.move_number));
   }
 
   make_move(Move move) {
@@ -925,9 +1405,9 @@ class Chess {
 
     /* turn off castling if we move a rook */
     if (game.castling[us] != 0) {
-      for (int i = 0,
-          len = ROOKS[us].length; i < len; i++) {
-        if (move.from == ROOKS[us][i]['square'] && ((game.castling[us] & ROOKS[us][i]['flag']) != 0)) {
+      for (int i = 0, len = ROOKS[us].length; i < len; i++) {
+        if (move.from == ROOKS[us][i]['square'] &&
+            ((game.castling[us] & ROOKS[us][i]['flag']) != 0)) {
           game.castling[us] ^= ROOKS[us][i]['flag'];
           break;
         }
@@ -936,9 +1416,9 @@ class Chess {
 
     /* turn off castling if we capture a rook */
     if (game.castling[them] != 0) {
-      for (int i = 0,
-          len = ROOKS[them].length; i < len; i++) {
-        if (move.to == ROOKS[them][i]['square'] && ((game.castling[them] & ROOKS[them][i]['flag']) != 0)) {
+      for (int i = 0, len = ROOKS[them].length; i < len; i++) {
+        if (move.to == ROOKS[them][i]['square'] &&
+            ((game.castling[them] & ROOKS[them][i]['flag']) != 0)) {
           game.castling[them] ^= ROOKS[them][i]['flag'];
           break;
         }
@@ -1008,7 +1488,6 @@ class Chess {
       game.board[index] = new Piece(PAWN, them);
     }
 
-
     if ((move.flags & (BITS_KSIDE_CASTLE | BITS_QSIDE_CASTLE)) != 0) {
       var castling_to, castling_from;
       if ((move.flags & BITS_KSIDE_CASTLE) != 0) {
@@ -1038,8 +1517,7 @@ class Chess {
     var same_rank = 0;
     var same_file = 0;
 
-    for (int i = 0,
-        len = moves.length; i < len; i++) {
+    for (int i = 0, len = moves.length; i < len; i++) {
       var ambig_from = moves[i].from;
       var ambig_to = moves[i].to;
       var ambig_piece = moves[i].piece;
@@ -1066,12 +1544,14 @@ class Chess {
        */
       if (same_rank > 0 && same_file > 0) {
         return algebraic(from);
-      } /* if the moving piece rests on the same file, use the rank symbol as the
+      }
+      /* if the moving piece rests on the same file, use the rank symbol as the
        * disambiguator
        */
       else if (same_file > 0) {
         return algebraic(from)[1];
-      } /* else use the file symbol */
+      }
+      /* else use the file symbol */
       else {
         return algebraic(from)[0];
       }
@@ -1123,8 +1603,7 @@ class Chess {
   }
 
   static String algebraic(int i) {
-    var f = file(i),
-        r = rank(i);
+    var f = file(i), r = rank(i);
     return 'abcdefgh'.substring(f, f + 1) + '87654321'.substring(r, r + 1);
   }
 
@@ -1134,6 +1613,20 @@ class Chess {
 
   static bool is_digit(String c) {
     return '0123456789'.contains(c);
+  }
+
+  void forEachPiece(ForEachPieceCallback callback) {
+    for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
+      if ((i & 0x88) != 0) {
+        i += 7;
+        continue;
+      }
+
+      Piece piece = game.board[i];
+      if (piece != null && callback != null) {
+        callback(piece);
+      }
+    }
   }
 
   /// pretty = external move object
@@ -1161,14 +1654,11 @@ class Chess {
 
   // debug utility
   perft(int depth) {
-    List<Move> moves = generate_moves({
-      'legal': false
-    });
+    List<Move> moves = generate_moves({'legal': false});
     var nodes = 0;
     var color = game.turn;
 
-    for (var i = 0,
-        len = moves.length; i < len; i++) {
+    for (var i = 0, len = moves.length; i < len; i++) {
       make_move(moves[i]);
       if (!king_attacked(color)) {
         if (depth - 1 > 0) {
@@ -1213,18 +1703,20 @@ class Chess {
        */
 
     List<Move> ugly_moves = generate_moves(options);
-    if (options != null && options.containsKey('asObjects') && options['asObjects'] == true) {
+    if (options != null &&
+        options.containsKey('asObjects') &&
+        options['asObjects'] == true) {
       return ugly_moves;
     }
     List moves = [];
 
-    for (int i = 0,
-        len = ugly_moves.length; i < len; i++) {
-
+    for (int i = 0, len = ugly_moves.length; i < len; i++) {
       /* does the user want a full move object (most likely not), or just
          * SAN
          */
-      if (options != null && options.containsKey('verbose') && options['verbose'] == true) {
+      if (options != null &&
+          options.containsKey('verbose') &&
+          options['verbose'] == true) {
         moves.add(make_pretty(ugly_moves[i]));
       } else {
         moves.add(move_to_san(ugly_moves[i]));
@@ -1235,7 +1727,10 @@ class Chess {
   }
 
   bool get in_draw {
-    return game.half_moves >= 100 || in_stalemate || insufficient_material || in_threefold_repetition;
+    return game.half_moves >= 100 ||
+        in_stalemate ||
+        insufficient_material ||
+        in_threefold_repetition;
   }
 
   bool get game_over {
@@ -1251,8 +1746,16 @@ class Chess {
     /* using the specification from http://www.chessclub.com/help/PGN-spec
        * example for html usage: .pgn({ max_width: 72, newline_char: "<br />" })
        */
-    var newline = (options != null && options.containsKey("newline_char") && options["newline_char"] != null) ? options['newline_char'] : '\n';
-    var max_width = (options != null && options.containsKey("max_width") && options["max_width"] != null) ? options["max_width"] : 0;
+    var newline = (options != null &&
+            options.containsKey("newline_char") &&
+            options["newline_char"] != null)
+        ? options['newline_char']
+        : '\n';
+    var max_width = (options != null &&
+            options.containsKey("max_width") &&
+            options["max_width"] != null)
+        ? options["max_width"]
+        : 0;
     var result = [];
     var header_exists = false;
 
@@ -1261,7 +1764,12 @@ class Chess {
       /* TODO: order of enumerated properties in header object is not
          * guaranteed, see ECMA-262 spec (section 12.6.4)
          */
-      result.add('[' + i.toString() + ' \"' + game.header[i].toString() + '\"]' + newline);
+      result.add('[' +
+          i.toString() +
+          ' \"' +
+          game.header[i].toString() +
+          '\"]' +
+          newline);
       header_exists = true;
     }
 
@@ -1322,7 +1830,6 @@ class Chess {
     for (int i = 0; i < moves.length; i++) {
       /* if the current move will push past max_width */
       if (current_width + moves[i].length > max_width && i != 0) {
-
         /* don't end the line with whitespace */
         if (result[result.length - 1] == ' ') {
           result.removeLast();
@@ -1356,10 +1863,10 @@ class Chess {
       */
     move_from_san(move) {
       var moves = generate_moves();
-      for (var i = 0,
-          len = moves.length; i < len; i++) {
+      for (var i = 0, len = moves.length; i < len; i++) {
         /* strip off any trailing move decorations: e.g Nf3+?! */
-        if (move.replaceAll(new RegExp(r"[+#?!=]+$"), '') == move_to_san(moves[i]).replaceAll(new RegExp(r"[+#?!=]+$"), '')) {
+        if (move.replaceAll(new RegExp(r"[+#?!=]+$"), '') ==
+            move_to_san(moves[i]).replaceAll(new RegExp(r"[+#?!=]+$"), '')) {
           return moves[i];
         }
       }
@@ -1379,7 +1886,10 @@ class Chess {
       }*/
 
     parse_pgn_header(header, [Map options]) {
-      var newline_char = (options != null && options.containsKey("newline_char")) ? options['newline_char'] : '\r?\n';
+      var newline_char =
+          (options != null && options.containsKey("newline_char"))
+              ? options['newline_char']
+              : '\r?\n';
       var header_obj = {};
       var headers = header.split(newline_char);
       var key = '';
@@ -1406,7 +1916,9 @@ class Chess {
       return header_obj;
     }
 
-    var newline_char = (options != null && options.containsKey("newline_char")) ? options["newline_char"] : '\r?\n';
+    var newline_char = (options != null && options.containsKey("newline_char"))
+        ? options["newline_char"]
+        : '\r?\n';
     //var regex = new RegExp(r'^(\[.*\]).*' + r'1\.'); //+ r"1\."); //+ mask(newline_char));
 
     int indexOfMoveStart = pgn.indexOf(new RegExp(newline_char + r"1\."));
@@ -1431,14 +1943,15 @@ class Chess {
     }
 
     /* delete header to get the moves */
-    var ms = pgn.replaceAll(header_string, '').replaceAll(new RegExp(mask(newline_char)), ' ');
+    var ms = pgn
+        .replaceAll(header_string, '')
+        .replaceAll(new RegExp(mask(newline_char)), ' ');
 
     /* delete comments */
     ms = ms.replaceAll(new RegExp(r"(\{[^}]+\})+?"), '');
 
     /* delete move numbers */
     ms = ms.replaceAll(new RegExp(r"\d+\."), '');
-
 
     /* trim and get array of moves */
     var moves = trim(ms).split(new RegExp(r"\s+"));
@@ -1500,8 +2013,10 @@ class Chess {
     } else if (move is Map) {
       /* convert the pretty move object to an ugly move object */
       for (var i = 0; i < moves.length; i++) {
-        if (move['from'] == moves[i].fromAlgebraic && move['to'] == moves[i].toAlgebraic
-            && (moves[i].promotion == null || move['promotion'] == moves[i].promotion.name)) {
+        if (move['from'] == moves[i].fromAlgebraic &&
+            move['to'] == moves[i].toAlgebraic &&
+            (moves[i].promotion == null ||
+                move['promotion'] == moves[i].promotion.name)) {
           move_obj = moves[i];
           break;
         }
@@ -1543,7 +2058,9 @@ class Chess {
   getHistory([Map options]) {
     List<Move> reversed_history = [];
     var move_history = [];
-    var verbose = (options != null && options.containsKey("verbose") && options["verbose"] == true);
+    var verbose = (options != null &&
+        options.containsKey("verbose") &&
+        options["verbose"] == true);
 
     while (game.history.length > 0) {
       reversed_history.add(undo_move());
