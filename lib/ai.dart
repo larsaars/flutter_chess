@@ -11,8 +11,6 @@ class ChessAI {
   static void entryPointMoveFinderIsolate(List context) {
     //init the messenger, which sends messages back to the main thread
     final SendPort messenger = context[0];
-    //set the difficulty
-    _difficulty = context[2];
     //if the received object is a chess game, start the move generation
     //hand over the messenger and the chess
     _findBestMove(Chess.fromFEN(context[1]), messenger);
@@ -160,8 +158,8 @@ class ChessAI {
       double eval = 0.0;
       //eval individually piece value in the current position
       //keep track of pawns in columns (files)
-      List<int> maxPawnsInFiles = List.generate(8, (index) => 0),
-          minPawnsInFiles = List.generate(8, (index) => 0);
+      List<int> maxPawnsInY = List.generate(8, (index) => 0),
+          minPawnsInY = List.generate(8, (index) => 0);
       //loop through all squares
       for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
         if ((i & 0x88) != 0) {
@@ -172,26 +170,26 @@ class ChessAI {
         Piece piece = c.game.board[i];
         if (piece != null) {
           //get the x and y from the map
-          final xAndY = _COORDINATES_SQUARES[i];
+          final x = Chess.file(i), y = Chess.rank(i);
           //evaluate the piece at the position
-          eval += _getPieceValue(piece, xAndY[0], xAndY[1]);
+          eval += _getPieceValue(piece, x, y);
           //add to pawns list
           if (piece.type == PieceType.PAWN) {
             if (piece.color == _MAX)
-              maxPawnsInFiles[xAndY[1]]++;
+              maxPawnsInY[y]++;
             else
-              minPawnsInFiles[xAndY[1]]++;
+              minPawnsInY[y]++;
           }
         }
       }
 
       //duplicate pawns
       for (int i = 0; i < 8; i++) {
-        int sum = maxPawnsInFiles[i] + minPawnsInFiles[i];
-        if (maxPawnsInFiles[i] >= 1 && minPawnsInFiles[i] >= 1)
+        int sum = maxPawnsInY[i] + minPawnsInY[i];
+        if (maxPawnsInY[i] >= 1 && minPawnsInY[i] >= 1)
           eval -= 0.05 * sum;
-        if (maxPawnsInFiles[i] >= 1) eval -= 0.06 * maxPawnsInFiles[i];
-        if (minPawnsInFiles[i] >= 1) eval += 0.06 * minPawnsInFiles[i];
+        if (maxPawnsInY[i] >= 1) eval -= 0.06 * maxPawnsInY[i];
+        if (minPawnsInY[i] >= 1) eval += 0.06 * minPawnsInY[i];
       }
 
       //king safety
@@ -248,73 +246,6 @@ class ChessAI {
     PieceType.ROOK: 50,
     PieceType.QUEEN: 90,
     PieceType.KING: 20000
-  };
-
-  static const Map _COORDINATES_SQUARES = const {
-    0: [0, 7],
-    1: [1, 7],
-    2: [2, 7],
-    3: [3, 7],
-    4: [4, 7],
-    5: [5, 7],
-    6: [6, 7],
-    7: [7, 7],
-    16: [0, 6],
-    17: [1, 6],
-    18: [2, 6],
-    19: [3, 6],
-    20: [4, 6],
-    21: [5, 6],
-    22: [6, 6],
-    23: [7, 6],
-    32: [0, 5],
-    33: [1, 5],
-    34: [2, 5],
-    35: [3, 5],
-    36: [4, 5],
-    37: [5, 5],
-    38: [6, 5],
-    39: [7, 5],
-    48: [0, 4],
-    49: [1, 4],
-    50: [2, 4],
-    51: [3, 4],
-    52: [4, 4],
-    53: [5, 4],
-    54: [6, 4],
-    55: [7, 4],
-    64: [0, 3],
-    65: [1, 3],
-    66: [2, 3],
-    67: [3, 3],
-    68: [4, 3],
-    69: [5, 3],
-    70: [6, 3],
-    71: [7, 3],
-    80: [0, 2],
-    81: [1, 2],
-    82: [2, 2],
-    83: [3, 2],
-    84: [4, 2],
-    85: [5, 2],
-    86: [6, 2],
-    87: [7, 2],
-    96: [0, 1],
-    97: [1, 1],
-    98: [2, 1],
-    99: [3, 1],
-    100: [4, 1],
-    101: [5, 1],
-    102: [6, 1],
-    103: [7, 1],
-    112: [0, 0],
-    113: [1, 0],
-    114: [2, 0],
-    115: [3, 0],
-    116: [4, 0],
-    117: [5, 0],
-    118: [6, 0],
-    119: [7, 0]
   };
 
   static List _reverseList(List list) {

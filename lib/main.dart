@@ -21,8 +21,6 @@ ChessController _chessController;
 SharedPreferences prefs;
 
 void main() async {
-  int square = 110;
-
   //run the app
   runApp(MyApp());
   //add all licenses
