@@ -31,20 +31,10 @@ class ChessAI {
   // ignore: non_constant_identifier_names
   static int _MAX_DEPTH = 3;
 
-  //the difficulty level
-  //0 - easy
-  //1 - medium
-  //2 - normal
-  //3 - hard
-  static int _difficulty = 0;
-
   //the actual method starting the alpha beta pruning
   static void _findBestMove(Chess chess, SendPort messenger) {
     //get the start time
     num startTime = DateTime.now().millisecondsSinceEpoch;
-    //set the the depth from the difficulty
-    if (_difficulty == 0)
-      _MAX_DEPTH = 2;
 
     //get the MAX and MIN color
     _MAX = chess.game.turn;
@@ -168,66 +158,46 @@ class ChessAI {
     } else {
       //the final evaluation to be returned
       double eval = 0.0;
-      //if the difficulty is easy, eval material
-      if (_difficulty == 0 || _difficulty == 1) {
-        for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
-          if ((i & 0x88) != 0) {
-            i += 7;
-            continue;
-          }
-
-          Piece piece = c.game.board[i];
-          if (piece != null) {
-            eval += (piece.color == _MAX)
-                ? _easyPieceValues[piece.type]
-                : -_easyPieceValues[piece.type];
-          }
-        }
-        //else eval individually piece value in the current position
-      } else {
-        //keep track of pawns in columns (files)
-        List<int> maxPawnsInFiles = List.generate(8, (index) => 0),
-            minPawnsInFiles = List.generate(8, (index) => 0);
-        //loop through all squares
-        for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
-          if ((i & 0x88) != 0) {
-            i += 7;
-            continue;
-          }
-
-          Piece piece = c.game.board[i];
-          if (piece != null) {
-            //get the x and y from the map
-            final xAndY = _COORDINATES_SQUARES[i];
-            //evaluate the piece at the position
-            eval += _getPieceValue(piece, xAndY[0], xAndY[1]);
-            //add to pawns list
-            if(piece.type == PieceType.PAWN && _difficulty == 3) {
-              if(piece.color == _MAX) maxPawnsInFiles[xAndY[1]]++;
-              else minPawnsInFiles[xAndY[1]]++;
-            }
-          }
+      //eval individually piece value in the current position
+      //keep track of pawns in columns (files)
+      List<int> maxPawnsInFiles = List.generate(8, (index) => 0),
+          minPawnsInFiles = List.generate(8, (index) => 0);
+      //loop through all squares
+      for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
+        if ((i & 0x88) != 0) {
+          i += 7;
+          continue;
         }
 
-        if(_difficulty == 3) {
-          //duplicate pawns
-          for (int i = 0; i < 8; i++) {
-            int sum = maxPawnsInFiles[i] + minPawnsInFiles[i];
-            if (maxPawnsInFiles[i] >= 1 && minPawnsInFiles[i] >= 1)
-              eval -= 0.05 * sum;
-            if (maxPawnsInFiles[i] >= 1)
-              eval -= 0.06 * maxPawnsInFiles[i];
-            if (minPawnsInFiles[i] >= 1)
-              eval += 0.06 * minPawnsInFiles[i];
+        Piece piece = c.game.board[i];
+        if (piece != null) {
+          //get the x and y from the map
+          final xAndY = _COORDINATES_SQUARES[i];
+          //evaluate the piece at the position
+          eval += _getPieceValue(piece, xAndY[0], xAndY[1]);
+          //add to pawns list
+          if (piece.type == PieceType.PAWN) {
+            if (piece.color == _MAX)
+              maxPawnsInFiles[xAndY[1]]++;
+            else
+              minPawnsInFiles[xAndY[1]]++;
           }
-
-          //king safety
-          if(c.king_attacked(_MIN))
-            eval += 9;
-          else if(c.king_attacked(_MAX))
-            eval -= 9;
         }
       }
+
+      //duplicate pawns
+      for (int i = 0; i < 8; i++) {
+        int sum = maxPawnsInFiles[i] + minPawnsInFiles[i];
+        if (maxPawnsInFiles[i] >= 1 && minPawnsInFiles[i] >= 1)
+          eval -= 0.05 * sum;
+        if (maxPawnsInFiles[i] >= 1) eval -= 0.06 * maxPawnsInFiles[i];
+        if (minPawnsInFiles[i] >= 1) eval += 0.06 * minPawnsInFiles[i];
+      }
+
+      //king safety
+      if (c.king_attacked(_MIN))
+        eval += 9;
+      else if (c.king_attacked(_MAX)) eval -= 9;
 
       return eval;
     }
@@ -250,23 +220,27 @@ class ChessAI {
 
   static double _getAbsoluteValue(PieceType piece, bool isWhite, int x, int y) {
     if (piece.name == 'p') {
-      return _easyPieceValues[PieceType.PAWN] + (isWhite ? _whitePawnEval[y][x] : _blackPawnEval[y][x]);
+      return _easyPieceValues[PieceType.PAWN] +
+          (isWhite ? _whitePawnEval[y][x] : _blackPawnEval[y][x]);
     } else if (piece.name == 'r') {
-      return _easyPieceValues[PieceType.ROOK] + (isWhite ? _whiteRookEval[y][x] : _blackRookEval[y][x]);
+      return _easyPieceValues[PieceType.ROOK] +
+          (isWhite ? _whiteRookEval[y][x] : _blackRookEval[y][x]);
     } else if (piece.name == 'n') {
       return _easyPieceValues[PieceType.KNIGHT] + _knightEval[y][x];
     } else if (piece.name == 'b') {
-      return _easyPieceValues[PieceType.BISHOP] + (isWhite ? _whiteBishopEval[y][x] : _blackBishopEval[y][x]);
+      return _easyPieceValues[PieceType.BISHOP] +
+          (isWhite ? _whiteBishopEval[y][x] : _blackBishopEval[y][x]);
     } else if (piece.name == 'q') {
       return _easyPieceValues[PieceType.QUEEN] + _evalQueen[y][x];
     } else if (piece.name == 'k') {
-      return _easyPieceValues[PieceType.KING] + (isWhite ? _whiteKingEval[y][x] : _blackKingEval[y][x]);
+      return _easyPieceValues[PieceType.KING] +
+          (isWhite ? _whiteKingEval[y][x] : _blackKingEval[y][x]);
     }
 
     return 0;
   }
 
-  //the piece values
+//the piece values
   static const Map _easyPieceValues = const {
     PieceType.PAWN: 10,
     PieceType.KNIGHT: 32,
@@ -420,4 +394,6 @@ class ChessAI {
   ];
 
   static final _blackKingEval = _reverseList(_whiteKingEval);
+
+  static const _CALC_MIN_DEPTH = 3, _CALC_MAX_DEPTH = 6;
 }
