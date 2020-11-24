@@ -101,11 +101,12 @@ class ChessAI {
   // implements a simple alpha beta algorithm
   static double _alphaBeta(
       Chess c, int depth, double alpha, double beta, Color whoNow) {
-    //update idx
-    _idx++;
 
     //is leaf
     if (depth >= _MAX_DEPTH || c.game_over) {
+      //update idx
+      _idx++;
+      //return the end node evaluation
       return _evaluatePosition(c, depth);
     }
 

@@ -5,9 +5,8 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
 class Chess2 {
   //game instances
   List<Piece> board = List(128);
-  ColorMap kings = ColorMap.of(-1);
   Color turn = Color.WHITE;
-  Map castling = {};
+  ColorMap castling = ColorMap.of(0);
   int epSquare = -1;
   int halfMoves = 0;
   int moveNumber = 1;
@@ -31,6 +30,17 @@ class Chess2 {
     return generateFen();
   }
 
+  Chess2 copy() {
+    return new Chess2()
+      ..board = List<Piece>.from(this.board)
+      ..turn = Color.fromInt(this.turn.value)
+      ..castling = new ColorMap.clone(this.castling)
+      ..epSquare = this.epSquare
+      ..halfMoves = this.halfMoves
+      ..moveNumber = this.moveNumber
+      ..history = List<State>.from(this.history);
+  }
+
   clear() {
     this.board = List(128);
     this.pieces = {
@@ -42,7 +52,7 @@ class Chess2 {
       PAWN: { WHITE: [], BLACK: []}
     };
     this.turn = WHITE;
-    this.castling = { WHITE: 0, BLACK: 0};
+    this.castling = ColorMap.of(0);
     this.epSquare = EMPTY;
     this.halfMoves = 0;
     this.moveNumber = 1;
@@ -67,8 +77,8 @@ class Chess2 {
     int square = 0;
 
     Map validMap = validateFen(fen);
-    if (!validMap["valid"]) {
-      print(validMap["error"]);
+    if (!validMap['valid']) {
+      print(validMap['error']);
       return false;
     }
 
@@ -84,7 +94,7 @@ class Chess2 {
       } else {
         Color color = (piece == piece.toUpperCase()) ? WHITE : BLACK;
         PieceType type = PIECE_TYPES[piece.toLowerCase()];
-        put(new Piece(type, color), algebraic(square));
+        putPiece(Piece(type, color), square);
         square++;
       }
     }
@@ -112,31 +122,6 @@ class Chess2 {
     epSquare = (tokens[3] == '-') ? EMPTY : SQUARES[tokens[3]];
     halfMoves = int.parse(tokens[4]);
     moveNumber = int.parse(tokens[5]);
-
-    return true;
-  }
-
-  Piece get(String square) {
-    return board[SQUARES[square]];
-  }
-
-  /// Put [piece] on [square]
-  bool put(Piece piece, String square) {
-    /* check for piece */
-    if (SYMBOLS.indexOf(piece.type.toLowerCase()) == -1) {
-      return false;
-    }
-
-    /* check for valid square */
-    if (!(SQUARES.containsKey(square))) {
-      return false;
-    }
-
-    int sq = SQUARES[square];
-    board[sq] = piece;
-    if (piece.type == KING) {
-      kings[piece.color] = sq;
-    }
 
     return true;
   }
@@ -297,21 +282,21 @@ class Chess2 {
         .join(' ');
   }
 
-  getPiece(square) {
+  Piece getPiece(square) {
     return this.board[square];
     // final piece = this.board[square];
     // return piece ? { type: piece.type, color: piece.color } : null;
   }
 
 
-  checkPiece(square, color, type) {
+  bool checkPiece(int square, Color color, PieceType type) {
     final piece = this.getPiece(square);
-    if (!piece) return false;
+    if (piece == null) return false;
     return piece.color == color && piece.type == type;
   }
 
 
-  putPiece(piece, square) {
+  void putPiece(Piece piece, int square) {
     this.board[square] = piece;
 
     if (piece.type == KING) {
@@ -328,9 +313,9 @@ class Chess2 {
   }
 
 
-  removePiece(square) {
+  void removePiece(int square) {
     final piece = this.getPiece(square);
-    if (!piece) return;
+    if (piece == null) return;
 
     this.board[square] = null;
 
@@ -350,9 +335,9 @@ class Chess2 {
   }
 
 
-  movePiece(from, to) {
+  void movePiece(int from, int to) {
     final piece = this.getPiece(from);
-    if (!piece) return;
+    if (piece == null) return;
 
     this.board[from] = null;
     this.board[to] = piece;
@@ -376,14 +361,14 @@ class Chess2 {
 
 
   forEachPiece(callback) {
-    for (var i = SQUARES.a8; i <= SQUARES.h1; i++) {
+    for (var i = SQUARES['a8']; i <= SQUARES['h1']; i++) {
       if (i & 0x88) {
         i += 7;
         continue;
       }
 
       final piece = this.getPiece(i);
-      if (!piece) continue;
+      if (piece == null) continue;
       callback(piece, i);
     }
   }
@@ -393,76 +378,76 @@ class Chess2 {
     // if (piece.type != KING) return;
 
     this.squaresNearKing[piece.color] = [
-      square + V.NORTH,
-      square + V.SOUTH,
-      square + V.EAST,
-      square + V.WEST,
-      square + V.NW,
-      square + V.NE,
-      square + V.SW,
-      square + V.SE
-    ].concat(
+      square + V['NORTH'],
+      square + V['SOUTH'],
+      square + V['EAST'],
+      square + V['WEST'],
+      square + V['NW'],
+      square + V['NE'],
+      square + V['SW'],
+      square + V['SE']
+    ] + (
         piece.color == WHITE ?
         [
-          square + V.NN,
-          square + V.NORTH + V.NE,
-          square + V.NORTH + V.NW
+          square + V['NN'],
+          square + V['NORTH'] + V['NE'],
+          square + V['NORTH'] + V['NW']
         ] :
         [
-          square + V.SS,
-          square + V.SOUTH + V.SE,
-          square + V.SOUTH + V.SW
+          square + V['SS'],
+          square + V['SOUTH'] + V['SE'],
+          square + V['SOUTH'] + V['SW']
         ]
     );
     //.filter(validateSquare); // Validation is so slow
   }
 
 
-  addPawnControl(piece, square) {
+  void addPawnControl(Piece piece, square) {
     // if (piece.type != PAWN) return;
 
     final squares = [
-      square + (piece.color == WHITE ? V.NE : V.SE),
-      square + (piece.color == WHITE ? V.NW : V.SW)
+      square + (piece.color == WHITE ? V['NE'] : V['SE']),
+      square + (piece.color == WHITE ? V['NW'] : V['SW'])
     ];
 
     squares
     // .filter(validateSquare) // Validation is so slow
-        .forEach((square){
-    if (this.pawnControl[piece.color][square] == null)
-    this.pawnControl[piece.color][square] = 0;
+        .forEach((square) {
+      if (this.pawnControl[piece.color][square] == null)
+        this.pawnControl[piece.color][square] = 0;
 
-    this.pawnControl[piece.color][square]++;
+      this.pawnControl[piece.color][square]++;
     });
   }
 
 
-  removePawnControl(piece, square) {
+  void removePawnControl(Piece piece, int square) {
     // if (piece.type != PAWN) return;
 
     final squares = [
-      square + (piece.color == 'w' ? V.NE : V.SE),
-      square + (piece.color == 'w' ? V.NW : V.SW)
+      square + (piece.color == WHITE ? V['NE'] : V['SE']),
+      square + (piece.color == WHITE ? V['NW'] : V['SW'])
     ];
 
     squares
     // .filter(validateSquare)
-        .forEach(square => {
-    this.pawnControl[piece.color][square]--;
+        .forEach((square) {
+      this.pawnControl[piece.color][square]--;
 
-    if (this.pawnControl[piece.color][square] <= 0)
-    devare this.pawnControl[piece.color][square];
+      if (this.pawnControl[piece.color][square] <= 0)
+        this.pawnControl[piece.color].remove(square);
     });
   }
 
 
-  addPawnCounts(piece, square) {
+  void addPawnCounts(Piece piece, int square) {
     this.pawnCountsByRank[piece.color][rank(square)]++;
     this.pawnCountsByFile[piece.color][file(square)]++;
   }
 
 
-  removePawnCounts(piece, square) {
+  void removePawnCounts(Piece piece, int square) {
     this.pawnCountsByRank[piece.color][rank(square)]--;
     this.pawnCountsByFile[piece.color][file(square)]--;
   }
@@ -471,29 +456,26 @@ class Chess2 {
   /**
    * Builds move struct
    */
-  buildMove(color, from, to, flags, promotion) {
-    final move = {
-      color: color,
-      from: from,
-      to: to,
-      flags: flags,
-      piece: this.board[from].type
-    };
-
-    if (promotion) {
-      move.flags |= BITS_PROMOTION;
-      move.promotion = promotion;
+  Move buildMove(List<Piece> board, from, to, flags, [PieceType promotion]) {
+    if (promotion != null) {
+      flags |= BITS_PROMOTION;
     }
 
-    final pieceTo = this.board[to];
-
-    if (pieceTo) {
-      move.captured = pieceTo.type;
-    } else if (flags & BITS_EP_CAPTURE) {
-      move.captured = PAWN;
+    PieceType captured;
+    Piece toPiece = board[to];
+    if (toPiece != null) {
+      captured = toPiece.type;
+    } else if ((flags & BITS_EP_CAPTURE) != 0) {
+      captured = PAWN;
     }
-
-    return move;
+    return new Move(
+        turn,
+        from,
+        to,
+        flags,
+        board[from].type,
+        captured,
+        promotion);
   }
 
 
@@ -504,8 +486,8 @@ class Chess2 {
     /* if pawn promotion */
     if (this.board[from].type == PAWN &&
         (rank(to) == RANK_8 || rank(to) == RANK_1)) {
-      [QUEEN, ROOK, BISHOP, KNIGHT].forEach(piece => {
-      moves.push(this.buildMove(color, from, to, flags, piece));
+      [QUEEN, ROOK, BISHOP, KNIGHT].forEach((piece) {
+        moves.push(this.buildMove(color, from, to, flags, piece));
       });
     } else {
       moves.push(this.buildMove(color, from, to, flags));
@@ -513,7 +495,7 @@ class Chess2 {
   }
 
 
-  generatePieceMoves(square) {
+  List<Move> generatePieceMoves(int square) {
     final piece = this.getPiece(square);
     final moves = [];
 
@@ -525,23 +507,23 @@ class Chess2 {
       // Forward, non-capturing
         final forwardSquare = square + PAWN_OFFSETS[us][0];
         if (this.board[forwardSquare] == null) {
-          this.addMove(moves, us, square, forwardSquare, BITS.NORMAL);
+          this.addMove(moves, us, square, forwardSquare, BITS_NORMAL);
 
           final doubleForwardSquare = square + PAWN_OFFSETS[us][1];
           if ({BLACK: RANK_7, WHITE: RANK_2}[us] == rank(square) &&
               this.board[doubleForwardSquare] == null) {
-            this.addMove(moves, us, square, doubleForwardSquare, BITS.BIG_PAWN);
+            this.addMove(moves, us, square, doubleForwardSquare, BITS_BIG_PAWN);
           }
         }
 
         // Capturing
         for (var j = 2; j < 4; j++) {
-          var targetSquare = square + PAWN_OFFSETS[us][j];
-          if (targetSquare & 0x88) continue;
+          int targetSquare = square + PAWN_OFFSETS[us][j];
+          if (targetSquare & 0x88 != 0) continue;
 
           if (this.board[targetSquare] != null &&
               this.board[targetSquare].color == them) {
-            this.addMove(moves, us, square, targetSquare, BITS.CAPTURE);
+            this.addMove(moves, us, square, targetSquare, BITS_CAPTURE);
           } else if (targetSquare == this.epSquare) {
             this.addMove(moves, us, square, this.epSquare, BITS_EP_CAPTURE);
           }
@@ -549,7 +531,7 @@ class Chess2 {
         break;
 
       case KING:
-        if (this.castling[us] & BITS_KSIDE_CASTLE) {
+        if ((this.castling[us] & BITS_KSIDE_CASTLE) {
           final castling_from = this.pieces[KING][us];
           final castling_to = castling_from + 2;
 
@@ -579,29 +561,31 @@ class Chess2 {
                 BITS_QSIDE_CASTLE);
           }
         }
-    // CAUTION: GOES DOWN!
-    // break;
+        // CAUTION: GOES DOWN!
+        // break;
+        continue def;
 
+      def:
       default:
         for (var j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
           final offset = PIECE_OFFSETS[piece.type][j];
-          var targetSquare = square;
+          int targetSquare = square;
 
           while (true) {
             targetSquare += offset;
-            if (targetSquare & 0x88) break;
+            if ((targetSquare & 0x88) != 0) break;
 
             if (this.board[targetSquare] == null) {
-              this.addMove(moves, us, square, targetSquare, BITS.NORMAL);
+              this.addMove(moves, us, square, targetSquare, BITS_NORMAL);
             } else {
               if (this.board[targetSquare].color == us) break;
-              this.addMove(moves, us, square, targetSquare, BITS.CAPTURE);
+              this.addMove(moves, us, square, targetSquare, BITS_CAPTURE);
               break;
             }
 
             /* break, if knight or king */
             // if (piece.type == 'n' || piece.type == 'k') break;
-            if (piece.type == 'n' || piece.type == 'k') break;
+            if (piece.type == KNIGHT || piece.type == KING) break;
           }
         }
         break;
@@ -611,25 +595,25 @@ class Chess2 {
   }
 
 
-  generateAllTurnMoves() {
-    var moves = [];
+  List<Move> generateAllTurnMoves() {
+    List moves = [];
 
-    this.forEachPiece((piece, square) => {
-    if (piece.color != this.turn) return;
-    moves = moves.concat(this.generatePieceMoves(square));
+    this.forEachPiece((piece, square) {
+      if (piece.color != this.turn) return;
+      moves = moves + (this.generatePieceMoves(square));
     });
 
-    return moves.filter(move => {
-    final us = this.turn;
-    this.move(move);
-    final valid = !this.isKingAttacked(us);
-    this.undo();
-    return valid;
-    });
+    return moves.where((move) {
+      final us = this.turn;
+      this.move(move);
+      final valid = !this.isKingAttacked(us);
+      this.undo();
+      return valid;
+    }).toList();
   }
 
 
-  checkPieceAttack(pieceSquare, targetSquare) {
+  bool checkPieceAttack(pieceSquare, targetSquare) {
     final piece = this.getPiece(pieceSquare);
     final difference = pieceSquare - targetSquare;
     final index = difference + 119;
@@ -667,18 +651,17 @@ class Chess2 {
   }
 
 
-  checkColorAttack(color, targetSquare) {
-    var rv = false;
+  bool checkColorAttack(Color color, int targetSquare) {
+    bool rv = false;
 
-    this.forEachPiece((piece, square) => {
-    if (rv) return;
-        if (piece.color != color)
-    return;
-    rv = rv || this.checkPieceAttack(square, targetSquare);
-  });
+    this.forEachPiece((piece, square) {
+      if (rv) return;
+      if (piece.color != color)
+        return;
+      rv = rv || this.checkPieceAttack(square, targetSquare);
+    });
 
-    return
-    rv;
+    return rv;
   }
 
 
@@ -702,33 +685,38 @@ class Chess2 {
   }
 
 
-  isStalemate() {
+  bool get isStalemate {
     return !this.isCheck() && this
         .generateAllTurnMoves()
         .length == 0;
   }
 
 
-  isInsufficientMaterial() {
+  bool get isInsufficientMaterial {
     final counts = {
-      p: this.pieces.p[WHITE].length + this.pieces.p[BLACK].length,
-      n: this.pieces.n[WHITE].length + this.pieces.n[BLACK].length,
-      b: this.pieces.b[WHITE].length + this.pieces.b[BLACK].length,
-      r: this.pieces.r[WHITE].length + this.pieces.r[BLACK].length,
-      q: this.pieces.q[WHITE].length + this.pieces.q[BLACK].length,
-      k: 2
+      PAWN: this.pieces[PAWN][WHITE].length + this.pieces[PAWN][BLACK].length,
+      KNIGHT: this.pieces[KNIGHT][WHITE].length +
+          this.pieces[KNIGHT][BLACK].length,
+      BISHOP: this.pieces[BISHOP][WHITE].length +
+          this.pieces[BISHOP][BLACK].length,
+      ROOK: this.pieces[ROOK][WHITE].length + this.pieces[ROOK][BLACK].length,
+      QUEEN: this.pieces[QUEEN][WHITE].length +
+          this.pieces[QUEEN][BLACK].length,
+      KING: 2
     };
-    final totalCount = counts.p + counts.n + counts.b + counts.r + counts.q +
-        counts.k;
+    final totalCount = counts[PAWN] + counts[KNIGHT] + counts[BISHOP] +
+        counts[ROOK] + counts[QUEEN] +
+        counts[KING];
 
     if (totalCount == 2)
       return true;
 
-    if (totalCount == 3 && (counts.b == 1 || counts.n == 1))
+    if (totalCount == 3 && (counts[BISHOP] == 1 || counts[BISHOP] == 1))
       return true;
 
-    if (totalCount == counts.b + 2) {
-      final bishops = this.pieces.b[WHITE].concat(this.pieces.b[BLACK]);
+    if (totalCount == counts[BISHOP] + 2) {
+      final bishops = this.pieces[BISHOP][WHITE].concat(
+          this.pieces[BISHOP][BLACK]);
       final colorSum = bishops.reduce((sum, square) => {
           return sum + SQUARE_COLORS[square];
       }, 0);
@@ -741,20 +729,54 @@ class Chess2 {
   }
 
 
-  in_threefold_repetition() {
-    // TODO
+  bool get isInThreefoldPosition {
+    /* TODO: while this function is fine for casual use, a better
+     * implementation would use a Zobrist key (instead of FEN). the
+     * Zobrist key would be maintained in the make_move/undo_move functions,
+     * avoiding the costly that we do below.
+     */
+    List moves = [];
+    Map positions = {};
+    bool repetition = false;
+
+    while (true) {
+      var move = undo();
+      if (move == null) {
+        break;
+      }
+      moves.add(move);
+    }
+
+    while (true) {
+      /* remove the last two fields in the FEN string, they're not needed
+       * when checking for draw by rep */
+      var fen = generateFen().split(' ').sublist(0, 4).join(' ');
+
+      /* has the position occurred three or move times */
+      positions[fen] = (positions.containsKey(fen)) ? positions[fen] + 1 : 1;
+      if (positions[fen] >= 3) {
+        repetition = true;
+      }
+
+      if (moves.length == 0) {
+        break;
+      }
+      move(moves.removeLast());
+    }
+
+    return repetition;
   }
 
 
-  isDraw() {
-    return this.isStalemate() || this.isInsufficientMaterial();
+  bool get isDraw {
+    return this.isStalemate || this.isInsufficientMaterial;
   }
 
 
-  isGameOver() {
+  bool get isGameOver {
     return this
         .generateAllTurnMoves()
-        .length == 0 || this.isInsufficientMaterial();
+        .length == 0 || this.isInsufficientMaterial;
   }
 
 
@@ -771,19 +793,19 @@ class Chess2 {
   }
 
 
-  move_(move) {
+  bool move_(Move move) {
     final moves = this.generateAllTurnMoves();
-    final found = _.find(moves, move_ => {
-    return move_.from == move.from && move_.to == move.to;
+    final found = _.find(moves, (move_) {
+      return move_.from == move.from && move_.to == move.to;
     });
     if (!found) return false;
     return this.move(found);
   }
 
 
-  move(move) {
+  bool move(Move move) {
     final piece = this.getPiece(move.from);
-    if (!piece) return false;
+    if (piece == null) return false;
 
     this.removePiece(move.to);
     this.movePiece(move.from, move.to);
@@ -793,7 +815,7 @@ class Chess2 {
     final them = swap_color(this.turn);
 
     /* if ep capture, remove the captured pawn */
-    if (move.flags & BITS_EP_CAPTURE) {
+    if ((move.flags & BITS_EP_CAPTURE) != 0) {
       if (us == BLACK) {
         this.removePiece(move.to - 16);
       } else {
@@ -802,7 +824,7 @@ class Chess2 {
     }
 
     /* if pawn promotion, replace with new piece */
-    if (move.flags & BITS_PROMOTION) {
+    if ((move.flags & BITS_PROMOTION) != 0) {
       this.removePiece(move.to);
       this.putPiece({ 'type': move.promotion, 'color': us}, move.to);
     }
@@ -810,11 +832,11 @@ class Chess2 {
     /* if we moved the king */
     if (piece.type == KING) {
       /* if we castled, move the rook next to the king */
-      if (move.flags & BITS_KSIDE_CASTLE) {
+      if ((move.flags & BITS_KSIDE_CASTLE) != 0) {
         final castling_to = move.to - 1;
         final castling_from = move.to + 1;
         this.movePiece(castling_from, castling_to);
-      } else if (move.flags & BITS_QSIDE_CASTLE) {
+      } else if ((move.flags & BITS_QSIDE_CASTLE) != 0) {
         final castling_to = move.to + 1;
         final castling_from = move.to - 2;
         this.movePiece(castling_from, castling_to);
@@ -847,7 +869,7 @@ class Chess2 {
     }
 
     /* if big pawn move, update the en passant square */
-    if (move.flags & BITS.BIG_PAWN) {
+    if ((move.flags & BITS_BIG_PAWN) != 0) {
       if (us == BLACK) {
         this.epSquare = move.to - 16;
       } else {
@@ -860,7 +882,7 @@ class Chess2 {
     /* reset the 50 move counter if a pawn is moved or a piece is captured */
     if (move.piece == PAWN) {
       this.halfMoves = 0;
-    } else if (move.flags & (BITS.CAPTURE | BITS_EP_CAPTURE)) {
+    } else if ((move.flags & (BITS_CAPTURE | BITS_EP_CAPTURE)) != 0) {
       this.halfMoves = 0;
     } else {
       this.halfMoves++;
@@ -870,62 +892,62 @@ class Chess2 {
       this.moveNumber++;
     }
 
-    this.turn = them;
+    this.turn = swap_color(turn);
     return true;
   }
 
 
-  undo() {
-    final old = this.history.pop();
-    if (!old) return;
-
-    final move = old.move;
-
-    this.turn = old.turn;
-    this.castling = old.castling;
-    this.epSquare = old.epSquare;
-    this.halfMoves = old.halfMoves;
-    this.moveNumber = old.moveNumber;
-
-    final us = this.turn;
-    final them = swap_color(us);
-
-    this.movePiece(move.to, move.from);
-
-    if (move.flags & BITS.CAPTURE) {
-      this.removePiece(move.to);
-      this.putPiece({ type: move.captured, color: them}, move.to);
+  Move undo() {
+    if (history.isEmpty) {
+      return null;
+    }
+    State old = history.removeLast();
+    if (old == null) {
+      return null;
     }
 
-    if (move.flags & BITS_EP_CAPTURE) {
-      var index;
+    Move move = old.move;
+    kings = old.kings;
+    turn = old.turn;
+    castling = old.castling;
+    epSquare = old.ep_square;
+    halfMoves = old.half_moves;
+    moveNumber = old.move_number;
 
+    Color us = turn;
+    Color them = swap_color(turn);
+
+    board[move.from] = board[move.to];
+    board[move.from].type = move.piece; // to undo any promotions
+    board[move.to] = null;
+
+    if ((move.flags & BITS_CAPTURE) != 0) {
+      board[move.to] = new Piece(move.captured, them);
+    } else if ((move.flags & BITS_EP_CAPTURE) != 0) {
+      var index;
       if (us == BLACK) {
         index = move.to - 16;
       } else {
         index = move.to + 16;
       }
-
-      this.putPiece({ type: PAWN, color: them}, index);
+      board[index] = new Piece(PAWN, them);
     }
 
-    if (move.flags & BITS_PROMOTION) {
-      this.removePiece(move.from);
-      this.putPiece({ type: move.piece, color: us}, move.from);
-    }
-
-    if (move.flags & (BITS_KSIDE_CASTLE | BITS_QSIDE_CASTLE)) {
+    if ((move.flags & (BITS_KSIDE_CASTLE | BITS_QSIDE_CASTLE)) != 0) {
       var castling_to, castling_from;
-      if (move.flags & BITS_KSIDE_CASTLE) {
+      if ((move.flags & BITS_KSIDE_CASTLE) != 0) {
         castling_to = move.to + 1;
         castling_from = move.to - 1;
-      } else if (move.flags & BITS_QSIDE_CASTLE) {
+      } else if ((move.flags & BITS_QSIDE_CASTLE) != 0) {
         castling_to = move.to - 2;
         castling_from = move.to + 1;
       }
 
-      this.movePiece(castling_from, castling_to);
+      board[castling_to] = board[castling_from];
+      board[castling_from] = null;
     }
+
+    return move;
   }
 
 
@@ -1002,6 +1024,39 @@ class Chess2 {
   static const PieceType ROOK = PieceType.ROOK;
   static const PieceType QUEEN = PieceType.QUEEN;
   static const PieceType KING = PieceType.KING;
+
+  static const SQUARE_COLORS = [
+    0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  ];
+
+  static const SHIFTS = {
+    PAWN: 0,
+    KNIGHT: 1,
+    BISHOP: 2,
+    ROOK: 3,
+    QUEEN: 4,
+    KING: 5
+  };
+
+  static const V = {
+    'NORTH': -16,
+    'NN': -32,
+    'SOUTH': 16,
+    'SS': 32,
+    'EAST': 1,
+    'WEST': -1,
+    'NE': -15,
+    'SW': 15,
+    'NW': -17,
+    'SE': 17
+  };
 
   static const Map<String, PieceType> PIECE_TYPES = const {
     'p': PieceType.PAWN,
