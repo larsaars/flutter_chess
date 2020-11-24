@@ -5,7 +5,7 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'chess_board/chess.dart';
+import 'chess_board/chess2.dart';
 
 class ChessAI {
   //the entry point for the new isolate
@@ -14,7 +14,7 @@ class ChessAI {
     final SendPort messenger = context[0];
     //if the received object is a chess game, start the move generation
     //hand over the messenger and the chess
-    _findBestMove(Chess.fromFEN(context[1]), messenger);
+    _findBestMove(Chess2.fromFen(context[1]), messenger);
   }
 
   //the random
@@ -34,7 +34,7 @@ class ChessAI {
   static int _MAX_DEPTH = 3;
 
   //the actual method starting the alpha beta pruning
-  static void _findBestMove(Chess chess, SendPort messenger) {
+  static void _findBestMove(Chess2 chess, SendPort messenger) {
     //get the start time
     num startTime = DateTime.now().millisecondsSinceEpoch;
 
@@ -45,14 +45,14 @@ class ChessAI {
     _calcMaxDepth(chess);
 
     //get the MAX and MIN color
-    _MAX = chess.game.turn;
-    _MIN = Chess.swap_color(chess.game.turn);
+    _MAX = chess.turn;
+    _MIN = Chess2.swap_color(chess.turn);
 
     //execute the first depth of max
     List<List> moveEvalPairs = new List<List>();
 
     _idx = 0;
-    for (Move m in chess.generate_moves()) {
+    for (Move m in chess.generateAllTurnMoves()) {
       //perform an alpha beta minimax algorithm in the first gen with max to min
       chess.move(m);
       double eval = _alphaBeta(chess, 1, -_INFINITY, _INFINITY, _MIN);
@@ -100,26 +100,27 @@ class ChessAI {
 
   // implements a simple alpha beta algorithm
   static double _alphaBeta(
-      Chess c, int depth, double alpha, double beta, Color whoNow) {
+      Chess2 c, int depth, double alpha, double beta, Color whoNow) {
 
     //is leaf
-    if (depth >= _MAX_DEPTH || c.game_over) {
+    bool gameOver = c.isGameOver;
+    if (depth >= _MAX_DEPTH) {
       //update idx
       _idx++;
       //return the end node evaluation
-      return _evaluatePosition(c, depth);
+      return _evaluatePosition(c, gameOver, depth);
     }
 
     // if the computer is the current player (MAX)
     if (whoNow == _MAX) {
       // go through all legal moves
-      for (Move m in c.generate_moves()) {
+      for (Move m in c.generateAllTurnMoves()) {
         //move to be able to generate future moves
-        c.make_move(m);
+        c.move(m);
         //recursive execute of alpha beta
         alpha = max(alpha, _alphaBeta(c, depth + 1, alpha, beta, _MIN));
         //undo after alpha beta
-        c.undo_move();
+        c.undo();
         //cut of branches
         if (alpha >= beta) {
           break;
@@ -130,13 +131,13 @@ class ChessAI {
       //the same of min
     } else {
       // opponent ist he player (MIN)
-      for (Move m in c.generate_moves()) {
+      for (Move m in c.generateAllTurnMoves()) {
         //try move
         c.move(m);
         //minimize beta from new alpha beta
         beta = min(beta, _alphaBeta(c, depth + 1, alpha, beta, _MAX));
         //undo the moves
-        c.undo_move();
+        c.undo();
         //cut off here as well
         if (alpha >= beta) {
           break;
@@ -147,14 +148,14 @@ class ChessAI {
   }
 
   // simple material based evaluation
-  static double _evaluatePosition(Chess c, int depth) {
-    if (c.game_over) {
-      if (c.in_draw) {
+  static double _evaluatePosition(Chess2 c, bool gameOver, int depth) {
+    if (gameOver) {
+      if (c.isDraw) {
         // draw is a neutral outcome
         return 0.0;
       } else {
         // otherwise must be a mate
-        if (c.game.turn == _MAX) {
+        if (c.turn == _MAX) {
           // avoid mates loss, the deeper the better
           //(earlier is worse)
           return -_LARGE - depth;
@@ -172,16 +173,16 @@ class ChessAI {
       List<int> maxPawnsInY = List.generate(8, (index) => 0),
           minPawnsInY = List.generate(8, (index) => 0);
       //loop through all squares
-      for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
+      for (int i = Chess2.SQUARES_A8; i <= Chess2.SQUARES_H1; i++) {
         if ((i & 0x88) != 0) {
           i += 7;
           continue;
         }
 
-        Piece piece = c.game.board[i];
+        Piece piece = c.board[i];
         if (piece != null) {
           //get the x and y from the map
-          final x = Chess.file(i), y = Chess.rank(i);
+          final x = Chess2.file(i), y = Chess2.rank(i);
           //evaluate the piece at the position
           eval += _getPieceValue(piece, x, y);
           //add to pawns list
@@ -243,26 +244,26 @@ class ChessAI {
     return 0;
   }
 
-  static void _calcMaxDepth(Chess chess) {
+  static void _calcMaxDepth(Chess2 chess) {
     //calc the expected time expenditure in a sub function
     num expectedTimeExpenditure(int depth) {
       //always generate the first move if possible, then check how many moves there are
       num prod = 1;
-      void addNumRecursive(Chess root, int thisDepth) {
+      void addNumRecursive(Chess2 root, int thisDepth) {
         //check for not hitting too deep
         if(thisDepth > depth)
           return;
         //list of moves
-        List moves = root.generate_moves();
+        List moves = root.generateAllTurnMoves();
         if(moves.length > 0) {
           //create the product
           prod *= moves.length;
           //make one of them randomly, always selecting 0 move could be wrong
-          root.make_move(moves[_random.nextInt(moves.length)]);
+          root.move(moves[_random.nextInt(moves.length)]);
           //call this one recursive
           addNumRecursive(root, thisDepth + 1);
           //then undo it
-          root.undo_move();
+          root.undo();
         }
       }
       //call the recursive counter

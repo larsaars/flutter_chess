@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess;
 import 'package:scoped_model/scoped_model.dart';
 
+import '../chess2.dart';
 import 'chess_board_controller.dart';
 
 typedef void MoveCallback(move);
@@ -37,20 +37,20 @@ class BoardModel extends Model {
   ChessBoardController chessBoardController;
 
   /// Creates a logical game
-  Chess game;
+  Chess2 game;
 
   String fen;
 
   /// Refreshes board
   void refreshBoard() {
-    if (game.in_checkmate) {
-      onCheckMate(game.game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
+    if (game.isCheckmate) {
+      onCheckMate(game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
     }
-    else if (game.in_draw || game.in_stalemate || game.in_threefold_repetition || game.insufficient_material) {
+    else if (game.isDraw || game.isStalemate || game.isInThreefoldPosition || game.isInsufficientMaterial) {
       onDraw();
     }
-    else if (game.in_check) {
-      onCheck(game.game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
+    else if (game.isCheck) {
+      onCheck(game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
     }
     notifyListeners();
   }

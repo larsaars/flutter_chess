@@ -294,7 +294,12 @@ class Chess2 {
   }
 
   Piece getPiece(square) {
-    return this.board[square];
+    if (square is int)
+      return this.board[square];
+    else if (square is String)
+      return board[SQUARES[square]];
+    else
+      return null;
     // final piece = this.board[square];
     // return piece ? { type: piece.type, color: piece.color } : null;
   }
@@ -455,7 +460,8 @@ class Chess2 {
   /**
    * Builds move struct
    */
-  Move buildMove(Color color, int from, int to, int flags, [PieceType promotion]) {
+  Move buildMove(Color color, int from, int to, int flags,
+      [PieceType promotion]) {
     if (promotion != null) {
       flags |= BITS_PROMOTION;
     }
@@ -467,10 +473,8 @@ class Chess2 {
     } else if ((flags & BITS_EP_CAPTURE) != 0) {
       captured = PAWN;
     }
-    return Move(
-        color, from, to, flags, board[from].type, captured, promotion);
+    return Move(color, from, to, flags, board[from].type, captured, promotion);
   }
-
 
   List<Move> generatePieceMoves(int square) {
     //Builds move struct and adds them in `moves` array.
@@ -653,20 +657,20 @@ class Chess2 {
   /**
    * Is color's king attacked?
    */
-  isKingAttacked(Color color) {
+  bool isKingAttacked(Color color) {
     return this.checkColorAttack(swap_color(color), this.pieces[KING][color]);
   }
 
-  isCheck() {
+  bool get isCheck {
     return this.isKingAttacked(this.turn);
   }
 
-  isCheckmate() {
-    return this.isCheck() && this.generateAllTurnMoves().length == 0;
+  bool get isCheckmate {
+    return this.isCheck && this.generateAllTurnMoves().length == 0;
   }
 
   bool get isStalemate {
-    return !this.isCheck() && this.generateAllTurnMoves().length == 0;
+    return !this.isCheck && this.generateAllTurnMoves().length == 0;
   }
 
   bool get isInsufficientMaterial {
@@ -694,8 +698,7 @@ class Chess2 {
       return true;
 
     if (totalCount == counts[BISHOP] + 2) {
-      final bishops =
-          this.pieces[BISHOP][WHITE] + this.pieces[BISHOP][BLACK];
+      final bishops = this.pieces[BISHOP][WHITE] + this.pieces[BISHOP][BLACK];
       final colorSum = bishops.reduce((sum, square) {
         return sum + SQUARE_COLORS[square];
       }, 0);
@@ -767,10 +770,13 @@ class Chess2 {
         Map.from(this.pawnCountsByFile)));
   }
 
-  bool moveIfFound(Move move) {
+  bool moveIfFound(Map move) {
     final moves = this.generateAllTurnMoves();
     final found = moves.where((Move move2) {
-      return move2.from == move.from && move2.to == move.to;
+      return move2.from == move['from'] &&
+          move2.to == move['to'] &&
+          (move['promotion'] == null ||
+              move['promotion'] == move2.promotion.name);
     });
     if (found.length == 0) return false;
     return this.move(found.first);
