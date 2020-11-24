@@ -261,15 +261,15 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                           strings.turn_of_x(
-                              (_chessController?.game?.turn ==
+                              (_chessController?.game?.game?.turn ==
                                       chess_sub.Color.BLACK)
                                   ? strings.black
                                   : strings.white),
                           style: Theme.of(context).textTheme.subtitle1.copyWith(
                                 inherit: true,
                                 color:
-                                    (_chessController?.game?.isCheck ?? false)
-                                        ? ((_chessController.game.isCheckmate)
+                                    (_chessController?.game?.in_check ?? false)
+                                        ? ((_chessController.game.in_checkmate)
                                             ? Colors.purple
                                             : Colors.red)
                                         : Colors.black,
