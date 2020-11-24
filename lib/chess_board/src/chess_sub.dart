@@ -1,4 +1,3 @@
-
 import '../chess.dart';
 
 class Game {
@@ -52,6 +51,26 @@ class State {
 
   State(this.move, this.kings, this.turn, this.castling, this.ep_square,
       this.half_moves, this.move_number);
+}
+
+class State2 {
+  final Move move;
+  final ColorMap castling;
+  final Color turn;
+  final int epSquare, halfMoves, moveNumber;
+  final Map pawnControl, squaresNearKing, pawnCountsByRank, pawnCountsByFile;
+
+  State2(
+      this.move,
+      this.turn,
+      this.castling,
+      this.epSquare,
+      this.halfMoves,
+      this.moveNumber,
+      this.pawnControl,
+      this.squaresNearKing,
+      this.pawnCountsByRank,
+      this.pawnCountsByFile);
 }
 
 class Piece {
