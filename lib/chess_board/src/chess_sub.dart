@@ -1,4 +1,4 @@
-import '../chess.dart';
+import '../chess2.dart';
 
 class Game {
   Game();
@@ -27,11 +27,11 @@ class Move {
       this.captured, this.promotion);
 
   String get fromAlgebraic {
-    return Chess.algebraic(from);
+    return Chess2.algebraic(from);
   }
 
   String get toAlgebraic {
-    return Chess.algebraic(to);
+    return Chess2.algebraic(to);
   }
 
   @override
