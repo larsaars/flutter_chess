@@ -357,16 +357,16 @@ class Chess {
 
   List<Move> generate_moves([Map options]) {
     // ignore: non_constant_identifier_names
-    void add_move(List<Piece> board, List<Move> moves, from, to, flags) {
+    void add_move(List<Move> moves, from, to, flags) {
       /* if pawn promotion */
-      if (board[from].type == PAWN &&
+      if (game.board[from].type == PAWN &&
           (rank(to) == RANK_8 || rank(to) == RANK_1)) {
         List pieces = [QUEEN, ROOK, BISHOP, KNIGHT];
         for (var i = 0, len = pieces.length; i < len; i++) {
-          moves.add(build_move(board, from, to, flags, pieces[i]));
+          moves.add(build_move(game.board, from, to, flags, pieces[i]));
         }
       } else {
-        moves.add(build_move(board, from, to, flags));
+        moves.add(build_move(game.board, from, to, flags));
       }
     }
 
@@ -413,12 +413,12 @@ class Chess {
         /* single square, non-capturing */
         int square = i + PAWN_OFFSETS[us][0];
         if (game.board[square] == null) {
-          add_move(game.board, moves, i, square, BITS_NORMAL);
+          add_move(moves, i, square, BITS_NORMAL);
 
           /* double square */
           var square2 = i + PAWN_OFFSETS[us][1];
           if (second_rank[us] == rank(i) && game.board[square2] == null) {
-            add_move(game.board, moves, i, square2, BITS_BIG_PAWN);
+            add_move(moves, i, square2, BITS_BIG_PAWN);
           }
         }
 
@@ -428,9 +428,9 @@ class Chess {
           if ((square & 0x88) != 0) continue;
 
           if (game.board[square] != null && game.board[square].color == them) {
-            add_move(game.board, moves, i, square, BITS_CAPTURE);
+            add_move(moves, i, square, BITS_CAPTURE);
           } else if (square == game.ep_square) {
-            add_move(game.board, moves, i, game.ep_square, BITS_EP_CAPTURE);
+            add_move(moves, i, game.ep_square, BITS_EP_CAPTURE);
           }
         }
       } else {
@@ -443,12 +443,12 @@ class Chess {
             if ((square & 0x88) != 0) break;
 
             if (game.board[square] == null) {
-              add_move(game.board, moves, i, square, BITS_NORMAL);
+              add_move(moves, i, square, BITS_NORMAL);
             } else {
               if (game.board[square].color == us) {
                 break;
               }
-              add_move(game.board, moves, i, square, BITS_CAPTURE);
+              add_move(moves, i, square, BITS_CAPTURE);
               break;
             }
 
@@ -472,7 +472,7 @@ class Chess {
             !attacked(them, game.kings[us]) &&
             !attacked(them, castling_from + 1) &&
             !attacked(them, castling_to)) {
-          add_move(game.board, moves, game.kings[us], castling_to,
+          add_move(moves, game.kings[us], castling_to,
               BITS_KSIDE_CASTLE);
         }
       }
@@ -488,7 +488,7 @@ class Chess {
             !attacked(them, game.kings[us]) &&
             !attacked(them, castling_from - 1) &&
             !attacked(them, castling_to)) {
-          add_move(game.board, moves, game.kings[us], castling_to,
+          add_move(moves, game.kings[us], castling_to,
               BITS_QSIDE_CASTLE);
         }
       }
