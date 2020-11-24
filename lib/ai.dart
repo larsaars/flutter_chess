@@ -101,14 +101,14 @@ class ChessAI {
   // implements a simple alpha beta algorithm
   static double _alphaBeta(
       Chess c, int depth, double alpha, double beta, Color whoNow) {
+    //update idx
+    _idx++;
     //generate the moves
     List<Move> futureMoves = c.generateMoves();
 
     //is leaf
     bool gameOver = c.game_over(futureMoves);
     if (depth >= _MAX_DEPTH || gameOver) {
-      //update idx
-      _idx++;
       //return the end node evaluation
       return _evaluatePosition(c, gameOver, c.lastInDraw, depth);
     }
@@ -150,7 +150,8 @@ class ChessAI {
   }
 
   // simple material based evaluation
-  static double _evaluatePosition(Chess c, bool gameOver, bool inDraw, int depth) {
+  static double _evaluatePosition(
+      Chess c, bool gameOver, bool inDraw, int depth) {
     if (gameOver) {
       if (inDraw) {
         // draw is a neutral outcome
@@ -253,11 +254,10 @@ class ChessAI {
       num prod = 1;
       void addNumRecursive(Chess root, int thisDepth) {
         //check for not hitting too deep
-        if(thisDepth > depth)
-          return;
+        if (thisDepth > depth) return;
         //list of moves
         List moves = root.generateMoves();
-        if(moves.length > 0) {
+        if (moves.length > 0) {
           //create the product
           prod *= moves.length;
           //make one of them randomly, always selecting 0 move could be wrong
@@ -268,11 +268,13 @@ class ChessAI {
           root.undo();
         }
       }
+
       //call the recursive counter
       addNumRecursive(chess, 1);
       //calc prod * 3/4 because of pruning
       return prod * 0.75;
     }
+
     //WE DON'T USE THE SHANNON NUMBER
     //first calculate the number of pieces on the board,
     //from that calculate the time expenditure for alpha beta pruning:
@@ -281,18 +283,17 @@ class ChessAI {
     //depth, pm
     //minimizing loop
     bool changed = false;
-    for(int depth = _MAX_CALC_DEPTH; depth >= _MIN_CALC_DEPTH; depth--) {
+    for (int depth = _MAX_CALC_DEPTH; depth >= _MIN_CALC_DEPTH; depth--) {
       num exp = expectedTimeExpenditure(depth);
       print('expected: $exp');
-      if(exp < _MAX_CALC_ESTIMATED_MOVES) {
+      if (exp < _MAX_CALC_ESTIMATED_MOVES) {
         _MAX_DEPTH = depth;
         changed = true;
         break;
       }
     }
 
-    if(!changed)
-      _MAX_DEPTH = _MIN_CALC_DEPTH;
+    if (!changed) _MAX_DEPTH = _MIN_CALC_DEPTH;
 
     print('set max depth to $_MAX_DEPTH');
   }
@@ -385,5 +386,7 @@ class ChessAI {
 
   static final _blackKingEval = _reverseList(_whiteKingEval);
 
-  static const _MIN_CALC_DEPTH = 3, _MAX_CALC_DEPTH = 6, _MAX_CALC_ESTIMATED_MOVES = 50000;
+  static const _MIN_CALC_DEPTH = 3,
+      _MAX_CALC_DEPTH = 6,
+      _MAX_CALC_ESTIMATED_MOVES = 150000;
 }
