@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import '../chess.dart';
+import '../chess2.dart';
 import 'board_model.dart';
 import 'board_rank.dart';
 import 'chess_board_controller.dart';
@@ -56,7 +56,7 @@ class ChessBoard extends StatefulWidget {
   final VoidCallback onDraw;
 
   //the callbacks for returning the controller and game
-  final Chess chess;
+  final Chess2 chess;
 
   /// A boolean which notes if white board side is towards users
   final bool whiteSideTowardsUser;
