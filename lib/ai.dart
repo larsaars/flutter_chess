@@ -171,10 +171,6 @@ class ChessAI {
     } else {
       //the final evaluation to be returned
       double eval = 0.0;
-      //eval individually piece value in the current position
-      //keep track of pawns in columns (files)
-      List<int> maxPawnsInY = List.generate(8, (index) => 0),
-          minPawnsInY = List.generate(8, (index) => 0);
       //loop through all squares
       for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
         if ((i & 0x88) != 0) {
@@ -185,26 +181,12 @@ class ChessAI {
         Piece piece = c.game.board[i];
         if (piece != null) {
           //get the x and y from the map
-          final x = Chess.file(i), y = Chess.rank(i);
+          final x = Chess.file(i),
+              y = Chess.rank(i);
           //evaluate the piece at the position
           eval += _getPieceValue(piece, x, y);
-          //add to pawns list
-          if (piece.type == PieceType.PAWN) {
-            if (piece.color == _MAX)
-              maxPawnsInY[y]++;
-            else
-              minPawnsInY[y]++;
-          }
         }
       }
-
-      //duplicate pawns
-      /*for (int i = 0; i < 8; i++) {
-        int sum = maxPawnsInY[i] + minPawnsInY[i];
-        if (maxPawnsInY[i] >= 1 && minPawnsInY[i] >= 1) eval -= 0.05 * sum;
-        if (maxPawnsInY[i] >= 1) eval -= 0.06 * maxPawnsInY[i];
-        if (minPawnsInY[i] >= 1) eval += 0.06 * minPawnsInY[i];
-      }*/
 
       return eval;
     }
