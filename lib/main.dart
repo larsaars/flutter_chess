@@ -321,14 +321,6 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                           width: 8.0,
                         ),
                         FancyButton(
-                          onPressed: _chessController.onDifficultyChange,
-                          icon: Icons.present_to_all_outlined,
-                          animation: FancyButtonAnimation.pulse,
-                        ),
-                        SizedBox(
-                          width: 8.0,
-                        ),
-                        FancyButton(
                           onPressed: _chessController.switchColors,
                           icon: Icons.switch_left,
                         ),
