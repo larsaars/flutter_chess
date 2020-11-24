@@ -49,12 +49,6 @@ class ChessBoardController {
     refreshBoard == null ? this._throwNotAttachedException() : refreshBoard();
   }
 
-  /// Loads a PGN
-  void loadPGN(String pgn) {
-    game.load_pgn(pgn);
-    refreshBoard == null ? this._throwNotAttachedException() : refreshBoard();
-  }
-
   /// Exception when a controller is not attached to a board
   void _throwNotAttachedException() {
     throw Exception("Controller not attached to a ChessBoard widget!");

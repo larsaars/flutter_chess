@@ -1,3 +1,5 @@
+import 'package:quiver/core.dart';
+
 import '../chess.dart';
 
 class Game {
@@ -7,9 +9,9 @@ class Game {
   ColorMap kings = ColorMap.of(-1);
   Color turn = Color.WHITE;
   ColorMap castling = ColorMap.of(0);
-  int ep_square = -1;
-  int half_moves = 0;
-  int move_number = 1;
+  int epSquare = -1;
+  int halfMoves = 0;
+  int moveNumber = 1;
   List<State> history = [];
   Map header = {};
 }
@@ -38,6 +40,16 @@ class Move {
   String toString() {
     return 'from: $from to $to';
   }
+
+  @override
+  bool operator ==(Object other) {
+    return (other is Move) && (hashCode == other.hashCode);
+  }
+
+  @override
+  int get hashCode {
+    return hashObjects([color, from, to, flags, piece, captured, promotion]);
+  }
 }
 
 class State {
@@ -45,12 +57,12 @@ class State {
   final ColorMap kings;
   final Color turn;
   final ColorMap castling;
-  final int ep_square;
-  final int half_moves;
-  final int move_number;
+  final int epSquare;
+  final int halfMoves;
+  final int moveNumber;
 
-  State(this.move, this.kings, this.turn, this.castling, this.ep_square,
-      this.half_moves, this.move_number);
+  State(this.move, this.kings, this.turn, this.castling, this.epSquare,
+      this.halfMoves, this.moveNumber);
 }
 
 class State2 {
@@ -78,6 +90,14 @@ class Piece {
   final Color color;
 
   Piece(this.type, this.color);
+
+  @override
+  int get hashCode => hash2(type, color);
+
+  @override
+  bool operator ==(Object other) {
+    return (other is Piece) && (other.hashCode == hashCode);
+  }
 }
 
 class PieceType {
@@ -153,5 +173,14 @@ class ColorMap {
     } else {
       black = value;
     }
+  }
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => hash2(white, black);
+
+  @override
+  bool operator ==(Object other) {
+    return (other is ColorMap) && (other.hashCode == hashCode);
   }
 }
