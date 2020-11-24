@@ -43,13 +43,14 @@ class BoardModel extends Model {
 
   /// Refreshes board
   void refreshBoard() {
-    if (game.in_checkmate) {
+    List<chess.Move> generatedMoves = game.generateMoves();
+    if (game.in_checkmate(generatedMoves)) {
       onCheckMate(game.game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
     }
-    else if (game.in_draw || game.in_stalemate || game.in_threefold_repetition || game.insufficient_material) {
+    else if (game.in_draw(generatedMoves) || game.in_stalemate(generatedMoves) || game.in_threefold_repetition(generatedMoves) || game.insufficient_material()) {
       onDraw();
     }
-    else if (game.in_check) {
+    else if (game.in_check()) {
       onCheck(game.game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
     }
     notifyListeners();

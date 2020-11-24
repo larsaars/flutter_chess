@@ -101,20 +101,22 @@ class ChessAI {
   // implements a simple alpha beta algorithm
   static double _alphaBeta(
       Chess c, int depth, double alpha, double beta, Color whoNow) {
+    //generate the moves
+    List<Move> futureMoves = c.generateMoves();
 
     //is leaf
-    bool gameOver = c.game_over;
+    bool gameOver = c.game_over(futureMoves);
     if (depth >= _MAX_DEPTH || gameOver) {
       //update idx
       _idx++;
       //return the end node evaluation
-      return _evaluatePosition(c, gameOver, depth);
+      return _evaluatePosition(c, gameOver, c.lastInDraw, depth);
     }
 
     // if the computer is the current player (MAX)
     if (whoNow == _MAX) {
       // go through all legal moves
-      for (Move m in c.generateMoves()) {
+      for (Move m in futureMoves) {
         //move to be able to generate future moves
         c.make_move(m);
         //recursive execute of alpha beta
@@ -131,7 +133,7 @@ class ChessAI {
       //the same of min
     } else {
       // opponent ist he player (MIN)
-      for (Move m in c.generateMoves()) {
+      for (Move m in futureMoves) {
         //try move
         c.make_move(m);
         //minimize beta from new alpha beta
@@ -148,9 +150,9 @@ class ChessAI {
   }
 
   // simple material based evaluation
-  static double _evaluatePosition(Chess c, bool gameOver, int depth) {
+  static double _evaluatePosition(Chess c, bool gameOver, bool inDraw, int depth) {
     if (gameOver) {
-      if (c.in_draw) {
+      if (inDraw) {
         // draw is a neutral outcome
         return 0.0;
       } else {
