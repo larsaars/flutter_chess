@@ -1,4 +1,3 @@
-import 'package:json_annotation/json_annotation.dart';
 
 import '../chess.dart';
 
@@ -86,7 +85,6 @@ class PieceType {
   String toUpperCase() => name.toUpperCase();
 }
 
-@JsonSerializable()
 class Color {
   static Color inverse(Color color) {
     return (color == WHITE) ? BLACK : WHITE;
@@ -112,7 +110,6 @@ class Color {
   }
 }
 
-@JsonSerializable()
 class ColorMap {
   int white;
   int black;
