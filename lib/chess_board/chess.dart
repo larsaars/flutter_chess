@@ -1,6 +1,7 @@
 library chess;
 
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
+import 'package:uuid/uuid.dart';
 
 /*  Copyright (c) 2014, David Kopec (my first name at oaksnow dot com)
  *  Released under the MIT license
@@ -15,9 +16,15 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
 typedef void ForEachPieceCallback(Piece piece);
 
 class Chess {
-
   // Instance Variables
   Game game = Game();
+
+  //this prevents calling generate_moves for the same move multiple times
+  Map generatedMoves = {
+    'gen_uuid': uuid.v4(),
+    'move_uuid': 'sth_different',
+    'gen': <Move>[]
+  };
 
   /// By default start with the standard chess starting position
   Chess() {
@@ -44,13 +51,23 @@ class Chess {
   }
 
   /// Reset all of the instance variables
-  clear() {
+  void clear() {
     game = Game();
+    resetGeneratedMovesMap();
   }
 
   /// Go back to the chess starting position
-  reset() {
+  void reset() {
     load(DEFAULT_POSITION);
+    resetGeneratedMovesMap();
+  }
+
+  void resetGeneratedMovesMap() {
+    generatedMoves = {
+      'gen_uuid': uuid.v4(),
+      'move_uuid': 'sth_different',
+      'gen': <Move>[]
+    };
   }
 
   /// Load a position from a FEN String
@@ -356,6 +373,9 @@ class Chess {
   }
 
   List<Move> generate_moves([Map options]) {
+    if (generatedMoves['move_uuid'] == generatedMoves['gen_uuid'])
+      return generatedMoves['gen'];
+
     // ignore: non_constant_identifier_names
     void add_move(List<Move> moves, from, to, flags) {
       /* if pawn promotion */
@@ -472,8 +492,7 @@ class Chess {
             !attacked(them, game.kings[us]) &&
             !attacked(them, castling_from + 1) &&
             !attacked(them, castling_to)) {
-          add_move(moves, game.kings[us], castling_to,
-              BITS_KSIDE_CASTLE);
+          add_move(moves, game.kings[us], castling_to, BITS_KSIDE_CASTLE);
         }
       }
 
@@ -488,8 +507,7 @@ class Chess {
             !attacked(them, game.kings[us]) &&
             !attacked(them, castling_from - 1) &&
             !attacked(them, castling_to)) {
-          add_move(moves, game.kings[us], castling_to,
-              BITS_QSIDE_CASTLE);
+          add_move(moves, game.kings[us], castling_to, BITS_QSIDE_CASTLE);
         }
       }
     }
@@ -511,7 +529,8 @@ class Chess {
       undo_move();
     }
 
-    return legal_moves;
+    generatedMoves['gen_uuid'] = generatedMoves['move_uuid'];
+    return generatedMoves['gen'] = legal_moves;
   }
 
   /// Convert a move from 0x88 coordinates to Standard Algebraic Notation(SAN)
@@ -716,7 +735,7 @@ class Chess {
         game.move_number));
   }
 
-  make_move(Move move) {
+  void make_move(Move move) {
     Color us = game.turn;
     Color them = swap_color(us);
     push(move);
@@ -805,6 +824,8 @@ class Chess {
       game.move_number++;
     }
     game.turn = swap_color(game.turn);
+
+    generatedMoves['move_uuid'] = uuid.v4();
   }
 
   /// Undoes a move and returns it, or null if move history is empty
@@ -2080,4 +2101,6 @@ class Chess {
       {'square': SQUARES_H8, 'flag': BITS_KSIDE_CASTLE}
     ]
   };
+
+  static Uuid uuid = Uuid();
 }
