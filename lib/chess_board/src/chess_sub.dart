@@ -58,7 +58,6 @@ class State2 {
   final ColorMap castling;
   final Color turn;
   final int epSquare, halfMoves, moveNumber;
-  final Map pawnControl, squaresNearKing, pawnCountsByRank, pawnCountsByFile;
 
   State2(
       this.move,
@@ -66,11 +65,7 @@ class State2 {
       this.castling,
       this.epSquare,
       this.halfMoves,
-      this.moveNumber,
-      this.pawnControl,
-      this.squaresNearKing,
-      this.pawnCountsByRank,
-      this.pawnCountsByFile);
+      this.moveNumber,);
 }
 
 class Piece {
