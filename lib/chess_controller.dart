@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:isolate';
 
+import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
@@ -11,12 +12,11 @@ import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';
 
 import 'ai.dart';
-import 'chess_board/chess2.dart';
 import 'chess_board/src/chess_board_controller.dart';
 
 class ChessController {
   ChessBoardController controller = ChessBoardController();
-  Chess2 game;
+  Chess game;
   BuildContext context;
 
   static bool whiteSideTowardsUser = true;
@@ -73,7 +73,7 @@ class ChessController {
         //execute exitPointMoveFinderIsolate
         //in the main thread again, manage the move object
         //make the move, if there is one
-        if (message != null) game.move(message[0]);
+        if (message != null) game.make_move(message[0]);
         //now set user can make moves true again
         controller.userCanMakeMoves = true;
         //set loading false
@@ -118,7 +118,7 @@ class ChessController {
 
   void makeBotMoveIfRequired() {
     //make move if needed
-    if (((game?.turn ?? Color.inverse(botColor)) == botColor) &&
+    if (((game?.game?.turn ?? Color.inverse(botColor)) == botColor) &&
         prefs.getBool('bot')) {
       findMove();
     }
@@ -155,22 +155,22 @@ class ChessController {
     if (await saveFile.exists()) {
       String fen = await saveFile.readAsString();
       if (fen.length < 2) {
-        game = Chess2();
+        game = Chess();
         return;
       }
 
       print('game loaded');
 
-      game = Chess2.fromFen(fen);
+      game = Chess.fromFEN(fen);
     } else
-      game = Chess2();
+      game = Chess();
   }
 
   void saveOldGame() async {
     final root = await rootDir;
     final saveFile = File('$root/game.fen');
     if (!await saveFile.exists()) await saveFile.create();
-    await saveFile.writeAsString(game.generateFen());
+    await saveFile.writeAsString(game.generate_fen());
 
     print('game saved');
   }
@@ -194,7 +194,7 @@ class ChessController {
   }
 
   void _undo() {
-    game.undo() != null
+    game.undo_move() != null
         ? controller.refreshBoard()
         : showTextDialog(strings.undo, strings.undo_impossible);
   }
@@ -356,8 +356,8 @@ class ChessController {
             } else if (idx == 1) {
               //insert fen from clipboard and reload game
               Clipboard.getData('text/plain').then((value) {
-                if (Chess2.validateFen(value.text)['valid']) {
-                  game = Chess2.fromFen(value.text);
+                if (Chess.validate_fen(value.text)['valid']) {
+                  game = Chess.fromFEN(value.text);
                   Navigator.of(ctx).pop('yes');
                 }else
                   Navigator.of(ctx).pop('no');

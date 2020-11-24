@@ -1,4 +1,4 @@
-import '../chess2.dart';
+import '../chess.dart';
 
 class Game {
   Game();
@@ -27,11 +27,11 @@ class Move {
       this.captured, this.promotion);
 
   String get fromAlgebraic {
-    return Chess2.algebraic(from);
+    return Chess.algebraic(from);
   }
 
   String get toAlgebraic {
-    return Chess2.algebraic(to);
+    return Chess.algebraic(to);
   }
 
   @override
@@ -58,6 +58,7 @@ class State2 {
   final ColorMap castling;
   final Color turn;
   final int epSquare, halfMoves, moveNumber;
+  final Map pawnControl, squaresNearKing, pawnCountsByRank, pawnCountsByFile;
 
   State2(
       this.move,
@@ -65,7 +66,11 @@ class State2 {
       this.castling,
       this.epSquare,
       this.halfMoves,
-      this.moveNumber,);
+      this.moveNumber,
+      this.pawnControl,
+      this.squaresNearKing,
+      this.pawnCountsByRank,
+      this.pawnCountsByFile);
 }
 
 class Piece {

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../../main.dart';
-import '../chess2.dart';
 import 'board_model.dart';
 
 /// A single square on the chessboard
@@ -22,7 +21,7 @@ class BoardSquare extends StatelessWidget {
       return Expanded(
         flex: 1,
         child: DragTarget(builder: (context, accepted, rejected) {
-          return model.game.getPiece(squareName) != null
+          return model.game.get(squareName) != null
               ? Draggable(
                   child: _getImageToDisplay(size: model.size / 8, model: model),
                   feedback: _getImageToDisplay(
@@ -30,8 +29,8 @@ class BoardSquare extends StatelessWidget {
                   onDragCompleted: () {},
                   data: [
                     squareName,
-                    model.game.getPiece(squareName).type.toUpperCase(),
-                    model.game.getPiece(squareName).color,
+                    model.game.get(squareName).type.toUpperCase(),
+                    model.game.get(squareName).color,
                   ],
                 )
               : Container();
@@ -39,7 +38,7 @@ class BoardSquare extends StatelessWidget {
           return (model?.chessBoardController?.userCanMakeMoves ?? false);
         }, onAccept: (List moveInfo) {
           // A way to check if move occurred.
-          chess.Color moveColor = model.game.turn;
+          chess.Color moveColor = model.game.game.turn;
 
           if (moveInfo[1] == "P" &&
               ((moveInfo[0][1] == "7" &&
@@ -49,12 +48,12 @@ class BoardSquare extends StatelessWidget {
                       squareName[1] == "1" &&
                       moveInfo[2] == chess.Color.BLACK))) {
             _promotionDialog(context).then((value) {
-              model.game.moveIfFound(
-                  {"from": Chess2.SQUARES[moveInfo[0]], "to": Chess2.SQUARES[squareName], "promotion": value});
+              model.game.move(
+                  {"from": moveInfo[0], "to": squareName, "promotion": value});
               //refresh the board
               model.refreshBoard();
               //after the promotion refresh the board and call on move
-              if (model.game.turn != moveColor) {
+              if (model.game.game.turn != moveColor) {
                 model.onMove({
                   'piece': moveInfo[1],
                   'square': squareName,
@@ -63,12 +62,12 @@ class BoardSquare extends StatelessWidget {
               }
             });
           } else {
-            model.game.moveIfFound({"from": Chess2.SQUARES[moveInfo[0]], "to": Chess2.SQUARES[squareName]});
+            model.game.move({"from": moveInfo[0], "to": squareName});
           }
 
           model.refreshBoard();
 
-          if (model.game.turn != moveColor) {
+          if (model.game.game.turn != moveColor) {
             model.onMove({
               'piece': moveInfo[1],
               'square': squareName,
@@ -128,13 +127,13 @@ class BoardSquare extends StatelessWidget {
   Widget _getImageToDisplay({double size, BoardModel model}) {
     Widget imageToDisplay = Container();
 
-    if (model.game.getPiece(squareName) == null) {
+    if (model.game.get(squareName) == null) {
       return Container();
     }
 
-    var piece0 = model.game.getPiece(squareName);
+    var piece0 = model.game.get(squareName);
     String piece = piece0.color.toString().substring(0, 1).toUpperCase() +
-        model.game.getPiece(squareName).type.toUpperCase();
+        model.game.get(squareName).type.toUpperCase();
 
     switch (piece) {
       case "WP":
