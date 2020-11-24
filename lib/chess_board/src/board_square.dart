@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../../main.dart';
+import '../chess2.dart';
 import 'board_model.dart';
 
 /// A single square on the chessboard
@@ -49,7 +50,7 @@ class BoardSquare extends StatelessWidget {
                       moveInfo[2] == chess.Color.BLACK))) {
             _promotionDialog(context).then((value) {
               model.game.moveIfFound(
-                  {"from": moveInfo[0], "to": squareName, "promotion": value});
+                  {"from": Chess2.SQUARES[moveInfo[0]], "to": Chess2.SQUARES[squareName], "promotion": value});
               //refresh the board
               model.refreshBoard();
               //after the promotion refresh the board and call on move
@@ -62,7 +63,7 @@ class BoardSquare extends StatelessWidget {
               }
             });
           } else {
-            model.game.moveIfFound({"from": moveInfo[0], "to": squareName});
+            model.game.moveIfFound({"from": Chess2.SQUARES[moveInfo[0]], "to": Chess2.SQUARES[squareName]});
           }
 
           model.refreshBoard();
