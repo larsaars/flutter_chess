@@ -52,9 +52,9 @@ class ChessAI {
     List<List> moveEvalPairs = new List<List>();
 
     _idx = 0;
-    for (Move m in chess.generate_moves()) {
+    for (Move m in chess.generateMoves()) {
       //perform an alpha beta minimax algorithm in the first gen with max to min
-      chess.move(m);
+      chess.make_move(m);
       double eval = _alphaBeta(chess, 1, -_INFINITY, _INFINITY, _MIN);
       moveEvalPairs.add([m, eval]);
       chess.undo();
@@ -103,7 +103,7 @@ class ChessAI {
       Chess c, int depth, double alpha, double beta, Color whoNow) {
 
     //is leaf
-    bool gameOver = false;
+    bool gameOver = c.game_over;
     if (depth >= _MAX_DEPTH || gameOver) {
       //update idx
       _idx++;
@@ -114,13 +114,13 @@ class ChessAI {
     // if the computer is the current player (MAX)
     if (whoNow == _MAX) {
       // go through all legal moves
-      for (Move m in c.generate_moves()) {
+      for (Move m in c.generateMoves()) {
         //move to be able to generate future moves
         c.make_move(m);
         //recursive execute of alpha beta
         alpha = max(alpha, _alphaBeta(c, depth + 1, alpha, beta, _MIN));
         //undo after alpha beta
-        c.undo_move();
+        c.undo();
         //cut of branches
         if (alpha >= beta) {
           break;
@@ -131,13 +131,13 @@ class ChessAI {
       //the same of min
     } else {
       // opponent ist he player (MIN)
-      for (Move m in c.generate_moves()) {
+      for (Move m in c.generateMoves()) {
         //try move
-        c.move(m);
+        c.make_move(m);
         //minimize beta from new alpha beta
         beta = min(beta, _alphaBeta(c, depth + 1, alpha, beta, _MAX));
         //undo the moves
-        c.undo_move();
+        c.undo();
         //cut off here as well
         if (alpha >= beta) {
           break;
@@ -254,7 +254,7 @@ class ChessAI {
         if(thisDepth > depth)
           return;
         //list of moves
-        List moves = root.generate_moves();
+        List moves = root.generateMoves();
         if(moves.length > 0) {
           //create the product
           prod *= moves.length;
@@ -263,7 +263,7 @@ class ChessAI {
           //call this one recursive
           addNumRecursive(root, thisDepth + 1);
           //then undo it
-          root.undo_move();
+          root.undo();
         }
       }
       //call the recursive counter

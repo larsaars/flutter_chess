@@ -194,7 +194,7 @@ class ChessController {
   }
 
   void _undo() {
-    game.undo_move() != null
+    game.undo() != null
         ? controller.refreshBoard()
         : showTextDialog(strings.undo, strings.undo_impossible);
   }
