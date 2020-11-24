@@ -13,7 +13,6 @@ class Game {
   int halfMoves = 0;
   int moveNumber = 1;
   List<State> history = [];
-  Map header = {};
 }
 
 class Move {

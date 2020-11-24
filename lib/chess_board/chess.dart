@@ -18,13 +18,6 @@ class Chess {
   // Instance Variables
   Game game = Game();
 
-  //this prevents calling generate_moves for the same move multiple times
-  Map generatedMoves = {
-    'gen_move': null,
-    'move_move': null,
-    'gen': <Move>[]
-  };
-
   /// By default start with the standard chess starting position
   Chess() {
     load(DEFAULT_POSITION);
@@ -45,28 +38,17 @@ class Chess {
       ..game.epSquare = this.game.epSquare
       ..game.halfMoves = this.game.halfMoves
       ..game.moveNumber = this.game.moveNumber
-      ..game.history = new List<State>.from(this.game.history)
-      ..game.header = new Map.from(this.game.header);
+      ..game.history = new List<State>.from(this.game.history);
   }
 
   /// Reset all of the instance variables
   void clear() {
     game = Game();
-    resetGeneratedMovesMap();
   }
 
   /// Go back to the chess starting position
   void reset() {
     load(DEFAULT_POSITION);
-    resetGeneratedMovesMap();
-  }
-
-  void resetGeneratedMovesMap() {
-    generatedMoves = {
-      'gen_move': null,
-      'move_move': null,
-      'gen': <Move>[]
-    };
   }
 
   /// Load a position from a FEN String
@@ -121,9 +103,6 @@ class Chess {
     game.epSquare = (tokens[3] == '-') ? EMPTY : SQUARES[tokens[3]];
     game.halfMoves = int.parse(tokens[4]);
     game.moveNumber = int.parse(tokens[5]);
-
-    update_setup(generate_fen());
-
     return true;
   }
 
@@ -285,33 +264,6 @@ class Chess {
         .join(' ');
   }
 
-  /// Updates [header] with the List of args and returns it
-  Map set_header(args) {
-    for (int i = 0; i < args.length; i += 2) {
-      if (args[i] is String && args[i + 1] is String) {
-        game.header[args[i]] = args[i + 1];
-      }
-    }
-    return game.header;
-  }
-
-  /// called when the initial board setup is changed with put() or remove().
-  /// modifies the SetUp and FEN properties of the header object.  if the FEN is
-  /// equal to the default position, the SetUp and FEN are deleted
-  /// the setup is only updated if history.length is zero, ie moves haven't been
-  /// made.
-  void update_setup(String fen) {
-    if (game.history.length > 0) return;
-
-    if (fen != DEFAULT_POSITION) {
-      game.header['SetUp'] = '1';
-      game.header['FEN'] = fen;
-    } else {
-      game.header.remove('SetUp');
-      game.header.remove('FEN');
-    }
-  }
-
   /// Returns the piece at the square in question or null
   /// if there is none
   Piece get(String square) {
@@ -336,8 +288,6 @@ class Chess {
       game.kings[piece.color] = sq;
     }
 
-    update_setup(generate_fen());
-
     return true;
   }
 
@@ -349,8 +299,6 @@ class Chess {
     if (piece != null && piece.type == KING) {
       game.kings[piece.color] = EMPTY;
     }
-
-    update_setup(generate_fen());
 
     return piece;
   }
@@ -372,10 +320,7 @@ class Chess {
   }
 
   List<Move> generateMoves([Map options]) {
-    if ((generatedMoves['move_move'] == generatedMoves['gen_move']) && (generatedMoves['gen'].length != 0)) {
-      print('saved');
-      return generatedMoves['gen'];
-    }
+
 
     // ignore: non_constant_identifier_names
     void add_move(List<Move> moves, from, to, flags) {
@@ -530,8 +475,7 @@ class Chess {
       undo();
     }
 
-    generatedMoves['gen_move'] = generatedMoves['move_move'];
-    return generatedMoves['gen'] = legal_moves;
+    return legal_moves;
   }
 
   /// Convert a move from 0x88 coordinates to Standard Algebraic Notation(SAN)
@@ -564,8 +508,8 @@ class Chess {
     }
 
     make_move(move);
-    if (in_check) {
-      if (in_checkmate) {
+    if (in_check()) {
+      if (in_checkmate(generateMoves())) {
         output += '#';
       } else {
         output += '+';
@@ -628,19 +572,19 @@ class Chess {
     return attacked(swap_color(color), game.kings[color]);
   }
 
-  bool get in_check {
+  bool in_check() {
     return king_attacked(game.turn);
   }
 
-  bool get in_checkmate {
-    return in_check && generateMoves().length == 0;
+  bool in_checkmate(List<Move> generatedMoves) {
+    return in_check() && generatedMoves.length == 0;
   }
 
-  bool get in_stalemate {
-    return !in_check && generateMoves().length == 0;
+  bool in_stalemate(List<Move> generatedMoves) {
+    return !in_check() && generatedMoves.length == 0;
   }
 
-  bool get insufficient_material {
+  bool insufficient_material() {
     Map pieces = {};
     List bishops = [];
     int num_pieces = 0;
@@ -687,14 +631,16 @@ class Chess {
     return false;
   }
 
-  bool get in_threefold_repetition {
+  bool in_threefold_repetition(List<Move> generatedMoves) {
+    //don't check for this because of performance
+    return false;
     /* TODO: while this function is fine for casual use, a better
      * implementation would use a Zobrist key (instead of FEN). the
      * Zobrist key would be maintained in the make_move/undo_move functions,
      * avoiding the costly that we do below.
      */
 
-    List moves = [];
+    /*List moves = [];
     Map positions = {};
     bool repetition = false;
 
@@ -723,7 +669,7 @@ class Chess {
       make_move(moves.removeLast());
     }
 
-    return repetition;
+    return repetition;*/
   }
 
   void push(Move move) {
@@ -826,8 +772,6 @@ class Chess {
       game.moveNumber++;
     }
     game.turn = swap_color(game.turn);
-
-    generatedMoves['move_uuid'] = move;
   }
 
   /// Undoes a move and returns it, or null if move history is empty
@@ -1008,38 +952,20 @@ class Chess {
     }
   }
 
-  /// pretty = external move object
-  Map make_pretty(Move ugly_move) {
-    Map map = {};
-    map['san'] = move_to_san(ugly_move);
-    map['to'] = ugly_move.toAlgebraic;
-    map['from'] = ugly_move.fromAlgebraic;
-    map['captured'] = ugly_move.captured;
-
-    var flags = '';
-    for (var flag in BITS.keys) {
-      if ((BITS[flag] & ugly_move.flags) != 0) {
-        flags += FLAGS[flag];
-      }
-    }
-    map['flags'] = flags;
-
-    return map;
-  }
-
   String trim(String str) {
     return str.replaceAll(new RegExp(r"^\s+|\s+$"), '');
   }
 
-  bool get in_draw {
-    return game.halfMoves >= 100 ||
-        in_stalemate ||
-        insufficient_material ||
-        in_threefold_repetition;
+  bool lastInDraw = false;
+  bool in_draw(List<Move> generatedMoves) {
+    return lastInDraw = (game.halfMoves >= 100 ||
+        in_stalemate(generatedMoves) ||
+        insufficient_material() ||
+        in_threefold_repetition(generatedMoves));
   }
 
-  bool get game_over {
-    return in_draw || in_checkmate;
+  bool game_over(List<Move> generatedMoves) {
+    return in_draw(generatedMoves) || in_checkmate(generatedMoves);
   }
 
   String get fen {

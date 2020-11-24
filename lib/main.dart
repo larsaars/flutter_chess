@@ -268,8 +268,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                           style: Theme.of(context).textTheme.subtitle1.copyWith(
                                 inherit: true,
                                 color:
-                                    (_chessController?.game?.in_check ?? false)
-                                        ? ((_chessController.game.in_checkmate)
+                                    (_chessController?.game?.in_check() ?? false)
+                                        ? ((_chessController.game.in_checkmate(_chessController.game.generateMoves()))
                                             ? Colors.purple
                                             : Colors.red)
                                         : Colors.black,
