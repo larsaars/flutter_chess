@@ -695,7 +695,7 @@ class Chess2 {
 
     if (totalCount == counts[BISHOP] + 2) {
       final bishops =
-          this.pieces[BISHOP][WHITE].concat(this.pieces[BISHOP][BLACK]);
+          this.pieces[BISHOP][WHITE] + this.pieces[BISHOP][BLACK];
       final colorSum = bishops.reduce((sum, square) {
         return sum + SQUARE_COLORS[square];
       }, 0);
