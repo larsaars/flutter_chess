@@ -16,11 +16,6 @@ class ChessBoardController {
 
   bool userCanMakeMoves = true;
 
-  /// Makes move on the board
-  void makeMove(String from, String to) {
-    game?.moveIfFound({"from": from, "to": to});
-    refreshBoard == null ? this._throwNotAttachedException() : refreshBoard();
-  }
 
   /// Makes move and promotes pawn to piece (from is a square like d4, to is also a square like e3, pieceToPromoteTo is a String like "Q".
   /// pieceToPromoteTo String will be changed to enum in a future update and this method will be deprecated in the future
