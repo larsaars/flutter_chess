@@ -388,5 +388,5 @@ class ChessAI {
 
   static const _MIN_CALC_DEPTH = 3,
       _MAX_CALC_DEPTH = 6,
-      _MAX_CALC_ESTIMATED_MOVES = 150000;
+      _MAX_CALC_ESTIMATED_MOVES = 135000;
 }
