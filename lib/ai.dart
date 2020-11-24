@@ -103,11 +103,12 @@ class ChessAI {
       Chess c, int depth, double alpha, double beta, Color whoNow) {
 
     //is leaf
-    if (depth >= _MAX_DEPTH || c.game_over) {
+    bool gameOver = false;
+    if (depth >= _MAX_DEPTH || gameOver) {
       //update idx
       _idx++;
       //return the end node evaluation
-      return _evaluatePosition(c, depth);
+      return _evaluatePosition(c, gameOver, depth);
     }
 
     // if the computer is the current player (MAX)
@@ -147,8 +148,8 @@ class ChessAI {
   }
 
   // simple material based evaluation
-  static double _evaluatePosition(Chess c, int depth) {
-    if (c.game_over) {
+  static double _evaluatePosition(Chess c, bool gameOver, int depth) {
+    if (gameOver) {
       if (c.in_draw) {
         // draw is a neutral outcome
         return 0.0;
