@@ -34,7 +34,7 @@ class Chess2 {
     this.reset();
   }
 
-  Chess2.fromFen(String fen) {
+  Chess2.fromFEN(String fen) {
     loadFen(fen);
   }
 
