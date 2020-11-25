@@ -269,7 +269,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                 inherit: true,
                                 color:
                                     (_chessController?.game?.in_check() ?? false)
-                                        ? ((_chessController.game.in_checkmate(_chessController.game.generateMoves()))
+                                        ? ((_chessController.game.in_checkmate(_chessController.game.generateMoves().length == 0))
                                             ? Colors.purple
                                             : Colors.red)
                                         : Colors.black,
