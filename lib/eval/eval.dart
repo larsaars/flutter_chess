@@ -1,19 +1,18 @@
-
-
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 
 class Evaluation {
   // ignore: non_constant_identifier_names
   final Color _MAX, _MIN;
+  final bool endGame;
+
   // ignore: non_constant_identifier_names
   final double _LARGE;
 
-  Evaluation(this._MIN, this._MAX, this._LARGE);
+  Evaluation(this._MIN, this._MAX, this._LARGE, this.endGame);
 
   // simple material based evaluation
-  double evaluatePosition(
-      Chess c, bool gameOver, bool inDraw, int depth) {
+  double evaluatePosition(Chess c, bool gameOver, bool inDraw, int depth) {
     if (gameOver) {
       if (inDraw) {
         // draw is a neutral outcome
@@ -53,13 +52,13 @@ class Evaluation {
     }
   }
 
-  double _getPieceValue(Piece piece, int x, int y) {
+  num _getPieceValue(Piece piece, int x, int y) {
     if (piece == null) {
       return 0;
     }
 
     var absoluteValue =
-    _getAbsoluteValue(piece.type, piece.color == Color.WHITE, x, y);
+        _getAbsoluteValue(piece.type, piece.color == Color.WHITE, x, y);
 
     if (piece.color == _MAX) {
       return absoluteValue;
@@ -68,8 +67,7 @@ class Evaluation {
     }
   }
 
-  double _getAbsoluteValue(PieceType piece, bool isWhite, int x, int y) {
-    //return _easyPieceValues[piece].toDouble();
+  num _getAbsoluteValue(PieceType piece, bool isWhite, int x, int y) {
     if (piece.name == 'p') {
       return _pieceValues[PieceType.PAWN] +
           (isWhite ? _whitePawnEval[y][x] : _blackPawnEval[y][x]);
@@ -84,8 +82,15 @@ class Evaluation {
     } else if (piece.name == 'q') {
       return _pieceValues[PieceType.QUEEN] + _evalQueen[y][x];
     } else if (piece.name == 'k') {
-      return _pieceValues[PieceType.KING] +
-          (isWhite ? _whiteKingEval[y][x] : _blackKingEval[y][x]);
+      if (endGame) {
+        return _pieceValues[PieceType.KING] +
+            (isWhite
+                ? _whiteKingEvalEndGame[y][x]
+                : _blackKingEvalEndGame[y][x]);
+      } else {
+        return _pieceValues[PieceType.KING] +
+            (isWhite ? _whiteKingEval[y][x] : _blackKingEval[y][x]);
+      }
     }
 
     return 0;
@@ -106,63 +111,63 @@ class Evaluation {
   }
 
   static const _whitePawnEval = [
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
     [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
     [1.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 1.0],
     [0.5, 0.5, 1.0, 2.5, 2.5, 1.0, 0.5, 0.5],
-    [0.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 0.0],
-    [0.5, -0.5, -1.0, 0.0, 0.0, -1.0, -0.5, 0.5],
+    [0, 0, 0, 2.0, 2.0, 0, 0, 0],
+    [0.5, -0.5, -1.0, 0, 0, -1.0, -0.5, 0.5],
     [0.5, 1.0, 1.0, -2.0, -2.0, 1.0, 1.0, 0.5],
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    [0, 0, 0, 0, 0, 0, 0, 0]
   ];
 
   static final _blackPawnEval = _reverseList(_whitePawnEval);
 
   static const _knightEval = [
     [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
-    [-4.0, -2.0, 0.0, 0.0, 0.0, 0.0, -2.0, -4.0],
-    [-3.0, 0.0, 1.0, 1.5, 1.5, 1.0, 0.0, -3.0],
+    [-4.0, -2.0, 0, 0, 0, 0, -2.0, -4.0],
+    [-3.0, 0, 1.0, 1.5, 1.5, 1.0, 0, -3.0],
     [-3.0, 0.5, 1.5, 2.0, 2.0, 1.5, 0.5, -3.0],
-    [-3.0, 0.0, 1.5, 2.0, 2.0, 1.5, 0.0, -3.0],
+    [-3.0, 0, 1.5, 2.0, 2.0, 1.5, 0, -3.0],
     [-3.0, 0.5, 1.0, 1.5, 1.5, 1.0, 0.5, -3.0],
-    [-4.0, -2.0, 0.0, 0.5, 0.5, 0.0, -2.0, -4.0],
-    [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
+    [-4.0, -2.0, 0, 0.5, 0.5, 0, -2.0, -4.0],
+    [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
   ];
 
   static const _whiteBishopEval = [
     [-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
-    [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0],
-    [-1.0, 0.0, 0.5, 1.0, 1.0, 0.5, 0.0, -1.0],
+    [-1.0, 0, 0, 0, 0, 0, 0, -1.0],
+    [-1.0, 0, 0.5, 1.0, 1.0, 0.5, 0, -1.0],
     [-1.0, 0.5, 0.5, 1.0, 1.0, 0.5, 0.5, -1.0],
-    [-1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0],
+    [-1.0, 0, 1.0, 1.0, 1.0, 1.0, 0, -1.0],
     [-1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0],
-    [-1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, -1.0],
-    [-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0]
+    [-1.0, 0.5, 0, 0, 0, 0, 0.5, -1.0],
+    [-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
   ];
 
   static final _blackBishopEval = _reverseList(_whiteBishopEval);
 
   static const _whiteRookEval = [
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
     [0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0]
+    [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+    [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+    [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+    [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+    [-0.5, 0, 0, 0, 0, 0, 0, -0.5],
+    [0, 0, 0, 0.5, 0.5, 0, 0, 0]
   ];
 
   static final _blackRookEval = _reverseList(_whiteRookEval);
 
   static const _evalQueen = [
     [-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
-    [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0],
-    [-1.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -1.0],
-    [-0.5, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -0.5],
-    [0.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -0.5],
-    [-1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.0, -1.0],
-    [-1.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, -1.0],
+    [-1.0, 0, 0, 0, 0, 0, 0, -1.0],
+    [-1.0, 0, 0.5, 0.5, 0.5, 0.5, 0, -1.0],
+    [-0.5, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
+    [0, 0, 0.5, 0.5, 0.5, 0.5, 0, -0.5],
+    [-1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0, -1.0],
+    [-1.0, 0, 0.5, 0, 0, 0, 0, -1.0],
     [-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0]
   ];
 
@@ -173,9 +178,31 @@ class Evaluation {
     [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
     [-2.0, -3.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0],
     [-1.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.0],
-    [2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0],
-    [2.0, 3.0, 1.0, 0.0, 0.0, 1.0, 3.0, 2.0]
+    [2.0, 2.0, 0, 0, 0, 0, 2.0, 2.0],
+    [2.0, 3.0, 1.0, 0, 0, 1.0, 3.0, 2.0]
   ];
 
   static final _blackKingEval = _reverseList(_whiteKingEval);
+
+  static const _whiteKingEvalEndGame = [
+    [-5.0, -4.0, -3.0, -2.0, -2.0, -3.0, -4.0, -5.0],
+    [-3.0, -2.0, -1.0, 0, 0, -1.0, -2.0, -3.0],
+    [-3.0, -1.0, 2.0, 3.0, 3.0, 2.0, -1.0, -3.0],
+    [-3.0, -1.0, 3.0, 4.0, 4.0, 3.0, -1.0, -3.0],
+    [-3.0, -1.0, 3.0, 4.0, 4.0, 3.0, -1.0, -3.0],
+    [-3.0, -1.0, 2.0, 3.0, 3.0, 2.0, -1.0, -3.0],
+    [-3.0, -3.0, 0, 0, 0, 0, -3.0, -3.0],
+    [-5.0, -3.0, -3.0, -3.0, -3.0, -3.0, -3.0, -5.0]
+  ];
+
+  static final _blackKingEvalEndGame = _reverseList(_whiteKingEvalEndGame);
+
+  static bool isEndGame(Chess chess) {
+    int pieceCount = 0;
+    chess.forEachPiece((piece) {
+      pieceCount++;
+    });
+
+    return pieceCount < 12;
+  }
 }
