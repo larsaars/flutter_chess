@@ -16,7 +16,9 @@ class ChessBoardRank extends StatelessWidget {
       child: Row(
         children: children
             .map(
-              (squareName) => BoardSquare(squareName: squareName),
+              (squareName) => BoardSquare(
+                squareName: squareName,
+              ),
             )
             .toList(),
       ),
