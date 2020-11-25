@@ -53,7 +53,7 @@ class ChessAI {
     _MIN = Chess.swap_color(chess.game.turn);
 
     //init the eval
-    _eval = Evaluation(_MIN, _MAX, _LARGE);
+    _eval = Evaluation(_MIN, _MAX, _LARGE, Evaluation.isEndGame(chess));
 
     //execute the first depth of max
     List<List> moveEvalPairs = new List<List>();
