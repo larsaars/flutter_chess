@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';
 
-import 'ai.dart';
 import 'chess_board/src/chess_board_controller.dart';
+import 'eval/ai.dart';
 
 class ChessController {
   ChessBoardController controller = ChessBoardController();

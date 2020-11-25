@@ -509,7 +509,7 @@ class Chess {
 
     make_move(move);
     if (in_check()) {
-      if (in_checkmate(generateMoves().length == 0)) {
+      if (inCheckmate(generateMoves().length == 0)) {
         output += '#';
       } else {
         output += '+';
@@ -576,15 +576,15 @@ class Chess {
     return king_attacked(game.turn);
   }
 
-  bool in_checkmate(bool genMoveZero) {
+  bool inCheckmate(bool genMoveZero) {
     return in_check() && genMoveZero;
   }
 
-  bool in_stalemate(bool genMoveZero) {
+  bool inStalemate(bool genMoveZero) {
     return !in_check() && genMoveZero;
   }
 
-  bool insufficient_material() {
+  bool insufficientMaterial() {
     Map pieces = {};
     List bishops = [];
     int num_pieces = 0;
@@ -957,15 +957,15 @@ class Chess {
   }
 
   bool lastInDraw = false;
-  bool in_draw(bool genMoveZero) {
+  bool inDraw(bool genMoveZero) {
     return lastInDraw = (game.halfMoves >= 100 ||
-        in_stalemate(genMoveZero) ||
-        insufficient_material() ||
+        inStalemate(genMoveZero) ||
+        insufficientMaterial() ||
         in_threefold_repetition());
   }
 
   bool gameOver(bool genMoveZero) {
-    return in_draw(genMoveZero) || in_checkmate(genMoveZero);
+    return inDraw(genMoveZero) || inCheckmate(genMoveZero);
   }
 
   String get fen {
