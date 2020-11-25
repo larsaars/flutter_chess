@@ -37,7 +37,8 @@ class Move {
 
   @override
   String toString() {
-    return 'from: $from to $to';
+    String fromAlg = Chess.algebraic(from), toAlg = Chess.algebraic(to);
+    return 'from: $fromAlg to $toAlg';
   }
 
   @override
