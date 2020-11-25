@@ -48,6 +48,7 @@ class MyApp extends StatelessWidget {
       supportedLocales: S.delegate.supportedLocales,
       //define title etc.
       title: app_name,
+      locale: Locale('en', 'US'),
       theme: ThemeData(
         // This is the theme of your application.
         //
