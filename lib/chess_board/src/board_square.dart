@@ -44,10 +44,7 @@ class _BoardSquareState extends State<BoardSquare>
         !ChessController.loadingBotMoves) {
       milliseconds = 600;
     }
-    String from = ChessController.moveFrom,
-        to = ChessController.moveTo,
-        square = widget.squareName;
-    print('$from; $to; $square');
+
     _animationController.duration = Duration(milliseconds: milliseconds);
     _animationController.forward(from: 0);
 
