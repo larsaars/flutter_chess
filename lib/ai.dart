@@ -108,7 +108,7 @@ class ChessAI {
     List<Move> futureMoves = c.generateMoves();
 
     //is leaf
-    bool gameOver = c.gameOver(futureMoves);
+    bool gameOver = c.gameOver(futureMoves.length == 0);
     if (depth >= _MAX_DEPTH || gameOver) {
       //return the end node evaluation
       return _evaluatePosition(c, gameOver, c.lastInDraw, depth);
