@@ -62,7 +62,7 @@ class ChessController {
     //the move generation algorithm can work faster (lightweight)
     Isolate isolate = await Isolate.spawn(
       ChessAI.entryPointMoveFinderIsolate,
-      [receivePort.sendPort, game.fen, (prefs.getInt('difficulty') ?? 1)],
+      [receivePort.sendPort, game.fen],
       debugName: 'chess_move_generator',
     );
     //listen at the receive port for the game (exit point)
