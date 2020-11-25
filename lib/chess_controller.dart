@@ -19,11 +19,14 @@ class ChessController {
   Chess game;
   BuildContext context;
 
-  static bool whiteSideTowardsUser = true;
-  bool _showing = false, loadingBotMoves = false, botBattle = false;
+  bool whiteSideTowardsUser = true;
+  bool _showing = false, botBattle = false;
   int progress = 0;
 
   Color botColor = Color.BLACK;
+
+  static bool loadingBotMoves = false;
+  static String moveFrom, moveTo;
 
   ChessController(this.context);
 
@@ -31,11 +34,9 @@ class ChessController {
   var update;
 
   void onMove(move) {
-    //update text
-    if (update != null) update();
     //print the move
     print('onMove: $move');
-    //and then update the ui
+    // update the ui
     update();
     //check if bot should make a move
     //and then find it
@@ -72,8 +73,14 @@ class ChessController {
       if (message is List) {
         //execute exitPointMoveFinderIsolate
         //in the main thread again, manage the move object
+        //get the move object
+        var move = message[0] as Move;
+        //set the move from and move to object
+        //for the animation in board_square
+        moveFrom = move.fromAlgebraic;
+        moveTo = move.toAlgebraic;
         //make the move, if there is one
-        if (message != null) game.make_move(message[0]);
+        if (message != null) game.make_move(move);
         //now set user can make moves true again
         controller.userCanMakeMoves = true;
         //set loading false
@@ -92,8 +99,8 @@ class ChessController {
         //if botbattle is activated, wait a certain amount of time,
         //then inverse botColor and
         //make check if bot move is required
-        if(botBattle) {
-          Future.delayed(Duration(milliseconds: 300)).then((value) {
+        if (botBattle) {
+          Future.delayed(Duration(milliseconds: 350)).then((value) {
             botColor = Color.inverse(botColor);
             update();
             makeBotMoveIfRequired();
@@ -339,8 +346,7 @@ class ChessController {
     showTextDialog('fen', null, setStateCallback: (ctx0, setState) {
       ctx = ctx0;
     }, onDone: (value) {
-      if(value == 'yes')
-        update();
+      if (value == 'yes') update();
     }, children: [
       RadioGroup.builder(
           direction: Axis.vertical,
@@ -359,7 +365,7 @@ class ChessController {
                 if (Chess.validate_fen(value.text)['valid']) {
                   game = Chess.fromFEN(value.text);
                   Navigator.of(ctx).pop('yes');
-                }else
+                } else
                   Navigator.of(ctx).pop('no');
               });
             }
