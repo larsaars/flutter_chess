@@ -964,7 +964,7 @@ class Chess {
         in_threefold_repetition(generatedMoves));
   }
 
-  bool game_over(List<Move> generatedMoves) {
+  bool gameOver(List<Move> generatedMoves) {
     return in_draw(generatedMoves) || in_checkmate(generatedMoves);
   }
 
