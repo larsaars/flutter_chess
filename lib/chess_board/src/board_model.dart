@@ -44,10 +44,10 @@ class BoardModel extends Model {
   /// Refreshes board
   void refreshBoard() {
     bool generatedMovesLen0 = game.generateMoves().length == 0;
-    if (game.in_checkmate(generatedMovesLen0)) {
+    if (game.inCheckmate(generatedMovesLen0)) {
       onCheckMate(game.game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
     }
-    else if (game.in_draw(generatedMovesLen0) || game.in_stalemate(generatedMovesLen0) || game.in_threefold_repetition() || game.insufficient_material()) {
+    else if (game.inDraw(generatedMovesLen0) || game.inStalemate(generatedMovesLen0) || game.in_threefold_repetition() || game.insufficientMaterial()) {
       onDraw();
     }
     else if (game.in_check()) {
