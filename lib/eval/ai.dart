@@ -5,7 +5,8 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'chess_board/chess.dart';
+import '../chess_board/chess.dart';
+import 'eval.dart';
 
 class ChessAI {
   //the entry point for the new isolate
@@ -25,6 +26,9 @@ class ChessAI {
 
   // ignore: non_constant_identifier_names
   static Color _MAX, _MIN;
+
+  //the eval
+  static Evaluation _eval;
 
   //big enough to be infinity in this case
   static const double _INFINITY = 99999999.0, _LARGE = 9999999;
@@ -47,6 +51,9 @@ class ChessAI {
     //get the MAX and MIN color
     _MAX = chess.game.turn;
     _MIN = Chess.swap_color(chess.game.turn);
+
+    //init the eval
+    _eval = Evaluation(_MIN, _MAX, _LARGE);
 
     //execute the first depth of max
     List<List> moveEvalPairs = new List<List>();
@@ -104,14 +111,14 @@ class ChessAI {
       Chess c, int depth, double alpha, double beta, Color whoNow) {
     //update idx
     _idx++;
-    //generate the moves
+    //generate the moves for eval and normal minimax / alpha-beta
     List<Move> futureMoves = c.generateMoves();
 
     //is leaf
     bool gameOver = c.gameOver(futureMoves.length == 0);
     if (depth >= _MAX_DEPTH || gameOver) {
       //return the end node evaluation
-      return _evaluatePosition(c, gameOver, c.lastInDraw, depth);
+      return _eval.evaluatePosition(c, gameOver, c.lastInDraw, depth);
     }
 
     // if the computer is the current player (MAX)
@@ -148,85 +155,6 @@ class ChessAI {
       }
       return beta;
     }
-  }
-
-  // simple material based evaluation
-  static double _evaluatePosition(
-      Chess c, bool gameOver, bool inDraw, int depth) {
-    if (gameOver) {
-      if (inDraw) {
-        // draw is a neutral outcome
-        return 0.0;
-      } else {
-        // otherwise must be a mate
-        if (c.game.turn == _MAX) {
-          // avoid mates loss, the deeper the better
-          //(earlier is worse)
-          return -_LARGE - depth;
-        } else {
-          // go for the loss of the other one, the deeper the worse
-          //(earlier is better)
-          return _LARGE - depth;
-        }
-      }
-    } else {
-      //the final evaluation to be returned
-      double eval = 0.0;
-      //loop through all squares
-      for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
-        if ((i & 0x88) != 0) {
-          i += 7;
-          continue;
-        }
-
-        Piece piece = c.game.board[i];
-        if (piece != null) {
-          //get the x and y from the map
-          final x = Chess.file(i), y = Chess.rank(i);
-          //evaluate the piece at the position
-          eval += _getPieceValue(piece, x, y);
-        }
-      }
-
-      return eval;
-    }
-  }
-
-  static double _getPieceValue(Piece piece, int x, int y) {
-    if (piece == null) {
-      return 0;
-    }
-
-    var absoluteValue =
-        _getAbsoluteValue(piece.type, piece.color == Color.WHITE, x, y);
-
-    if (piece.color == _MAX) {
-      return absoluteValue;
-    } else {
-      return -absoluteValue;
-    }
-  }
-
-  static double _getAbsoluteValue(PieceType piece, bool isWhite, int x, int y) {
-    if (piece.name == 'p') {
-      return _easyPieceValues[PieceType.PAWN] +
-          (isWhite ? _whitePawnEval[y][x] : _blackPawnEval[y][x]);
-    } else if (piece.name == 'r') {
-      return _easyPieceValues[PieceType.ROOK] +
-          (isWhite ? _whiteRookEval[y][x] : _blackRookEval[y][x]);
-    } else if (piece.name == 'n') {
-      return _easyPieceValues[PieceType.KNIGHT] + _knightEval[y][x];
-    } else if (piece.name == 'b') {
-      return _easyPieceValues[PieceType.BISHOP] +
-          (isWhite ? _whiteBishopEval[y][x] : _blackBishopEval[y][x]);
-    } else if (piece.name == 'q') {
-      return _easyPieceValues[PieceType.QUEEN] + _evalQueen[y][x];
-    } else if (piece.name == 'k') {
-      return _easyPieceValues[PieceType.KING] +
-          (isWhite ? _whiteKingEval[y][x] : _blackKingEval[y][x]);
-    }
-
-    return 0;
   }
 
   static void _calcMaxDepth(Chess chess) {
@@ -279,94 +207,6 @@ class ChessAI {
 
     print('set max depth to $_MAX_DEPTH');
   }
-
-  //the piece values
-  static const Map _easyPieceValues = const {
-    PieceType.PAWN: 10,
-    PieceType.KNIGHT: 32,
-    PieceType.BISHOP: 33,
-    PieceType.ROOK: 50,
-    PieceType.QUEEN: 90,
-    PieceType.KING: 20000
-  };
-
-  static List _reverseList(List list) {
-    return [...list].reversed.toList();
-  }
-
-  static const _whitePawnEval = [
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
-    [1.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 1.0],
-    [0.5, 0.5, 1.0, 2.5, 2.5, 1.0, 0.5, 0.5],
-    [0.0, 0.0, 0.0, 2.0, 2.0, 0.0, 0.0, 0.0],
-    [0.5, -0.5, -1.0, 0.0, 0.0, -1.0, -0.5, 0.5],
-    [0.5, 1.0, 1.0, -2.0, -2.0, 1.0, 1.0, 0.5],
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-  ];
-
-  static final _blackPawnEval = _reverseList(_whitePawnEval);
-
-  static const _knightEval = [
-    [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0],
-    [-4.0, -2.0, 0.0, 0.0, 0.0, 0.0, -2.0, -4.0],
-    [-3.0, 0.0, 1.0, 1.5, 1.5, 1.0, 0.0, -3.0],
-    [-3.0, 0.5, 1.5, 2.0, 2.0, 1.5, 0.5, -3.0],
-    [-3.0, 0.0, 1.5, 2.0, 2.0, 1.5, 0.0, -3.0],
-    [-3.0, 0.5, 1.0, 1.5, 1.5, 1.0, 0.5, -3.0],
-    [-4.0, -2.0, 0.0, 0.5, 0.5, 0.0, -2.0, -4.0],
-    [-5.0, -4.0, -3.0, -3.0, -3.0, -3.0, -4.0, -5.0]
-  ];
-
-  static const _whiteBishopEval = [
-    [-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0],
-    [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0],
-    [-1.0, 0.0, 0.5, 1.0, 1.0, 0.5, 0.0, -1.0],
-    [-1.0, 0.5, 0.5, 1.0, 1.0, 0.5, 0.5, -1.0],
-    [-1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, -1.0],
-    [-1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, -1.0],
-    [-1.0, 0.5, 0.0, 0.0, 0.0, 0.0, 0.5, -1.0],
-    [-2.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -2.0]
-  ];
-
-  static final _blackBishopEval = _reverseList(_whiteBishopEval);
-
-  static const _whiteRookEval = [
-    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    [0.5, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [-0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.5],
-    [0.0, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0]
-  ];
-
-  static final _blackRookEval = _reverseList(_whiteRookEval);
-
-  static const _evalQueen = [
-    [-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0],
-    [-1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -1.0],
-    [-1.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -1.0],
-    [-0.5, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -0.5],
-    [0.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.0, -0.5],
-    [-1.0, 0.5, 0.5, 0.5, 0.5, 0.5, 0.0, -1.0],
-    [-1.0, 0.0, 0.5, 0.0, 0.0, 0.0, 0.0, -1.0],
-    [-2.0, -1.0, -1.0, -0.5, -0.5, -1.0, -1.0, -2.0]
-  ];
-
-  static const _whiteKingEval = [
-    [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
-    [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
-    [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
-    [-3.0, -4.0, -4.0, -5.0, -5.0, -4.0, -4.0, -3.0],
-    [-2.0, -3.0, -3.0, -4.0, -4.0, -3.0, -3.0, -2.0],
-    [-1.0, -2.0, -2.0, -2.0, -2.0, -2.0, -2.0, -1.0],
-    [2.0, 2.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0],
-    [2.0, 3.0, 1.0, 0.0, 0.0, 1.0, 3.0, 2.0]
-  ];
-
-  static final _blackKingEval = _reverseList(_whiteKingEval);
 
   static const _MIN_CALC_DEPTH = 3,
       _MAX_CALC_DEPTH = 5,
