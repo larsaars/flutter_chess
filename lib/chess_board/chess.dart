@@ -162,7 +162,7 @@ class Chess {
     }
 
     /* 6th criterion: 2nd field is "w" (white) or "b" (black)? */
-    RegExp check6 = new RegExp(r"^(w|b)$");
+    RegExp check6 = new RegExp(r"^([wb])$");
     if (check6.firstMatch(tokens[1]) == null) {
       return {'valid': false, 'error_number': 6, 'error': errors[6]};
     }
@@ -509,7 +509,7 @@ class Chess {
 
     make_move(move);
     if (in_check()) {
-      if (in_checkmate(generateMoves())) {
+      if (in_checkmate(generateMoves().length == 0)) {
         output += '#';
       } else {
         output += '+';
@@ -576,12 +576,12 @@ class Chess {
     return king_attacked(game.turn);
   }
 
-  bool in_checkmate(List<Move> generatedMoves) {
-    return in_check() && generatedMoves.length == 0;
+  bool in_checkmate(bool genMoveZero) {
+    return in_check() && genMoveZero;
   }
 
-  bool in_stalemate(List<Move> generatedMoves) {
-    return !in_check() && generatedMoves.length == 0;
+  bool in_stalemate(bool genMoveZero) {
+    return !in_check() && genMoveZero;
   }
 
   bool insufficient_material() {
@@ -631,7 +631,7 @@ class Chess {
     return false;
   }
 
-  bool in_threefold_repetition(List<Move> generatedMoves) {
+  bool in_threefold_repetition() {
     //don't check for this because of performance
     return false;
     /* TODO: while this function is fine for casual use, a better
@@ -957,15 +957,15 @@ class Chess {
   }
 
   bool lastInDraw = false;
-  bool in_draw(List<Move> generatedMoves) {
+  bool in_draw(bool genMoveZero) {
     return lastInDraw = (game.halfMoves >= 100 ||
-        in_stalemate(generatedMoves) ||
+        in_stalemate(genMoveZero) ||
         insufficient_material() ||
-        in_threefold_repetition(generatedMoves));
+        in_threefold_repetition());
   }
 
-  bool gameOver(List<Move> generatedMoves) {
-    return in_draw(generatedMoves) || in_checkmate(generatedMoves);
+  bool gameOver(bool genMoveZero) {
+    return in_draw(genMoveZero) || in_checkmate(genMoveZero);
   }
 
   String get fen {
