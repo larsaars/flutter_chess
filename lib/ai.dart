@@ -86,6 +86,7 @@ class ChessAI {
 
     //random one of the same scores
     var bestMove = bestMoves[_random.nextInt(bestMoves.length)];
+    print('best moves: $bestMoves');
 
     //print
     print('selected: $bestMove with $highestEval');
@@ -107,7 +108,7 @@ class ChessAI {
     List<Move> futureMoves = c.generateMoves();
 
     //is leaf
-    bool gameOver = c.game_over(futureMoves);
+    bool gameOver = c.gameOver(futureMoves);
     if (depth >= _MAX_DEPTH || gameOver) {
       //return the end node evaluation
       return _evaluatePosition(c, gameOver, c.lastInDraw, depth);
@@ -181,8 +182,7 @@ class ChessAI {
         Piece piece = c.game.board[i];
         if (piece != null) {
           //get the x and y from the map
-          final x = Chess.file(i),
-              y = Chess.rank(i);
+          final x = Chess.file(i), y = Chess.rank(i);
           //evaluate the piece at the position
           eval += _getPieceValue(piece, x, y);
         }
@@ -369,6 +369,6 @@ class ChessAI {
   static final _blackKingEval = _reverseList(_whiteKingEval);
 
   static const _MIN_CALC_DEPTH = 3,
-      _MAX_CALC_DEPTH = 6,
+      _MAX_CALC_DEPTH = 5,
       _MAX_CALC_ESTIMATED_MOVES = 135000;
 }

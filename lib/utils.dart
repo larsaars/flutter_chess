@@ -6,7 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'main.dart';
 
 const version = '1.0';
-const app_name = 'chess';
+const app_name = 'chess-g';
 
 Future<String> get rootDir async {
   final directory = await getApplicationDocumentsDirectory();
