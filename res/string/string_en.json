@@ -11,7 +11,7 @@
   "white": "white",
   "black": "black",
   "check_mate_desc": "${loser} is in checkmate. ${winner} won.",
-  "turn_of_x": "it's ${turn}'s turn",
+  "turn_of_x": "${turn}'s turn",
   "replay_desc": "Are you sure to restart the game and reset the board?",
   "undo_impossible": "can't perform undo",
   "undo": "undo",
