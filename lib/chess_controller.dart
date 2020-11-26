@@ -123,12 +123,15 @@ class ChessController {
     });
   }
 
-  void makeBotMoveIfRequired() {
+  bool makeBotMoveIfRequired() {
     //make move if needed
     if (((game?.game?.turn ?? Color.inverse(botColor)) == botColor) &&
         prefs.getBool('bot')) {
       findMove();
+      return true;
     }
+
+    return false;
   }
 
   void onDraw() {
