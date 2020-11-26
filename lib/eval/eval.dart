@@ -61,7 +61,7 @@ class Evaluation {
         _getAbsoluteValue(piece.type, piece.color == Color.WHITE, x, y);
 
     if (piece.color == _MAX) {
-      return absoluteValue;
+      return absoluteValue * _OWN_LOSS_WORSE_FACTOR;
     } else {
       return -absoluteValue;
     }
@@ -97,13 +97,21 @@ class Evaluation {
   }
 
   //the piece values
-  static const Map _pieceValues = const {
+  /*static const Map _pieceValues = const {
     PieceType.PAWN: 100,
     PieceType.KNIGHT: 320,
     PieceType.BISHOP: 330,
     PieceType.ROOK: 500,
     PieceType.QUEEN: 900,
     PieceType.KING: 20000
+  };*/
+  static const Map _pieceValues = const {
+    PieceType.PAWN: 0,
+    PieceType.KNIGHT: 0,
+    PieceType.BISHOP: 0,
+    PieceType.ROOK: 0,
+    PieceType.QUEEN: 0,
+    PieceType.KING: 0
   };
 
   static List _reverseList(List list) {
@@ -196,6 +204,9 @@ class Evaluation {
   ];
 
   static final _blackKingEvalEndGame = _reverseList(_whiteKingEvalEndGame);
+
+  //for taking good positions, but not for losing a piece
+  static const _OWN_LOSS_WORSE_FACTOR = 0.97;
 
   static bool isEndGame(Chess chess) {
     int pieceCount = 0;
