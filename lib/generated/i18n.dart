@@ -122,6 +122,10 @@ class S {
     return Intl.message("bot vs. bot", name: 'bot_vs_bot');
   }
 
+  String get copy_fen {
+    return Intl.message("copy fen", name: 'copy_fen');
+  }
+
 
 }
 

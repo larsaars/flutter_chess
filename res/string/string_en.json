@@ -22,5 +22,6 @@
   "difficulty": "difficulty",
   "difficulties": "easy,medium,normal,hard",
   "fen_options": "to clipboard,from clipboard",
-  "bot_vs_bot": "bot vs. bot"
+  "bot_vs_bot": "bot vs. bot",
+  "copy_fen": "copy fen"
 }

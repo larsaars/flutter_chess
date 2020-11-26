@@ -2,17 +2,19 @@ import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 
 class Evaluation {
-  // ignore: non_constant_identifier_names
   final Color _MAX, _MIN;
+
+  // ignore: non_constant_identifier_names
   final bool endGame;
 
   // ignore: non_constant_identifier_names
   final double _LARGE;
 
-  Evaluation(this._MIN, this._MAX, this._LARGE, this.endGame);
+  Evaluation(this._MAX, this._MIN, this._LARGE, this.endGame);
 
   // simple material based evaluation
-  double evaluatePosition(Chess c, bool gameOver, bool inDraw, int depth) {
+  double evaluatePosition(
+      Chess c, Color currentPlayer, bool gameOver, bool inDraw, int depth) {
     if (gameOver) {
       if (inDraw) {
         // draw is a neutral outcome
@@ -44,7 +46,7 @@ class Evaluation {
           //get the x and y from the map
           final x = Chess.file(i), y = Chess.rank(i);
           //evaluate the piece at the position
-          eval += _getPieceValue(piece, x, y);
+          eval += _getPieceValue(piece, currentPlayer, x, y);
         }
       }
 
@@ -52,7 +54,7 @@ class Evaluation {
     }
   }
 
-  num _getPieceValue(Piece piece, int x, int y) {
+  num _getPieceValue(Piece piece, Color currentPlayer, int x, int y) {
     if (piece == null) {
       return 0;
     }
@@ -60,11 +62,19 @@ class Evaluation {
     var absoluteValue =
         _getAbsoluteValue(piece.type, piece.color == Color.WHITE, x, y);
 
-    if (piece.color == _MAX) {
-      return absoluteValue * _OWN_LOSS_WORSE_FACTOR;
+    bool curIsMax = _MAX == currentPlayer;
+
+    //if the current player is the max and also the color is max of the piece, calc the piece positive,
+    //else if the current player is not max and the piece color is min
+    if (((piece.color == _MAX) && curIsMax) ||
+        (!curIsMax && (piece.color == _MIN))) {
+      //* lower factor to make the game play rather defensive than losing a piece
+      return absoluteValue;
     } else {
       return -absoluteValue;
     }
+
+
   }
 
   num _getAbsoluteValue(PieceType piece, bool isWhite, int x, int y) {
@@ -198,7 +208,7 @@ class Evaluation {
   static final _blackKingEvalEndGame = _reverseList(_whiteKingEvalEndGame);
 
   //for taking good positions, but not for losing a piece
-  static const _OWN_LOSS_WORSE_FACTOR = 0.9443;
+  static const _OWN_LOSS_WORSE_FACTOR = 1;
 
   static bool isEndGame(Chess chess) {
     int pieceCount = 0;

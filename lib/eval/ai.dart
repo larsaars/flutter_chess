@@ -50,7 +50,7 @@ class ChessAI {
     _MIN = Chess.swap_color(chess.game.turn);
 
     //init the eval
-    _eval = Evaluation(_MIN, _MAX, _LARGE, Evaluation.isEndGame(chess));
+    _eval = Evaluation(_MAX, _MIN, _LARGE, Evaluation.isEndGame(chess));
 
     //calc the max depth
     _calcMaxDepth(chess);
@@ -118,7 +118,7 @@ class ChessAI {
     bool gameOver = c.gameOver(futureMoves.length == 0);
     if (depth >= _MAX_DEPTH || gameOver) {
       //return the end node evaluation
-      return _eval.evaluatePosition(c, gameOver, c.lastInDraw, depth);
+      return _eval.evaluatePosition(c, whoNow, gameOver, c.lastInDraw, depth);
     }
 
     // if the computer is the current player (MAX)
