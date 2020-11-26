@@ -45,15 +45,15 @@ class ChessAI {
     //set the random
     _random = Random();
 
-    //calc the max depth
-    _calcMaxDepth(chess);
-
     //get the MAX and MIN color
     _MAX = chess.game.turn;
     _MIN = Chess.swap_color(chess.game.turn);
 
     //init the eval
     _eval = Evaluation(_MIN, _MAX, _LARGE, Evaluation.isEndGame(chess));
+
+    //calc the max depth
+    _calcMaxDepth(chess);
 
     //execute the first depth of max
     List<List> moveEvalPairs = new List<List>();

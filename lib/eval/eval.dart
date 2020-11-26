@@ -97,21 +97,13 @@ class Evaluation {
   }
 
   //the piece values
-  /*static const Map _pieceValues = const {
+  static const Map _pieceValues = const {
     PieceType.PAWN: 100,
     PieceType.KNIGHT: 320,
     PieceType.BISHOP: 330,
     PieceType.ROOK: 500,
     PieceType.QUEEN: 900,
     PieceType.KING: 20000
-  };*/
-  static const Map _pieceValues = const {
-    PieceType.PAWN: 0,
-    PieceType.KNIGHT: 0,
-    PieceType.BISHOP: 0,
-    PieceType.ROOK: 0,
-    PieceType.QUEEN: 0,
-    PieceType.KING: 0
   };
 
   static List _reverseList(List list) {
