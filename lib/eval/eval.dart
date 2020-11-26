@@ -198,7 +198,7 @@ class Evaluation {
   static final _blackKingEvalEndGame = _reverseList(_whiteKingEvalEndGame);
 
   //for taking good positions, but not for losing a piece
-  static const _OWN_LOSS_WORSE_FACTOR = 0.97;
+  static const _OWN_LOSS_WORSE_FACTOR = 0.9443;
 
   static bool isEndGame(Chess chess) {
     int pieceCount = 0;
