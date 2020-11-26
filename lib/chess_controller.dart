@@ -346,7 +346,7 @@ class ChessController {
 
     var fen = game.fen;
 
-    showTextDialog('fen', null, setStateCallback: (ctx0, setState) {
+    showTextDialog(strings.copy_fen, null, setStateCallback: (ctx0, setState) {
       ctx = ctx0;
     }, onDone: (value) {
       if (value == 'yes') update();
