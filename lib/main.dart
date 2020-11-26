@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess_sub;
 import 'package:chess_bot/chess_controller.dart';
@@ -48,7 +49,6 @@ class MyApp extends StatelessWidget {
       supportedLocales: S.delegate.supportedLocales,
       //define title etc.
       title: app_name,
-      locale: Locale('en', 'US'),
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -354,7 +354,11 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                 _chessController.botBattle = value;
                                 setState(() {});
                                 //check if has to make bot move
-                                _chessController?.makeBotMoveIfRequired();
+                                if(!_chessController.makeBotMoveIfRequired()) {
+                                  //since move has not been made, inverse the bot color and retry
+                                  _chessController.botColor = Chess.swap_color(_chessController.botColor);
+                                  _chessController.makeBotMoveIfRequired();
+                                }
                               },
                             ),
                           ),
