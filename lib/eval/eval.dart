@@ -62,12 +62,7 @@ class Evaluation {
     var absoluteValue =
         _getAbsoluteValue(piece.type, piece.color == Color.WHITE, x, y);
 
-    bool curIsMax = _MAX == currentPlayer;
-
-    //if the current player is the max and also the color is max of the piece, calc the piece positive,
-    //else if the current player is not max and the piece color is min
-    if (((piece.color == _MAX) && curIsMax) ||
-        (!curIsMax && (piece.color == _MIN))) {
+    if (piece.color == _MAX) {
       //* lower factor to make the game play rather defensive than losing a piece
       return absoluteValue;
     } else {
