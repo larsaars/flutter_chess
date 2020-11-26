@@ -60,7 +60,7 @@ class $en extends MessageLookupByLibrary {
 		"white" : MessageLookupByLibrary.simpleMessage("white"),
 		"black" : MessageLookupByLibrary.simpleMessage("black"),
 		"check_mate_desc" : (loser, winner) => "${loser} is in checkmate. ${winner} won.",
-		"turn_of_x" : (turn) => "it's ${turn}'s turn",
+		"turn_of_x" : (turn) => "${turn}'s turn",
 		"replay_desc" : MessageLookupByLibrary.simpleMessage("Are you sure to restart the game and reset the board?"),
 		"undo_impossible" : MessageLookupByLibrary.simpleMessage("can't perform undo"),
 		"undo" : MessageLookupByLibrary.simpleMessage("undo"),
