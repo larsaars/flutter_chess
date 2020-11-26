@@ -75,7 +75,7 @@ class S {
   }
 
   String turn_of_x(turn) {
-    return Intl.message("it's ${turn}'s turn", name: 'turn_of_x', args: [turn]);
+    return Intl.message("${turn}'s turn", name: 'turn_of_x', args: [turn]);
   }
 
   String get replay_desc {

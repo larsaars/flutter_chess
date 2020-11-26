@@ -185,6 +185,12 @@ class ChessAI {
       return prod * 0.75;
     }
 
+    //if is not end game, keep in layer 3
+    if(!_eval.endGame) {
+      _MAX_DEPTH = _MIN_CALC_DEPTH;
+      return;
+    }
+
     //WE DON'T USE THE SHANNON NUMBER
     //first calculate the number of pieces on the board,
     //from that calculate the time expenditure for alpha beta pruning:
