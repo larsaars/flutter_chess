@@ -13,8 +13,7 @@ class Evaluation {
   Evaluation(this._MAX, this._MIN, this._LARGE, this.endGame);
 
   // simple material based evaluation
-  double evaluatePosition(
-      Chess c, Color currentPlayer, bool gameOver, bool inDraw, int depth) {
+  double evaluatePosition(Chess c, bool gameOver, bool inDraw, int depth) {
     if (gameOver) {
       if (inDraw) {
         // draw is a neutral outcome
@@ -46,7 +45,7 @@ class Evaluation {
           //get the x and y from the map
           final x = Chess.file(i), y = Chess.rank(i);
           //evaluate the piece at the position
-          eval += _getPieceValue(piece, currentPlayer, x, y);
+          eval += _getPieceValue(piece, x, y);
         }
       }
 
@@ -54,7 +53,33 @@ class Evaluation {
     }
   }
 
-  num _getPieceValue(Piece piece, Color currentPlayer, int x, int y) {
+  List<Move2> sortMoves(Chess chess, List<Move> moves) {
+    List<Move2> sorted = [];
+    for (Move m in moves) {
+      //move to be able to generate future moves
+      chess.make_move(m);
+      //recursive execute of alpha beta
+      Move2 m2 = Move2(
+          m.color, m.from, m.to, m.flags, m.piece, m.captured, m.promotion);
+      m2.eval = evaluatePosition(
+          chess,
+          chess.gameOver(chess.generateMoves().length == 0),
+          chess.lastInDraw,
+          0);
+      sorted.add(m2);
+      //undo after alpha beta
+      chess.undo();
+    }
+
+    sorted.sort((move1, move2) {
+      print('$move1');
+      return move1.eval.compareTo(move2.eval);
+    });
+
+    return sorted;
+  }
+
+  num _getPieceValue(Piece piece, int x, int y) {
     if (piece == null) {
       return 0;
     }
@@ -68,8 +93,6 @@ class Evaluation {
     } else {
       return -absoluteValue;
     }
-
-
   }
 
   num _getAbsoluteValue(PieceType piece, bool isWhite, int x, int y) {

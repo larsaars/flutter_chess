@@ -257,8 +257,7 @@ class Chess {
     if (cflags == "") {
       cflags = '-';
     }
-    String epflags =
-        (game.epSquare == EMPTY) ? '-' : algebraic(game.epSquare);
+    String epflags = (game.epSquare == EMPTY) ? '-' : algebraic(game.epSquare);
 
     return [fen, game.turn, cflags, epflags, game.halfMoves, game.moveNumber]
         .join(' ');
@@ -320,8 +319,6 @@ class Chess {
   }
 
   List<Move> generateMoves([Map options]) {
-
-
     // ignore: non_constant_identifier_names
     void add_move(List<Move> moves, from, to, flags) {
       /* if pawn promotion */
@@ -957,6 +954,7 @@ class Chess {
   }
 
   bool lastInDraw = false;
+
   bool inDraw(bool genMoveZero) {
     return lastInDraw = (game.halfMoves >= 100 ||
         inStalemate(genMoveZero) ||
