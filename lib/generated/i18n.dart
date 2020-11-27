@@ -107,11 +107,11 @@ class S {
   }
 
   String get difficulty {
-    return Intl.message("difficulty", name: 'difficulty');
+    return Intl.message("depth", name: 'difficulty');
   }
 
   String get difficulties {
-    return Intl.message("easy,medium,normal,hard", name: 'difficulties');
+    return Intl.message("auto,1,2,3,4,5", name: 'difficulties');
   }
 
   String get fen_options {
