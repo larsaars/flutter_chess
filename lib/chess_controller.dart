@@ -63,7 +63,7 @@ class ChessController {
     //the move generation algorithm can work faster (lightweight)
     Isolate isolate = await Isolate.spawn(
       ChessAI.entryPointMoveFinderIsolate,
-      [receivePort.sendPort, game.fen],
+      [receivePort.sendPort, game.fen, (prefs.getInt('set_depth') ?? 0)],
       debugName: 'chess_move_generator',
     );
     //listen at the receive port for the game (exit point)
@@ -315,7 +315,7 @@ class ChessController {
     });
   }
 
-  void onDifficultyChange() {
+  void onSetDepth() {
     List difficulties = strings.difficulties.split(',');
     BuildContext ctx;
 
@@ -329,11 +329,11 @@ class ChessController {
             //get diff int
             int diff = difficulties.indexOf(value);
             //save in the prefs
-            prefs.setInt('difficulty', diff);
+            prefs.setInt('set_depth', diff);
             //then pop the nav
             Navigator.of(ctx).pop();
           },
-          groupValue: difficulties[prefs.getInt('difficulty') ?? 1],
+          groupValue: difficulties[prefs.getInt('set_depth') ?? 0],
           items: difficulties,
           itemBuilder: (item) => RadioButtonBuilder(item,
               textPosition: RadioButtonTextPosition.right))
