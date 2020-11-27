@@ -62,11 +62,11 @@ class ChessAI {
     for (Move m in chess.generateMoves()) {
       //perform an alpha beta minimax algorithm in the first gen with max to min
       chess.make_move(m);
-      double eval = _alphaBeta(chess, 1, -_INFINITY, _INFINITY, _MIN);
+      double eval = _minimax(chess, 1, -_INFINITY, _INFINITY, _MIN);
       moveEvalPairs.add([m, eval]);
       chess.undo();
       //print the progress
-      print('m$_idx with $eval');
+      print('$_idx with $eval');
       //send a progress via send function
       messenger.send(_idx);
     }
@@ -107,7 +107,7 @@ class ChessAI {
   }
 
   // implements a simple alpha beta algorithm
-  static double _alphaBeta(
+  static double _minimax(
       Chess c, int depth, double alpha, double beta, Color whoNow) {
     //update idx
     _idx++;
@@ -118,7 +118,7 @@ class ChessAI {
     bool gameOver = c.gameOver(futureMoves.length == 0);
     if (depth >= _MAX_DEPTH || gameOver) {
       //return the end node evaluation
-      return _eval.evaluatePosition(c, whoNow, gameOver, c.lastInDraw, depth);
+      return _eval.evaluatePosition(c, gameOver, c.lastInDraw, depth);
     }
 
     // if the computer is the current player (MAX)
@@ -128,7 +128,7 @@ class ChessAI {
         //move to be able to generate future moves
         c.make_move(m);
         //recursive execute of alpha beta
-        alpha = max(alpha, _alphaBeta(c, depth + 1, alpha, beta, _MIN));
+        alpha = max(alpha, _minimax(c, depth + 1, alpha, beta, _MIN));
         //undo after alpha beta
         c.undo();
         //cut of branches
@@ -145,7 +145,7 @@ class ChessAI {
         //try move
         c.make_move(m);
         //minimize beta from new alpha beta
-        beta = min(beta, _alphaBeta(c, depth + 1, alpha, beta, _MAX));
+        beta = min(beta, _minimax(c, depth + 1, alpha, beta, _MAX));
         //undo the moves
         c.undo();
         //cut off here as well
@@ -185,12 +185,6 @@ class ChessAI {
       return prod * 0.75;
     }
 
-    //if is not end game, keep in layer 3
-    if(!_eval.endGame) {
-      _MAX_DEPTH = _MIN_CALC_DEPTH;
-      return;
-    }
-
     //WE DON'T USE THE SHANNON NUMBER
     //first calculate the number of pieces on the board,
     //from that calculate the time expenditure for alpha beta pruning:
@@ -214,7 +208,7 @@ class ChessAI {
     print('set max depth to $_MAX_DEPTH');
   }
 
-  static const _MIN_CALC_DEPTH = 3,
+  static const _MIN_CALC_DEPTH = 4,
       _MAX_CALC_DEPTH = 5,
       _MAX_CALC_ESTIMATED_MOVES = 135000;
 }
