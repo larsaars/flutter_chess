@@ -53,32 +53,6 @@ class Evaluation {
     }
   }
 
-  List<Move2> sortMoves(Chess chess, List<Move> moves) {
-    List<Move2> sorted = [];
-    for (Move m in moves) {
-      //move to be able to generate future moves
-      chess.make_move(m);
-      //recursive execute of alpha beta
-      Move2 m2 = Move2(
-          m.color, m.from, m.to, m.flags, m.piece, m.captured, m.promotion);
-      m2.eval = evaluatePosition(
-          chess,
-          chess.gameOver(chess.generateMoves().length == 0),
-          chess.lastInDraw,
-          0);
-      sorted.add(m2);
-      //undo after alpha beta
-      chess.undo();
-    }
-
-    sorted.sort((move1, move2) {
-      print('$move1');
-      return move1.eval.compareTo(move2.eval);
-    });
-
-    return sorted;
-  }
-
   num _getPieceValue(Piece piece, int x, int y) {
     if (piece == null) {
       return 0;

@@ -13,6 +13,8 @@ class ChessAI {
   static void entryPointMoveFinderIsolate(List context) {
     //init the messenger, which sends messages back to the main thread
     final SendPort messenger = context[0];
+    //set the set depth
+    _SET_DEPTH = context[2];
     //if the received object is a chess game, start the move generation
     //hand over the messenger and the chess
     _findBestMove(Chess.fromFEN(context[1]), messenger);
@@ -35,7 +37,7 @@ class ChessAI {
 
   //the maximum depth, will change according to difficulty level
   // ignore: non_constant_identifier_names
-  static int _MAX_DEPTH = 3;
+  static int _MAX_DEPTH = 3, _SET_DEPTH = 0;
 
   //the actual method starting the alpha beta pruning
   static void _findBestMove(Chess chess, SendPort messenger) {
@@ -158,6 +160,11 @@ class ChessAI {
   }
 
   static void _calcMaxDepth(Chess chess) {
+    //check if is not default but set depth
+    if(_SET_DEPTH != 0) {
+      _MAX_DEPTH = _SET_DEPTH;
+      return;
+    }
     //calc the expected time expenditure in a sub function
     num expectedTimeExpenditure(int depth) {
       //always generate the first move if possible, then check how many moves there are

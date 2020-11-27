@@ -20,8 +20,8 @@
   "bot_off": "bot aus",
   "legal": "von Lurzapps",
   "moves_done": "${progress} Bretter verarbeitet",
-  "difficulty": "Schwierigkeit",
-  "difficulties": "einfach,medium,normal,schwierig",
+  "difficulty": "Tiefe",
+  "difficulties": "auto,1,2,3,4,5",
   "fen_options": "in Zwischenablage,aus Zwischenablage",
   "bot_vs_bot": "bot vs. bot",
   "copy_fen": "fen kopieren"
