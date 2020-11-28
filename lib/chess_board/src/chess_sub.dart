@@ -28,7 +28,7 @@ class Move {
   List<Move> childMoves = [];
   num eval = 0;
   bool gameOver = false, gameDraw = false;
-  bool explored = false;
+  bool explored = false, isSorted = false;
 
   Move(this.color, this.from, this.to, this.flags, this.piece,
       this.captured, this.promotion);
