@@ -108,6 +108,13 @@ class ChessAI {
     messenger.send([bestMove, (endTime - startTime)]);
   }
 
+  //iterative deepening that repeats the minimax
+  //again each time with 1 depth deeper, saving all lists
+  //and using hash sort
+  void _iterativeDeepening(Chess c) {
+
+  }
+
   // implements a simple alpha beta algorithm
   static double _minimax(
       Chess c, int depth, double alpha, double beta, Color whoNow) {

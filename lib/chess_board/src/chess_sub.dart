@@ -15,12 +15,6 @@ class Game {
   List<State> history = [];
 }
 
-class Move2 extends Move {
-  num eval = -9999999999;
-
-  Move2(Color color, int from, int to, int flags, PieceType piece, PieceType captured, PieceType promotion) : super(color, from, to, flags, piece, captured, promotion);
-}
-
 class Move {
   final Color color;
   final int from;
@@ -30,7 +24,11 @@ class Move {
   final PieceType captured;
   final PieceType promotion;
 
-  const Move(this.color, this.from, this.to, this.flags, this.piece,
+  //for iterative deepening
+  List<Move> genMoves;
+  num eval = 0;
+
+  Move(this.color, this.from, this.to, this.flags, this.piece,
       this.captured, this.promotion);
 
   String get fromAlgebraic {
