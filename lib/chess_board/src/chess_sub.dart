@@ -25,8 +25,10 @@ class Move {
   final PieceType promotion;
 
   //for iterative deepening
-  List<Move> genMoves;
+  List<Move> childMoves = [];
   num eval = 0;
+  bool gameOver = false, gameDraw = false;
+  bool explored = false;
 
   Move(this.color, this.from, this.to, this.flags, this.piece,
       this.captured, this.promotion);
