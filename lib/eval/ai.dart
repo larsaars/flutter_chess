@@ -33,16 +33,20 @@ class ChessAI {
   static Evaluation _eval;
 
   //big enough to be infinity in this case
-  static const double _INFINITY = 99999999.0, _LARGE = 9999999;
+  static const double _INFINITY = 99999999.0,
+      _LARGE = 9999999;
 
   //the maximum depth, will change according to difficulty level
   // ignore: non_constant_identifier_names
-  static int _MAX_DEPTH = 3, _SET_DEPTH = 0;
+  static int _MAX_DEPTH = 3,
+      _SET_DEPTH = 0;
 
   //the actual method starting the alpha beta pruning
   static void _findBestMove(Chess chess, SendPort messenger) {
     //get the start time
-    num startTime = DateTime.now().millisecondsSinceEpoch;
+    num startTime = DateTime
+        .now()
+        .millisecondsSinceEpoch;
 
     //set the random
     _random = Random();
@@ -101,7 +105,9 @@ class ChessAI {
     print('selected: $bestMove with $highestEval');
 
     //get the end time
-    num endTime = DateTime.now().millisecondsSinceEpoch;
+    num endTime = DateTime
+        .now()
+        .millisecondsSinceEpoch;
 
     //send the best move up again
     //also return as second argument the time needed
@@ -111,33 +117,61 @@ class ChessAI {
   //iterative deepening that repeats the minimax
   //again each time with 1 depth deeper, saving all lists
   //and using hash sort
-  void _iterativeDeepening(Chess c) {
-
+  Move _iterativeDeepening(Chess c) {
+    //set a root move
+    Move rootMove = Move(null, null, null, null, null, null, null);
+    //loop through the max depth
+    for (int maxDepthNow = 1; maxDepthNow <= _MAX_DEPTH; maxDepthNow++) {
+      _minimax(rootMove, c, 1, maxDepthNow, _INFINITY, -_INFINITY, _MAX);
+    }
+    //the best move is the root move at zero++
+    //TODO: return the one of the best moves randomly
   }
 
   // implements a simple alpha beta algorithm
-  static double _minimax(
-      Chess c, int depth, double alpha, double beta, Color whoNow) {
+  static double _minimax(Move parentMove, Chess c,
+      int thisDepth,
+      int maxDepthNow, double alpha, double beta, Color whoNow) {
     //update idx
     _idx++;
-    //generate the moves for eval and normal minimax / alpha-beta
-    List<Move> futureMoves = c.generateMoves();
-
+    //if the passed list future moves has the length zero,
+    //this depth has not been explored before
+    //because of this, generate then the moves here newly
+    //and also gameOver / gameDraw
+    if (parentMove.explored) {
+      //set explored true for not generating moves a second time,
+      //checking for list.len == 0 could be wrong since it could be a game over
+      parentMove.explored = true;
+      //now generate moves
+      parentMove.childMoves = c.generateMoves();
+      //is game over if generated moves len is still zero
+      parentMove.gameOver = c.gameOver(parentMove.childMoves.length == 0);
+      //take the last in draw bool
+      parentMove.gameDraw = c.lastInDraw;
+    }
+    //TODO: is currently not yet sorting the eval moves.
     //is leaf
-    bool gameOver = c.gameOver(futureMoves.length == 0);
-    if (depth >= _MAX_DEPTH || gameOver) {
+    if (thisDepth >= maxDepthNow || parentMove.gameOver) {
       //return the end node evaluation
-      return _eval.evaluatePosition(c, gameOver, c.lastInDraw, depth);
+      return _eval.evaluatePosition(
+          c, parentMove.gameOver, parentMove.gameDraw, thisDepth);
     }
 
     // if the computer is the current player (MAX)
     if (whoNow == _MAX) {
       // go through all legal moves
-      for (Move m in futureMoves) {
+      for (Move m in parentMove.childMoves) {
         //move to be able to generate future moves
         c.make_move(m);
         //recursive execute of alpha beta
-        alpha = max(alpha, _minimax(c, depth + 1, alpha, beta, _MIN));
+        alpha = max(alpha, _minimax(
+            m,
+            c,
+            thisDepth + 1,
+            maxDepthNow,
+            alpha,
+            beta,
+            _MIN));
         //undo after alpha beta
         c.undo();
         //cut of branches
@@ -145,16 +179,26 @@ class ChessAI {
           break;
         }
       }
+      //now sort the moves for max afterwards
+      //sortMovesForMax(parentMove.genMoves);
+      parentMove.childMoves.sort((a, b) => b.eval.compareTo(a.eval));
       //return the alpha
       return alpha;
       //the same of min
     } else {
       // opponent ist he player (MIN)
-      for (Move m in futureMoves) {
+      for (Move m in parentMove.childMoves) {
         //try move
         c.make_move(m);
         //minimize beta from new alpha beta
-        beta = min(beta, _minimax(c, depth + 1, alpha, beta, _MAX));
+        beta = min(beta, _minimax(
+            m,
+            c,
+            thisDepth + 1,
+            maxDepthNow,
+            alpha,
+            beta,
+            _MAX));
         //undo the moves
         c.undo();
         //cut off here as well
@@ -162,13 +206,17 @@ class ChessAI {
           break;
         }
       }
+      //now sort the moves for the min in the next iterative deepening
+      //sortMovesForMin(parentMove.genMoves);
+      parentMove.childMoves.sort((a, b) => a.eval.compareTo(b.eval));
+      //return the min beta value for upper max
       return beta;
     }
   }
 
   static void _calcMaxDepth(Chess chess) {
     //check if is not default but set depth
-    if(_SET_DEPTH != 0) {
+    if (_SET_DEPTH != 0) {
       _MAX_DEPTH = _SET_DEPTH;
       return;
     }
