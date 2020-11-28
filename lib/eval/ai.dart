@@ -33,20 +33,16 @@ class ChessAI {
   static Evaluation _eval;
 
   //big enough to be infinity in this case
-  static const double _INFINITY = 99999999.0,
-      _LARGE = 9999999;
+  static const double _INFINITY = 99999999.0, _LARGE = 9999999;
 
   //the maximum depth, will change according to difficulty level
   // ignore: non_constant_identifier_names
-  static int _MAX_DEPTH = 3,
-      _SET_DEPTH = 0;
+  static int _MAX_DEPTH = 3, _SET_DEPTH = 0;
 
   //the actual method starting the alpha beta pruning
   static void _findBestMove(Chess chess, SendPort messenger) {
     //get the start time
-    num startTime = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    num startTime = DateTime.now().millisecondsSinceEpoch;
 
     //set the random
     _random = Random();
@@ -61,53 +57,19 @@ class ChessAI {
     //calc the max depth
     _calcMaxDepth(chess);
 
-    //execute the first depth of max
-    List<List> moveEvalPairs = new List<List>();
-
-    _idx = 0;
-    for (Move m in chess.generateMoves()) {
-      //perform an alpha beta minimax algorithm in the first gen with max to min
-      chess.make_move(m);
-      double eval = _minimax(chess, 1, -_INFINITY, _INFINITY, _MIN);
-      moveEvalPairs.add([m, eval]);
-      chess.undo();
-      //print the progress
-      print('$_idx with $eval');
-      //send a progress via send function
-      messenger.send(_idx);
-    }
-
-    //determine the highest eval score
-    double highestEval = -_INFINITY;
-
-    for (List pair in moveEvalPairs) {
-      if (pair[1] > highestEval) {
-        highestEval = pair[1];
-      }
-    }
-
-    var bestMoves = [];
-    for (List pair in moveEvalPairs) {
-      if (pair[1] == highestEval) bestMoves.add(pair[0]);
-    }
+    Move bestMove = _iterativeDeepening(chess, messenger);
 
     //if there is no move, send null
-    if (bestMoves.length == 0) {
+    if (bestMove == null) {
       messenger.send('no_moves');
       return;
     }
 
-    //random one of the same scores
-    var bestMove = bestMoves[_random.nextInt(bestMoves.length)];
-    print('best moves: $bestMoves');
-
     //print
-    print('selected: $bestMove with $highestEval');
+    print('selected: $bestMove');
 
     //get the end time
-    num endTime = DateTime
-        .now()
-        .millisecondsSinceEpoch;
+    num endTime = DateTime.now().millisecondsSinceEpoch;
 
     //send the best move up again
     //also return as second argument the time needed
@@ -117,21 +79,25 @@ class ChessAI {
   //iterative deepening that repeats the minimax
   //again each time with 1 depth deeper, saving all lists
   //and using hash sort
-  Move _iterativeDeepening(Chess c) {
+  static Move _iterativeDeepening(Chess c, SendPort messenger) {
     //set a root move
     Move rootMove = Move(null, null, null, null, null, null, null);
     //loop through the max depth
     for (int maxDepthNow = 1; maxDepthNow <= _MAX_DEPTH; maxDepthNow++) {
-      _minimax(rootMove, c, 1, maxDepthNow, _INFINITY, -_INFINITY, _MAX);
+      _minimax(rootMove, c, (maxDepthNow == _MAX_DEPTH), 1, maxDepthNow,
+          _INFINITY, -_INFINITY, _MAX);
+      messenger.send(_idx);
+      print('max depth $maxDepthNow now. idx = $_idx');
     }
     //the best move is the root move at zero++
     //TODO: return the one of the best moves randomly
+    //TODO: no pruning before last depth?
+    return rootMove.childMoves.length > 0 ? rootMove.childMoves[0] : null;
   }
 
   // implements a simple alpha beta algorithm
-  static double _minimax(Move parentMove, Chess c,
-      int thisDepth,
-      int maxDepthNow, double alpha, double beta, Color whoNow) {
+  static double _minimax(Move parentMove, Chess c, bool maxDepthIsFinal,
+      int thisDepth, int maxDepthNow, double alpha, double beta, Color whoNow) {
     //update idx
     _idx++;
     //if the passed list future moves has the length zero,
@@ -149,11 +115,10 @@ class ChessAI {
       //take the last in draw bool
       parentMove.gameDraw = c.lastInDraw;
     }
-    //TODO: is currently not yet sorting the eval moves.
     //is leaf
     if (thisDepth >= maxDepthNow || parentMove.gameOver) {
       //return the end node evaluation
-      return _eval.evaluatePosition(
+      return parentMove.eval = _eval.evaluatePosition(
           c, parentMove.gameOver, parentMove.gameDraw, thisDepth);
     }
 
@@ -164,24 +129,23 @@ class ChessAI {
         //move to be able to generate future moves
         c.make_move(m);
         //recursive execute of alpha beta
-        alpha = max(alpha, _minimax(
-            m,
-            c,
-            thisDepth + 1,
-            maxDepthNow,
+        alpha = max(
             alpha,
-            beta,
-            _MIN));
+            _minimax(m, c, maxDepthIsFinal, thisDepth + 1, maxDepthNow, alpha,
+                beta, _MIN));
         //undo after alpha beta
         c.undo();
         //cut of branches
-        if (alpha >= beta) {
+        if ((alpha >= beta) && maxDepthIsFinal) {
           break;
         }
       }
       //now sort the moves for max afterwards
       //sortMovesForMax(parentMove.genMoves);
-      parentMove.childMoves.sort((a, b) => b.eval.compareTo(a.eval));
+      if (!maxDepthIsFinal && !parentMove.isSorted) {
+        parentMove.childMoves.sort((a, b) => b.eval.compareTo(a.eval));
+        parentMove.isSorted = true;
+      }
       //return the alpha
       return alpha;
       //the same of min
@@ -191,24 +155,23 @@ class ChessAI {
         //try move
         c.make_move(m);
         //minimize beta from new alpha beta
-        beta = min(beta, _minimax(
-            m,
-            c,
-            thisDepth + 1,
-            maxDepthNow,
-            alpha,
+        beta = min(
             beta,
-            _MAX));
+            _minimax(m, c, maxDepthIsFinal, thisDepth + 1, maxDepthNow, alpha,
+                beta, _MAX));
         //undo the moves
         c.undo();
-        //cut off here as well
-        if (alpha >= beta) {
+        //cut off here as well, only if in last depth
+        if ((alpha >= beta) && maxDepthIsFinal) {
           break;
         }
       }
       //now sort the moves for the min in the next iterative deepening
       //sortMovesForMin(parentMove.genMoves);
-      parentMove.childMoves.sort((a, b) => a.eval.compareTo(b.eval));
+      if (!maxDepthIsFinal && !parentMove.isSorted) {
+        parentMove.childMoves.sort((a, b) => a.eval.compareTo(b.eval));
+        parentMove.isSorted = true;
+      }
       //return the min beta value for upper max
       return beta;
     }
