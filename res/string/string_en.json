@@ -20,7 +20,7 @@
   "bot_off": "bot off",
   "moves_done": "${progress} boards processed",
   "difficulty": "depth",
-  "difficulties": "auto,1,2,3,4,5",
+  "difficulties": "auto,2,3,4,5",
   "fen_options": "to clipboard,from clipboard",
   "bot_vs_bot": "bot vs. bot",
   "copy_fen": "copy fen"
