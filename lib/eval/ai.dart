@@ -16,8 +16,7 @@ class ChessAI {
     //set the set depth
     _SET_DEPTH = context[2];
     //if the set depth is not zero, add one since this is just the list index
-    if(_SET_DEPTH != 0)
-      _SET_DEPTH++;
+    if (_SET_DEPTH != 0) _SET_DEPTH++;
     //if the received object is a chess game, start the move generation
     //hand over the messenger and the chess
     _findBestMove(Chess.fromFEN(context[1]), messenger);
