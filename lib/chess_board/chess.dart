@@ -603,7 +603,7 @@ class Chess {
     List<Move> legal_moves = [];
     for (int i = 0,
         len = moves.length; i < len; i++) {
-      make_move(moves[i]);
+      makeMove(moves[i]);
       if (!king_attacked(us)) {
         legal_moves.add(moves[i]);
       }
@@ -642,7 +642,7 @@ class Chess {
       }
     }
 
-    make_move(move);
+    makeMove(move);
     if (in_check()) {
       if (inCheckmate(generateMoves().length == 0)) {
         output += '#';
@@ -818,7 +818,7 @@ class Chess {
         game.moveNumber));
   }
 
-  void make_move(Move move) {
+  void makeMove(Move move) {
     Color us = game.turn;
     Color them = swap_color(us);
     push(move);
@@ -1152,7 +1152,7 @@ class Chess {
        * move is made
        */
 
-    make_move(move_obj);
+    makeMove(move_obj);
 
     return true;
   }
