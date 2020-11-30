@@ -43,7 +43,7 @@ class BoardModel extends Model {
 
   /// Refreshes board
   void refreshBoard() {
-    bool generatedMovesLen0 = game.generateMoves().length == 0;
+    bool generatedMovesLen0 = game.moveCountIsZero();
     if (game.inCheckmate(generatedMovesLen0)) {
       onCheckMate(game.game.turn == chess.Color.WHITE ? PieceColor.White : PieceColor.Black);
     }
