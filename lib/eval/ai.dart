@@ -15,6 +15,9 @@ class ChessAI {
     final SendPort messenger = context[0];
     //set the set depth
     _SET_DEPTH = context[2];
+    //if the set depth is not zero, add one since this is just the list index
+    if(_SET_DEPTH != 0)
+      _SET_DEPTH++;
     //if the received object is a chess game, start the move generation
     //hand over the messenger and the chess
     _findBestMove(Chess.fromFEN(context[1]), messenger);
@@ -90,6 +93,8 @@ class ChessAI {
     Move rootMove = Move(null, null, null, null, null, null, null);
     //call the iterative method prepare minimax here
     _prepareMinimax(rootMove, c, 0, _MAX, messenger);
+    //after the prepare minimax reset the idx
+    _idx = 0;
     //then start the real minimax with alpha beta pruning
     //the first minimax iteration will be called from here as max
     //list of moves and their eval
@@ -99,8 +104,11 @@ class ChessAI {
       //make the move on the board
       c.makeMove(child);
       //add the child and the real eval, not the pre-eval
-      evalPairs
-          .add([child, _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN)]);
+      evalPairs.add([
+        child,
+        _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN, child.gameOver,
+            child.gameDraw)
+      ]);
       //undo the move
       c.undo();
       //send the progress
@@ -132,7 +140,8 @@ class ChessAI {
   //all moves till _MAX_DEPTH - 1 will be generated this way
   //this is basically a minimax without alpha beta pruning to sort
   //all nodes till _MAX_DEPTH - 1
-  static double _prepareMinimax(Move root, Chess c, int depth, Color player, SendPort messenger) {
+  static double _prepareMinimax(
+      Move root, Chess c, int depth, Color player, SendPort messenger) {
     //update idx
     _idx++;
     //generate the nodes
@@ -161,12 +170,11 @@ class ChessAI {
         value = max(value, _prepareMinimax(m, c, depth + 1, _MIN, messenger));
         //undo after alpha beta
         c.undo();
+        //if this is depth 0, report to messenger
+        if (depth == 0) messenger.send(_idx);
       }
       //sort the branches for max first (big eval numbers first)
       root.children.sort((Move a, Move b) => b.eval.compareTo(a.eval));
-      //if this is depth 0, report to messenger
-      if(depth == 0)
-        messenger.send(_idx);
       //then return the value
       return value;
       //the same of min
@@ -185,42 +193,47 @@ class ChessAI {
       }
       //sort the branches for max first (small eval numbers first)
       root.children.sort((Move a, Move b) => a.eval.compareTo(b.eval));
-      //if this is depth 0, report to messenger
-      if(depth == 0)
-        messenger.send(_idx);
       //then return the value
       return value;
     }
   }
 
   // implements a simple alpha beta algorithm
-  static double _minimax(Move parentMove, Chess c, int depth, double alpha,
-      double beta, Color player) {
+  static double _minimax(Move root, Chess c, int depth, double alpha,
+      double beta, Color player, bool upperIsGameOver, bool upperIsDraw) {
     //update idx
     _idx++;
     //if this is the max depth, then in the preparation the child nodes have not
     //been generated yet (performance)
+    //this does not check all child nodes,
+    //and just keeps the gameDraw and gameOver value of it predecessor,
+    //which makes it a hybrid of _MAX_DEPTH and _MAX_DEPTH - 1
+    //the value could be false,
+    //but it increases the performance by highest levels!
     if (depth == _MAX_DEPTH) {
       //is game over if generated moves len is still zero
-      parentMove.gameOver = c.gameOver(c.moveCountIsZero(true));
+      root.gameOver = upperIsGameOver; //c.gameOver(c.moveCountIsZero(false));
       //take the last in draw bool
-      parentMove.gameDraw = c.lastInDraw;
+      root.gameDraw = upperIsDraw; //c.lastInDraw;
     }
     //is leaf
-    if (depth >= _MAX_DEPTH || parentMove.gameOver) {
+    if (depth >= _MAX_DEPTH || root.gameOver) {
       //return the end node evaluation
-      return parentMove.eval = _eval.evaluatePosition(
-          c, parentMove.gameOver, parentMove.gameDraw, depth);
+      return root.eval =
+          _eval.evaluatePosition(c, root.gameOver, root.gameDraw, depth);
     }
 
     // if the computer is the current player (MAX)
     if (player == _MAX) {
       // go through all legal moves
-      for (Move m in parentMove.children) {
+      for (Move m in root.children) {
         //move to be able to generate future moves
         c.makeMove(m);
         //recursive execute of alpha beta
-        alpha = max(alpha, _minimax(m, c, depth + 1, alpha, beta, _MIN));
+        alpha = max(
+            alpha,
+            _minimax(m, c, depth + 1, alpha, beta, _MIN, root.gameOver,
+                root.gameDraw));
         //undo after alpha beta
         c.undo();
         //cut of branches
@@ -233,11 +246,14 @@ class ChessAI {
       //the same of min
     } else {
       // opponent ist he player (MIN)
-      for (Move m in parentMove.children) {
+      for (Move m in root.children) {
         //try move
         c.makeMove(m);
         //minimize beta from new alpha beta
-        beta = min(beta, _minimax(m, c, depth + 1, alpha, beta, _MAX));
+        beta = min(
+            beta,
+            _minimax(m, c, depth + 1, alpha, beta, _MAX, root.gameOver,
+                root.gameDraw));
         //undo the moves
         c.undo();
         //cut off here as well
