@@ -25,10 +25,9 @@ class Move {
   final PieceType promotion;
 
   //for iterative deepening
-  List<Move> childMoves = [];
+  List<Move> children = [];
   num eval = 0;
   bool gameOver = false, gameDraw = false;
-  bool explored = false, isSorted = false;
 
   Move(this.color, this.from, this.to, this.flags, this.piece,
       this.captured, this.promotion);
@@ -131,7 +130,7 @@ class PieceType {
 }
 
 class Color {
-  static Color inverse(Color color) {
+  static Color flip(Color color) {
     return (color == WHITE) ? BLACK : WHITE;
   }
 
