@@ -228,7 +228,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                 onPressed: () {
                                   //inverse the bot color and save it
                                   _chessController.botColor =
-                                      chess_sub.Color.inverse(
+                                      chess_sub.Color.flip(
                                           _chessController.botColor);
                                   //save value int to prefs
                                   prefs.setInt('bot_color',
