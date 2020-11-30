@@ -38,12 +38,17 @@ class _BoardSquareState extends State<BoardSquare>
 
   @override
   Widget build(BuildContext context) {
+    Color background = Colors.transparent;
+
     int milliseconds = 0;
     if (((widget.squareName == ChessController.moveFrom) ||
-            (widget.squareName == ChessController.moveTo)) &&
-        !ChessController.loadingBotMoves) {
-      milliseconds = 600;
+        (widget.squareName == ChessController.moveTo))) {
+      if (!ChessController.loadingBotMoves) milliseconds = 600;
+      background = Colors.green[700];
     }
+
+    if (ChessController.kingInCheck == widget.squareName)
+      background = Colors.red[800];
 
     _animationController.duration = Duration(milliseconds: milliseconds);
     _animationController.forward(from: 0);
@@ -51,63 +56,75 @@ class _BoardSquareState extends State<BoardSquare>
     return ScopedModelDescendant<BoardModel>(builder: (context, _, model) {
       return Expanded(
         flex: 1,
-        child: FadeTransition(
-          opacity: _animationController,
-          child: DragTarget(builder: (context, accepted, rejected) {
-            var childImage =
-                _getImageToDisplay(size: model.size / 8, model: model);
-            var feedbackImage = _getImageToDisplay(
-                size: (1.2 * (model.size / 8)), model: model);
+        child: Stack(children: [
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4.0),
+              child: Container(
+                color: background,
+              ),
+            ),
+          ),
+          FadeTransition(
+            opacity: _animationController,
+            child: DragTarget(builder: (context, accepted, rejected) {
+              var childImage =
+                  _getImageToDisplay(size: model.size / 8, model: model);
+              var feedbackImage = _getImageToDisplay(
+                  size: (1.2 * (model.size / 8)), model: model);
 
-            return model.game.get(widget.squareName) != null
-                ? Draggable<List>(
-                    child: childImage,
-                    feedback: feedbackImage,
-                    childWhenDragging: Container(),
-                    data: [
-                      widget.squareName,
-                      model.game.get(widget.squareName).type.toUpperCase(),
-                      model.game.get(widget.squareName).color,
-                    ],
-                  )
-                : Container();
-          }, onWillAccept: (willAccept) {
-            return (model?.chessBoardController?.userCanMakeMoves ?? false);
-          }, onAccept: (List moveInfo) {
-            // A way to check if move occurred.
-            chess.Color moveColor = model.game.game.turn;
+              return model.game.get(widget.squareName) != null
+                  ? Draggable<List>(
+                      child: childImage,
+                      feedback: feedbackImage,
+                      childWhenDragging: Container(),
+                      data: [
+                        widget.squareName,
+                        model.game.get(widget.squareName).type.toUpperCase(),
+                        model.game.get(widget.squareName).color,
+                      ],
+                    )
+                  : Container();
+            }, onWillAccept: (willAccept) {
+              return (model?.chessBoardController?.userCanMakeMoves ?? false);
+            }, onAccept: (List moveInfo) {
+              // A way to check if move occurred.
+              chess.Color moveColor = model.game.game.turn;
 
-            if (moveInfo[1] == "P" &&
-                ((moveInfo[0][1] == "7" &&
-                        widget.squareName[1] == "8" &&
-                        moveInfo[2] == chess.Color.WHITE) ||
-                    (moveInfo[0][1] == "2" &&
-                        widget.squareName[1] == "1" &&
-                        moveInfo[2] == chess.Color.BLACK))) {
-              _promotionDialog(context).then((value) {
-                model.game.move({
-                  "from": moveInfo[0],
-                  "to": widget.squareName,
-                  "promotion": value
+              if (moveInfo[1] == "P" &&
+                  ((moveInfo[0][1] == "7" &&
+                          widget.squareName[1] == "8" &&
+                          moveInfo[2] == chess.Color.WHITE) ||
+                      (moveInfo[0][1] == "2" &&
+                          widget.squareName[1] == "1" &&
+                          moveInfo[2] == chess.Color.BLACK))) {
+                _promotionDialog(context).then((value) {
+                  model.game.move({
+                    "from": moveInfo[0],
+                    "to": widget.squareName,
+                    "promotion": value
+                  });
+                  //refresh the board
+                  model.refreshBoard();
+                  //after the promotion refresh the board and call on move
+                  if (model.game.game.turn != moveColor) {
+                    model
+                        .onMove({'from': moveInfo[0], 'to': widget.squareName});
+                  }
                 });
-                //refresh the board
-                model.refreshBoard();
-                //after the promotion refresh the board and call on move
-                if (model.game.game.turn != moveColor) {
-                  model.onMove({'from': moveInfo[0], 'to': widget.squareName});
-                }
-              });
-            } else {
-              model.game.move({"from": moveInfo[0], "to": widget.squareName});
-            }
+              } else {
+                model.game.move({"from": moveInfo[0], "to": widget.squareName});
+              }
 
-            model.refreshBoard();
+              model.refreshBoard();
 
-            if (model.game.game.turn != moveColor) {
-              model.onMove({'from': moveInfo[0], 'to': widget.squareName});
-            }
-          }),
-        ),
+              if (model.game.game.turn != moveColor) {
+                model.onMove({'from': moveInfo[0], 'to': widget.squareName});
+              }
+            }),
+          ),
+        ]),
       );
     });
   }

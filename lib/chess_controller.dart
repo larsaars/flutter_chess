@@ -26,7 +26,7 @@ class ChessController {
   Color botColor = Color.BLACK;
 
   static bool loadingBotMoves = false;
-  static String moveFrom, moveTo;
+  static String moveFrom, moveTo, kingInCheck;
 
   ChessController(this.context);
 
@@ -34,6 +34,12 @@ class ChessController {
   var update;
 
   void onMove(move) {
+    //set the king if needed
+    setKingInCheckSquare();
+    //set the move from and move to object
+    //for the animation in board_square
+    ChessController.moveFrom = move['from'];
+    ChessController.moveTo = move['to'];
     //print the move
     print('onMove: $move');
     // update the ui
@@ -81,6 +87,8 @@ class ChessController {
         moveTo = move.toAlgebraic;
         //make the move, if there is one
         if (message != null) game.makeMove(move);
+        //set king in check square
+        setKingInCheckSquare();
         //now set user can make moves true again
         controller.userCanMakeMoves = true;
         //set loading false
@@ -121,6 +129,20 @@ class ChessController {
         update();
       }
     });
+  }
+
+  void setKingInCheckSquare() {
+    bool isCheck = false;
+    for(Color color in [Color.WHITE, Color.BLACK]) {
+      if(game.king_attacked(color)) {
+        kingInCheck = Chess.algebraic(game.game.kings[color]);
+        print('$kingInCheck');
+        isCheck = true;
+      }
+    }
+
+    if(!isCheck)
+      kingInCheck = null;
   }
 
   bool makeBotMoveIfRequired() {
@@ -189,6 +211,9 @@ class ChessController {
     showTextDialog(strings.replay, strings.replay_desc, onDoneText: strings.ok,
         onDone: (value) {
       game.reset();
+      moveTo = null;
+      moveFrom = null;
+      kingInCheck = null;
       update();
       makeBotMoveIfRequired();
     });
@@ -367,6 +392,9 @@ class ChessController {
               Clipboard.getData('text/plain').then((value) {
                 if (Chess.validate_fen(value.text)['valid']) {
                   game = Chess.fromFEN(value.text);
+                  moveTo = null;
+                  moveFrom = null;
+                  kingInCheck = null;
                   Navigator.of(ctx).pop('yes');
                 } else
                   Navigator.of(ctx).pop('no');
