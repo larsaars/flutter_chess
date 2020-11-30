@@ -89,17 +89,18 @@ class ChessAI {
     //set a root move
     Move rootMove = Move(null, null, null, null, null, null, null);
     //call the iterative method prepare minimax here
-    _prepareMinimax(rootMove, c, 0, _MAX);
+    _prepareMinimax(rootMove, c, 0, _MAX, messenger);
     //then start the real minimax with alpha beta pruning
     //the first minimax iteration will be called from here as max
     //list of moves and their eval
     List evalPairs = [];
     //loop through the root moves children (sorted)
-    for(Move child in rootMove.children) {
+    for (Move child in rootMove.children) {
       //make the move on the board
       c.makeMove(child);
       //add the child and the real eval, not the pre-eval
-      evalPairs.add([child, _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN)]);
+      evalPairs
+          .add([child, _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN)]);
       //undo the move
       c.undo();
       //send the progress
@@ -107,21 +108,18 @@ class ChessAI {
     }
 
     //if there are no moves, return null
-    if(evalPairs.length == 0)
-      return null;
+    if (evalPairs.length == 0) return null;
 
     //get the best eval
     double bestEval = -_INFINITY;
-    for(List pair in evalPairs) {
-      if(pair[1] > bestEval)
-        bestEval = pair[1];
+    for (List pair in evalPairs) {
+      if (pair[1] > bestEval) bestEval = pair[1];
     }
 
     //get the best eval moves
     List<Move> bestMoves = [];
-    for(List pair in evalPairs) {
-      if(pair[1] == bestEval)
-        bestMoves.add(pair[0]);
+    for (List pair in evalPairs) {
+      if (pair[1] == bestEval) bestMoves.add(pair[0]);
     }
 
     //return one random out of the best moves
@@ -130,48 +128,68 @@ class ChessAI {
 
   //the iterative repetition to prepare minimax:
   //generate all child nodes
-  //and sort all them until the depth of _MAX_DEPTH - 2,
+  //and sort all them until the depth of _MAX_DEPTH - 1,
   //all moves till _MAX_DEPTH - 1 will be generated this way
-  static void _prepareMinimax(Move root, Chess c, int depth, Color player) {
-    //generate the move list
+  //this is basically a minimax without alpha beta pruning to sort
+  //all nodes till _MAX_DEPTH - 1
+  static double _prepareMinimax(Move root, Chess c, int depth, Color player, SendPort messenger) {
+    //update idx
+    _idx++;
+    //generate the nodes
     root.children = c.generateMoves();
-    //generate the booleans for evaluation
-    bool gameOver = c.gameOver(root.children.length == 0);
-    bool gameDraw = c.lastInDraw;
-
-    //eval the root move and set the eval
-    root.eval = _eval.evaluatePosition(c, gameOver, gameDraw, depth);
-
-    //don't go deeper if the _MAX_DEPTH - 1 is reached
-    //only the evaluation shall be returned
-    if (depth >= (_MAX_DEPTH - 1)) return;
-
-    //loop through all children
-    for (Move child in root.children) {
-      //make the move on the chess board for the next eval
-      c.makeMove(child);
-      //if the king is attacked this is not a legal move, continue
-      if(c.king_attacked(player)) {
-        //but still undo the move
-        c.undo();
-        continue;
-      }
-      //iteratively call _prepareMinimax to evaluate all boards
-      //with inverted player
-      _prepareMinimax(child, c, depth + 1, Color.flip(player));
-      //undo the move again
-      c.undo();
+    //is game over if generated moves len is still zero
+    root.gameOver = c.gameOver(root.children.length == 0);
+    //take the last in draw bool
+    root.gameDraw = c.lastInDraw;
+    //is leaf (_MAX_DEPTH - 1)
+    if (depth >= (_MAX_DEPTH - 1) || root.gameOver) {
+      //return the end node evaluation
+      return root.eval =
+          _eval.evaluatePosition(c, root.gameOver, root.gameDraw, depth);
     }
 
-    //sort moves according to if is _MAX or _MIN after evaluating all children
+    // if the computer is the current player (MAX)
     if (player == _MAX) {
-      //sort for max
-      //the big values first
-      root.children.sort((a, b) => b.eval.compareTo(a.eval));
+      //the value
+      double value = -_INFINITY;
+      // go through all legal moves
+      for (Move m in root.children) {
+        //move to be able to generate future moves
+        c.makeMove(m);
+        //recursive execute of minimax
+        //get the maximizing value
+        value = max(value, _prepareMinimax(m, c, depth + 1, _MIN, messenger));
+        //undo after alpha beta
+        c.undo();
+      }
+      //sort the branches for max first (big eval numbers first)
+      root.children.sort((Move a, Move b) => b.eval.compareTo(a.eval));
+      //if this is depth 0, report to messenger
+      if(depth == 0)
+        messenger.send(_idx);
+      //then return the value
+      return value;
+      //the same of min
     } else {
-      //sort for min
-      //the low values first
-      root.children.sort((a, b) => a.eval.compareTo(b.eval));
+      //the value
+      double value = _INFINITY;
+      // go through all legal moves
+      for (Move m in root.children) {
+        //move to be able to generate future moves
+        c.makeMove(m);
+        //recursive execute of minimax
+        //get the minimizing value
+        value = min(value, _prepareMinimax(m, c, depth + 1, _MAX, messenger));
+        //undo after alpha beta
+        c.undo();
+      }
+      //sort the branches for max first (small eval numbers first)
+      root.children.sort((Move a, Move b) => a.eval.compareTo(b.eval));
+      //if this is depth 0, report to messenger
+      if(depth == 0)
+        messenger.send(_idx);
+      //then return the value
+      return value;
     }
   }
 
@@ -201,12 +219,6 @@ class ChessAI {
       for (Move m in parentMove.children) {
         //move to be able to generate future moves
         c.makeMove(m);
-        //if the king is attacked this is not a legal move, continue
-        if(c.king_attacked(c.game.turn)) {
-          //but still undo the move
-          c.undo();
-          continue;
-        }
         //recursive execute of alpha beta
         alpha = max(alpha, _minimax(m, c, depth + 1, alpha, beta, _MIN));
         //undo after alpha beta
@@ -224,12 +236,6 @@ class ChessAI {
       for (Move m in parentMove.children) {
         //try move
         c.makeMove(m);
-        //if the king is attacked this is not a legal move, continue
-        if(c.king_attacked(c.game.turn)) {
-          //but still undo the move
-          c.undo();
-          continue;
-        }
         //minimize beta from new alpha beta
         beta = min(beta, _minimax(m, c, depth + 1, alpha, beta, _MAX));
         //undo the moves
@@ -245,50 +251,50 @@ class ChessAI {
   }
 
   static void _calcMaxDepth(Chess chess) {
-    //max depth cannot be lower than 2 because of preperation of minimax etc.
-    if(_SET_DEPTH < 2) {
+//max depth cannot be lower than 2 because of preperation of minimax etc.
+    if (_SET_DEPTH < 2) {
       _SET_DEPTH = 2;
       return;
     }
-    //check if is not default but set depth
+//check if is not default but set depth
     if (_SET_DEPTH != 0) {
       _MAX_DEPTH = _SET_DEPTH;
       return;
     }
-    //calc the expected time expenditure in a sub function
+//calc the expected time expenditure in a sub function
     num expectedTimeExpenditure(int depth) {
-      //always generate the first move if possible, then check how many moves there are
+//always generate the first move if possible, then check how many moves there are
       num prod = 1;
       void addNumRecursive(Chess root, int thisDepth) {
-        //check for not hitting too deep
+//check for not hitting too deep
         if (thisDepth > depth) return;
-        //list of moves
-        List moves = root.generateMoves({'legal': true});
+//list of moves
+        List moves = root.generateMoves();
         if (moves.length > 0) {
-          //create the product
+//create the product
           prod *= moves.length;
-          //make one of them randomly, always selecting 0 move could be wrong
+//make one of them randomly, always selecting 0 move could be wrong
           root.makeMove(moves[_random.nextInt(moves.length)]);
-          //call this one recursive
+//call this one recursive
           addNumRecursive(root, thisDepth + 1);
-          //then undo it
+//then undo it
           root.undo();
         }
       }
 
-      //call the recursive counter
+//call the recursive counter
       addNumRecursive(chess, 1);
-      //calc prod * 3/4 because of pruning
+//calc prod * 3/4 because of pruning
       return prod * 0.75;
     }
 
-    //WE DON'T USE THE SHANNON NUMBER
-    //first calculate the number of pieces on the board,
-    //from that calculate the time expenditure for alpha beta pruning:
-    //b^(3/4)
-    //based on that then decide how deep we want to go with alpha beta pruning
-    //depth, pm
-    //minimizing loop
+//WE DON'T USE THE SHANNON NUMBER
+//first calculate the number of pieces on the board,
+//from that calculate the time expenditure for alpha beta pruning:
+//b^(3/4)
+//based on that then decide how deep we want to go with alpha beta pruning
+//depth, pm
+//minimizing loop
     bool changed = false;
     for (int depth = _MAX_CALC_DEPTH; depth >= _MIN_CALC_DEPTH; depth--) {
       num exp = expectedTimeExpenditure(depth);

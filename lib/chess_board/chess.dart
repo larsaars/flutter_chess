@@ -453,20 +453,16 @@ class Chess {
     /* return all pseudo-legal moves (this includes moves that allow the king
      * to be captured)
      */
-    if (options != null && options.containsKey('legal') && options['legal'] != null && options['legal'] == true) {
-      List<Move> legalMoves = [];
-      for (int i = 0, len = moves.length; i < len; i++) {
-        makeMove(moves[i]);
-        if (!king_attacked(us)) {
-          legalMoves.add(moves[i]);
-        }
-        undo();
+    List<Move> legalMoves = [];
+    for (int i = 0, len = moves.length; i < len; i++) {
+      makeMove(moves[i]);
+      if (!king_attacked(us)) {
+        legalMoves.add(moves[i]);
       }
-
-      return legalMoves;
-    } else {
-      return moves;
+      undo();
     }
+
+    return legalMoves;
   }
 
   //for the last depth, normally all moves are generated,
@@ -971,7 +967,7 @@ class Chess {
 
   /* this function is used to uniquely identify ambiguous moves */
   get_disambiguator(Move move) {
-    List<Move> moves = generateMoves({'legal': true});
+    List<Move> moves = generateMoves();
 
     var from = move.from;
     var to = move.to;
@@ -1124,7 +1120,7 @@ class Chess {
   /// It returns true if the move was made, or false if it could not be.
   bool move(move) {
     Move move_obj = null;
-    List<Move> moves = generateMoves({'legal': true});
+    List<Move> moves = generateMoves();
 
     if (move is String) {
       /* convert the move string to a move object */
