@@ -97,11 +97,13 @@ class ChessAI {
     //loop through the root moves children (sorted)
     for(Move child in rootMove.children) {
       //make the move on the board
-      c.make_move(child);
+      c.makeMove(child);
       //add the child and the real eval, not the pre-eval
       evalPairs.add([child, _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN)]);
       //undo the move
       c.undo();
+      //send the progress
+      messenger.send(_idx);
     }
 
     //if there are no moves, return null
@@ -147,10 +149,13 @@ class ChessAI {
     //loop through all children
     for (Move child in root.children) {
       //make the move on the chess board for the next eval
-      c.make_move(child);
+      c.makeMove(child);
       //if the king is attacked this is not a legal move, continue
-      if(c.king_attacked(_MAX))
+      if(c.king_attacked(player)) {
+        //but still undo the move
+        c.undo();
         continue;
+      }
       //iteratively call _prepareMinimax to evaluate all boards
       //with inverted player
       _prepareMinimax(child, c, depth + 1, Color.flip(player));
@@ -195,10 +200,13 @@ class ChessAI {
       // go through all legal moves
       for (Move m in parentMove.children) {
         //move to be able to generate future moves
-        c.make_move(m);
+        c.makeMove(m);
         //if the king is attacked this is not a legal move, continue
-        if(c.king_attacked(_MAX))
+        if(c.king_attacked(_MAX)) {
+          //but still undo the move
+          c.undo();
           continue;
+        }
         //recursive execute of alpha beta
         alpha = max(alpha, _minimax(m, c, depth + 1, alpha, beta, _MIN));
         //undo after alpha beta
@@ -215,10 +223,13 @@ class ChessAI {
       // opponent ist he player (MIN)
       for (Move m in parentMove.children) {
         //try move
-        c.make_move(m);
+        c.makeMove(m);
         //if the king is attacked this is not a legal move, continue
-        if(c.king_attacked(_MAX))
+        if(c.king_attacked(_MIN)) {
+          //but still undo the move
+          c.undo();
           continue;
+        }
         //minimize beta from new alpha beta
         beta = min(beta, _minimax(m, c, depth + 1, alpha, beta, _MAX));
         //undo the moves
@@ -257,7 +268,7 @@ class ChessAI {
           //create the product
           prod *= moves.length;
           //make one of them randomly, always selecting 0 move could be wrong
-          root.make_move(moves[_random.nextInt(moves.length)]);
+          root.makeMove(moves[_random.nextInt(moves.length)]);
           //call this one recursive
           addNumRecursive(root, thisDepth + 1);
           //then undo it
