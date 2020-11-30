@@ -81,6 +81,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomepageState extends State<MyHomePage> {
   Future<void> _loadEverythingUp() async {
     await _chessController.loadOldGame();
+    //set the king in chess board
+    _chessController.setKingInCheckSquare();
+    //await prefs
     prefs = await SharedPreferences.getInstance();
     //load values from prefs
     //the chess controller has already been set here!
