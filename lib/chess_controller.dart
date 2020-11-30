@@ -101,7 +101,7 @@ class ChessController {
         //make check if bot move is required
         if (botBattle) {
           Future.delayed(Duration(milliseconds: 350)).then((value) {
-            botColor = Color.inverse(botColor);
+            botColor = Color.flip(botColor);
             update();
             makeBotMoveIfRequired();
           });
@@ -125,7 +125,7 @@ class ChessController {
 
   bool makeBotMoveIfRequired() {
     //make move if needed
-    if (((game?.game?.turn ?? Color.inverse(botColor)) == botColor) &&
+    if (((game?.game?.turn ?? Color.flip(botColor)) == botColor) &&
         prefs.getBool('bot')) {
       findMove();
       return true;
