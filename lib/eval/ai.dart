@@ -92,12 +92,38 @@ class ChessAI {
     _prepareMinimax(rootMove, c, 0, _MAX);
     //then start the real minimax with alpha beta pruning
     //the first minimax iteration will be called from here as max
-    //list of moves and their evals
+    //list of moves and their eval
     List evalPairs = [];
     //loop through the root moves children (sorted)
     for(Move child in rootMove.children) {
-
+      //make the move on the board
+      c.make_move(child);
+      //add the child and the real eval, not the pre-eval
+      evalPairs.add([child, _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN)]);
+      //undo the move
+      c.undo();
     }
+
+    //if there are no moves, return null
+    if(evalPairs.length == 0)
+      return null;
+
+    //get the best eval
+    double bestEval = -_INFINITY;
+    for(List pair in evalPairs) {
+      if(pair[1] > bestEval)
+        bestEval = pair[1];
+    }
+
+    //get the best eval moves
+    List<Move> bestMoves = [];
+    for(List pair in evalPairs) {
+      if(pair[1] == bestEval)
+        bestMoves.add(pair[0]);
+    }
+
+    //return one random out of the best moves
+    return bestMoves[_random.nextInt(bestMoves.length)];
   }
 
   //the iterative repetition to prepare minimax:
@@ -122,6 +148,9 @@ class ChessAI {
     for (Move child in root.children) {
       //make the move on the chess board for the next eval
       c.make_move(child);
+      //if the king is attacked this is not a legal move, continue
+      if(c.king_attacked(_MAX))
+        continue;
       //iteratively call _prepareMinimax to evaluate all boards
       //with inverted player
       _prepareMinimax(child, c, depth + 1, Color.flip(player));
@@ -149,10 +178,8 @@ class ChessAI {
     //if this is the max depth, then in the preparation the child nodes have not
     //been generated yet (performance)
     if (depth == _MAX_DEPTH) {
-      //now generate moves
-      parentMove.children = c.generateMoves();
       //is game over if generated moves len is still zero
-      parentMove.gameOver = c.gameOver(parentMove.children.length == 0);
+      parentMove.gameOver = c.gameOver(c.moveCountIsZero(true));
       //take the last in draw bool
       parentMove.gameDraw = c.lastInDraw;
     }
@@ -169,6 +196,9 @@ class ChessAI {
       for (Move m in parentMove.children) {
         //move to be able to generate future moves
         c.make_move(m);
+        //if the king is attacked this is not a legal move, continue
+        if(c.king_attacked(_MAX))
+          continue;
         //recursive execute of alpha beta
         alpha = max(alpha, _minimax(m, c, depth + 1, alpha, beta, _MIN));
         //undo after alpha beta
@@ -186,6 +216,9 @@ class ChessAI {
       for (Move m in parentMove.children) {
         //try move
         c.make_move(m);
+        //if the king is attacked this is not a legal move, continue
+        if(c.king_attacked(_MAX))
+          continue;
         //minimize beta from new alpha beta
         beta = min(beta, _minimax(m, c, depth + 1, alpha, beta, _MAX));
         //undo the moves
@@ -201,6 +234,11 @@ class ChessAI {
   }
 
   static void _calcMaxDepth(Chess chess) {
+    //max depth cannot be lower than 2 because of preperation of minimax etc.
+    if(_SET_DEPTH < 2) {
+      _SET_DEPTH = 2;
+      return;
+    }
     //check if is not default but set depth
     if (_SET_DEPTH != 0) {
       _MAX_DEPTH = _SET_DEPTH;

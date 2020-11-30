@@ -344,11 +344,6 @@ class Chess {
     var last_sq = SQUARES_H1;
     bool single_square = false;
 
-    /* do we want legal moves? */
-    var legal = (options != null && options.containsKey('legal'))
-        ? options['legal']
-        : true;
-
     /* are we generating moves for a single square? */
     if (options != null && options.containsKey('square')) {
       if (SQUARES.containsKey(options['square'])) {
@@ -458,13 +453,156 @@ class Chess {
     /* return all pseudo-legal moves (this includes moves that allow the king
      * to be captured)
      */
-    if (!legal) {
-      return moves;
+    return moves;
+  }
+
+  //for the last depth, normally all moves are generated,
+  //but since we dont need the pure move object,
+  //here a simplification is done for performance so that not over 1M+ moves have
+  //to be generated every time
+  //this will just return the move count, since it will just be check if it is zero
+  bool moveCountIsZero(bool checkLegal) {
+    // ignore: non_constant_identifier_names
+    void add_move(List<Move> moves, from, to, flags) {
+      /* if pawn promotion */
+      if (game.board[from].type == PAWN &&
+          (rank(to) == RANK_8 || rank(to) == RANK_1)) {
+        List pieces = [QUEEN, ROOK, BISHOP, KNIGHT];
+        for (var i = 0, len = pieces.length; i < len; i++) {
+          moves.add(build_move(game.board, from, to, flags, pieces[i]));
+        }
+      } else {
+        moves.add(build_move(game.board, from, to, flags));
+      }
     }
 
-    /* filter out illegal moves */
+    List<Move> moves = [];
+    Color us = game.turn;
+    Color them = swap_color(us);
+    ColorMap second_rank = new ColorMap.of(0);
+    second_rank[BLACK] = RANK_7;
+    second_rank[WHITE] = RANK_2;
+
+    var first_sq = SQUARES_A8;
+    var last_sq = SQUARES_H1;
+    bool single_square = false;
+
+    for (int i = first_sq; i <= last_sq; i++) {
+      /* did we run off the end of the board */
+      if ((i & 0x88) != 0) {
+        i += 7;
+        continue;
+      }
+
+      Piece piece = game.board[i];
+      if (piece == null || piece.color != us) {
+        continue;
+      }
+
+      if (piece.type == PAWN) {
+        /* single square, non-capturing */
+        int square = i + PAWN_OFFSETS[us][0];
+        if (game.board[square] == null) {
+          if(!checkLegal)
+            return false;
+          add_move(moves, i, square, BITS_NORMAL);
+
+          /* double square */
+          var square2 = i + PAWN_OFFSETS[us][1];
+          if (second_rank[us] == rank(i) && game.board[square2] == null) {
+            add_move(moves, i, square2, BITS_BIG_PAWN);
+          }
+        }
+
+        /* pawn captures */
+        for (int j = 2; j < 4; j++) {
+          int square = i + PAWN_OFFSETS[us][j];
+          if ((square & 0x88) != 0) continue;
+
+          if (game.board[square] != null && game.board[square].color == them) {
+            if(!checkLegal)
+              return false;
+            add_move(moves, i, square, BITS_CAPTURE);
+          } else if (square == game.epSquare) {
+            if(!checkLegal)
+              return false;
+            add_move(moves, i, game.epSquare, BITS_EP_CAPTURE);
+          }
+        }
+      } else {
+        for (int j = 0, len = PIECE_OFFSETS[piece.type].length; j < len; j++) {
+          var offset = PIECE_OFFSETS[piece.type][j];
+          var square = i;
+
+          while (true) {
+            square += offset;
+            if ((square & 0x88) != 0) break;
+
+            if (game.board[square] == null) {
+              if(!checkLegal)
+                return false;
+              add_move(moves, i, square, BITS_NORMAL);
+            } else {
+              if (game.board[square].color == us) {
+                break;
+              }
+              if(!checkLegal)
+                return false;
+              add_move(moves, i, square, BITS_CAPTURE);
+              break;
+            }
+
+            /* break, if knight or king */
+            if (piece.type == KNIGHT || piece.type == KING) break;
+          }
+        }
+      }
+    }
+
+    // check for castling if: a) we're generating all moves, or b) we're doing
+    // single square move generation on the king's square
+    if ((!single_square) || last_sq == game.kings[us]) {
+      /* king-side castling */
+      if ((game.castling[us] & BITS_KSIDE_CASTLE) != 0) {
+        var castling_from = game.kings[us];
+        var castling_to = castling_from + 2;
+
+        if (game.board[castling_from + 1] == null &&
+            game.board[castling_to] == null &&
+            !attacked(them, game.kings[us]) &&
+            !attacked(them, castling_from + 1) &&
+            !attacked(them, castling_to)) {
+          if(!checkLegal)
+            return false;
+          add_move(moves, game.kings[us], castling_to, BITS_KSIDE_CASTLE);
+        }
+      }
+
+      /* queen-side castling */
+      if ((game.castling[us] & BITS_QSIDE_CASTLE) != 0) {
+        var castling_from = game.kings[us];
+        var castling_to = castling_from - 2;
+
+        if (game.board[castling_from - 1] == null &&
+            game.board[castling_from - 2] == null &&
+            game.board[castling_from - 3] == null &&
+            !attacked(them, game.kings[us]) &&
+            !attacked(them, castling_from - 1) &&
+            !attacked(them, castling_to)) {
+          if(!checkLegal)
+            return false;
+          add_move(moves, game.kings[us], castling_to, BITS_QSIDE_CASTLE);
+        }
+      }
+    }
+
+    //if it did make it this far, return true
+    if(!checkLegal)
+      return true;
+
     List<Move> legal_moves = [];
-    for (int i = 0, len = moves.length; i < len; i++) {
+    for (int i = 0,
+        len = moves.length; i < len; i++) {
       make_move(moves[i]);
       if (!king_attacked(us)) {
         legal_moves.add(moves[i]);
@@ -472,11 +610,11 @@ class Chess {
       undo();
     }
 
-    return legal_moves;
+    return legal_moves.length == 0;
   }
 
   /// Convert a move from 0x88 coordinates to Standard Algebraic Notation(SAN)
-  String move_to_san(Move move) {
+  String moveToSan(Move move) {
     String output = '';
     int flags = move.flags;
     if ((flags & BITS_KSIDE_CASTLE) != 0) {
@@ -985,7 +1123,7 @@ class Chess {
     if (move is String) {
       /* convert the move string to a move object */
       for (int i = 0; i < moves.length; i++) {
-        if (move == move_to_san(moves[i])) {
+        if (move == moveToSan(moves[i])) {
           move_obj = moves[i];
           break;
         }
