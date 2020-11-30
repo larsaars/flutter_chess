@@ -80,7 +80,7 @@ class ChessController {
         moveFrom = move.fromAlgebraic;
         moveTo = move.toAlgebraic;
         //make the move, if there is one
-        if (message != null) game.make_move(move);
+        if (message != null) game.makeMove(move);
         //now set user can make moves true again
         controller.userCanMakeMoves = true;
         //set loading false
