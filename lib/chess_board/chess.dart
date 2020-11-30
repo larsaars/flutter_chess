@@ -453,7 +453,20 @@ class Chess {
     /* return all pseudo-legal moves (this includes moves that allow the king
      * to be captured)
      */
-    return moves;
+    if (options != null && options.containsKey('legal') && options['legal'] != null && options['legal'] == true) {
+      List<Move> legalMoves = [];
+      for (int i = 0, len = moves.length; i < len; i++) {
+        makeMove(moves[i]);
+        if (!king_attacked(us)) {
+          legalMoves.add(moves[i]);
+        }
+        undo();
+      }
+
+      return legalMoves;
+    } else {
+      return moves;
+    }
   }
 
   //for the last depth, normally all moves are generated,
@@ -461,7 +474,9 @@ class Chess {
   //here a simplification is done for performance so that not over 1M+ moves have
   //to be generated every time
   //this will just return the move count, since it will just be check if it is zero
-  bool moveCountIsZero(bool checkLegal) {
+  bool moveCountIsZero([bool checkLegal]) {
+    if (checkLegal == null) checkLegal = true;
+
     // ignore: non_constant_identifier_names
     void add_move(List<Move> moves, from, to, flags) {
       /* if pawn promotion */
@@ -503,8 +518,7 @@ class Chess {
         /* single square, non-capturing */
         int square = i + PAWN_OFFSETS[us][0];
         if (game.board[square] == null) {
-          if(!checkLegal)
-            return false;
+          if (!checkLegal) return false;
           add_move(moves, i, square, BITS_NORMAL);
 
           /* double square */
@@ -520,12 +534,10 @@ class Chess {
           if ((square & 0x88) != 0) continue;
 
           if (game.board[square] != null && game.board[square].color == them) {
-            if(!checkLegal)
-              return false;
+            if (!checkLegal) return false;
             add_move(moves, i, square, BITS_CAPTURE);
           } else if (square == game.epSquare) {
-            if(!checkLegal)
-              return false;
+            if (!checkLegal) return false;
             add_move(moves, i, game.epSquare, BITS_EP_CAPTURE);
           }
         }
@@ -539,15 +551,13 @@ class Chess {
             if ((square & 0x88) != 0) break;
 
             if (game.board[square] == null) {
-              if(!checkLegal)
-                return false;
+              if (!checkLegal) return false;
               add_move(moves, i, square, BITS_NORMAL);
             } else {
               if (game.board[square].color == us) {
                 break;
               }
-              if(!checkLegal)
-                return false;
+              if (!checkLegal) return false;
               add_move(moves, i, square, BITS_CAPTURE);
               break;
             }
@@ -572,8 +582,7 @@ class Chess {
             !attacked(them, game.kings[us]) &&
             !attacked(them, castling_from + 1) &&
             !attacked(them, castling_to)) {
-          if(!checkLegal)
-            return false;
+          if (!checkLegal) return false;
           add_move(moves, game.kings[us], castling_to, BITS_KSIDE_CASTLE);
         }
       }
@@ -589,20 +598,17 @@ class Chess {
             !attacked(them, game.kings[us]) &&
             !attacked(them, castling_from - 1) &&
             !attacked(them, castling_to)) {
-          if(!checkLegal)
-            return false;
+          if (!checkLegal) return false;
           add_move(moves, game.kings[us], castling_to, BITS_QSIDE_CASTLE);
         }
       }
     }
 
     //if it did make it this far, return true
-    if(!checkLegal)
-      return true;
+    if (!checkLegal) return true;
 
     List<Move> legal_moves = [];
-    for (int i = 0,
-        len = moves.length; i < len; i++) {
+    for (int i = 0, len = moves.length; i < len; i++) {
       makeMove(moves[i]);
       if (!king_attacked(us)) {
         legal_moves.add(moves[i]);
@@ -644,7 +650,7 @@ class Chess {
 
     makeMove(move);
     if (in_check()) {
-      if (inCheckmate(generateMoves().length == 0)) {
+      if (inCheckmate(moveCountIsZero())) {
         output += '#';
       } else {
         output += '+';
@@ -965,7 +971,7 @@ class Chess {
 
   /* this function is used to uniquely identify ambiguous moves */
   get_disambiguator(Move move) {
-    List<Move> moves = generateMoves();
+    List<Move> moves = generateMoves({'legal': true});
 
     var from = move.from;
     var to = move.to;
@@ -1118,7 +1124,7 @@ class Chess {
   /// It returns true if the move was made, or false if it could not be.
   bool move(move) {
     Move move_obj = null;
-    List<Move> moves = generateMoves();
+    List<Move> moves = generateMoves({'legal': true});
 
     if (move is String) {
       /* convert the move string to a move object */

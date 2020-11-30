@@ -202,7 +202,7 @@ class ChessAI {
         //move to be able to generate future moves
         c.makeMove(m);
         //if the king is attacked this is not a legal move, continue
-        if(c.king_attacked(_MAX)) {
+        if(c.king_attacked(c.game.turn)) {
           //but still undo the move
           c.undo();
           continue;
@@ -225,7 +225,7 @@ class ChessAI {
         //try move
         c.makeMove(m);
         //if the king is attacked this is not a legal move, continue
-        if(c.king_attacked(_MIN)) {
+        if(c.king_attacked(c.game.turn)) {
           //but still undo the move
           c.undo();
           continue;
@@ -263,7 +263,7 @@ class ChessAI {
         //check for not hitting too deep
         if (thisDepth > depth) return;
         //list of moves
-        List moves = root.generateMoves();
+        List moves = root.generateMoves({'legal': true});
         if (moves.length > 0) {
           //create the product
           prod *= moves.length;
