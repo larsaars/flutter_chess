@@ -111,7 +111,7 @@ class S {
   }
 
   String get difficulties {
-    return Intl.message("auto,1,2,3,4,5", name: 'difficulties');
+    return Intl.message("auto,2,3,4,5", name: 'difficulties');
   }
 
   String get fen_options {
