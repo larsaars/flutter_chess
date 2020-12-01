@@ -2,7 +2,6 @@ import 'dart:isolate';
 import 'dart:math';
 
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
-import 'package:dorker/dorker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,14 +9,6 @@ import '../chess_board/chess.dart';
 import 'eval.dart';
 
 class ChessAI {
-  //the main method if is called by worker
-  void main() {
-    var boss = DorkerBoss();
-    boss.onMessage.listen((context) {
-      if(context is List)
-        entryPointMoveFinderIsolate([boss] + context);
-    });
-  }
 
   //the entry point for the new isolate
   static void entryPointMoveFinderIsolate(List context) {
@@ -34,9 +25,7 @@ class ChessAI {
 
   //determine to send via dorker or isolate
   static void _send(messenger, data) {
-    if (messenger is DorkerBoss)
-      messenger.postMessage.add(data);
-    else if (messenger is SendPort) messenger.send(data);
+    if (messenger is SendPort) messenger.send(data);
   }
 
   //the random
