@@ -272,16 +272,18 @@ class ChessAI {
   }
 
   static void _calcMaxDepth(Chess chess) {
-    //max depth cannot be lower than 2 because of preperation of minimax etc.
-    if (_SET_DEPTH < 2) {
-      _SET_DEPTH = 2;
-      return;
-    }
     //check if is not default but set depth
     if (_SET_DEPTH != 0) {
       _MAX_DEPTH = _SET_DEPTH;
       return;
     }
+
+    //max depth cannot be lower than 2 because of preparation of minimax etc.
+    if (_SET_DEPTH < 2) {
+      _SET_DEPTH = 2;
+      return;
+    }
+
 //calc the expected time expenditure in a sub function
     num expectedTimeExpenditure(int depth) {
 //always generate the first move if possible, then check how many moves there are
