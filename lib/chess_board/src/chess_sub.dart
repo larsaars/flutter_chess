@@ -181,7 +181,6 @@ class ColorMap {
   }
 
   @override
-  // TODO: implement hashCode
   int get hashCode => hash2(white, black);
 
   @override
