@@ -40,6 +40,7 @@ void showTextDialog(
   List<Widget> children = const [],
   OnDialogCancelCallback onDone,
   OnDialogReturnSetStateCallback setStateCallback,
+  IconData icon,
   var update,
 }) async {
   if (_showing) return;
@@ -67,9 +68,19 @@ void showTextDialog(
             return AlertDialog(
               title: Padding(
                   padding: EdgeInsets.all(8.0),
-                  child: Text(
-                    title ?? "",
-                    style: Theme.of(context).textTheme.subtitle1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      icon == null ? Container() : Icon(icon),
+                      SizedBox(
+                        width: 8.0,
+                      ),
+                      Text(
+                        title ?? "",
+                        style: Theme.of(context).textTheme.subtitle1,
+                      ),
+                    ],
                   )),
               content: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -94,7 +105,9 @@ void showTextDialog(
               actions: <Widget>[
                 FlatButton(
                     shape: roundButtonShape,
-                    child: Text(forceCancelText != null ? forceCancelText : (onDone == null ? strings.ok : strings.cancel)),
+                    child: Text(forceCancelText != null
+                        ? forceCancelText
+                        : (onDone == null ? strings.ok : strings.cancel)),
                     onPressed: () {
                       _showing = false;
                       Navigator.of(context).pop(onDone == null ? 'ok' : null);
