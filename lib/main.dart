@@ -38,14 +38,6 @@ class MyApp extends StatelessWidget {
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-    showTextDialog("Warning!", null,
-      forceCancelText: 'no',
-      onDoneText: 'yes',
-      children: [
-        Image.asset('res/drawable/moo.png')
-      ]
-    );
-
     //create the material app
     return MaterialApp(
       //manage resources first
@@ -200,8 +192,25 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
     );
   }
 
+  void _onWarning() {
+    showTextDialog("Warning!", null,
+        forceCancelText: 'no',
+        onDoneText: 'yes',
+        icon: Icons.warning,
+        onDone: (value) {
+
+        },
+        children: [
+          Image.asset('res/drawable/moo.png')
+        ]
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    //warning could open
+    if(Random().nextInt(900) == 420)
+      _onWarning();
     //get the available height for the chess board
     double availableHeight = MediaQuery.of(context).size.height - 200;
     //set the update method
