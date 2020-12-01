@@ -36,6 +36,7 @@ void showTextDialog(
   String title,
   String text, {
   String onDoneText,
+  String forceCancelText,
   List<Widget> children = const [],
   OnDialogCancelCallback onDone,
   OnDialogReturnSetStateCallback setStateCallback,
@@ -93,7 +94,7 @@ void showTextDialog(
               actions: <Widget>[
                 FlatButton(
                     shape: roundButtonShape,
-                    child: Text(onDone == null ? strings.ok : strings.cancel),
+                    child: Text(forceCancelText != null ? forceCancelText : (onDone == null ? strings.ok : strings.cancel)),
                     onPressed: () {
                       _showing = false;
                       Navigator.of(context).pop(onDone == null ? 'ok' : null);

@@ -1,5 +1,3 @@
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 import 'dart:io';
 import 'dart:isolate';
 
@@ -8,9 +6,7 @@ import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
-import 'package:dorker/dorker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';
@@ -65,10 +61,7 @@ class ChessController {
     //set player cannot change anything
     controller.userCanMakeMoves = false;
     //if is on web, html workers have to be used instead of isolates
-    if (kIsWeb)
-      _findMoveWorker();
-    else
-      await _findMoveIsolate();
+    await _findMoveIsolate();
   }
 
   Future<void> _findMoveIsolate() async {
@@ -115,9 +108,7 @@ class ChessController {
       //update the text etc
       update();
       //kill the isolate or worker
-      if (isolate is Isolate)
         isolate.kill();
-      else if (isolate is DorkerWorker) isolate.dispose();
       //reset progress
       progress = 0;
       //print how long it took
@@ -141,30 +132,9 @@ class ChessController {
       update();
     } else if (message is String && message == 'no_moves') {
       //kill the isolate or worker since there are no moves
-      if (isolate is Isolate)
         isolate.kill();
-      else if (isolate is DorkerWorker) isolate.dispose();
       //and update the board
       controller.userCanMakeMoves = true;
-      loadingBotMoves = false;
-      update();
-    }
-  }
-
-  //this is being called if the chess engine runs on a browser
-  Future<void> _findMoveWorker() async {
-    if (html.Worker.supported) {
-      //create a new worker since they are supported
-      var worker = DorkerWorker(html.Worker('lib/eval/ai.dart.js'));
-      //listen to events being returned
-      worker.onMessage.listen((event) {
-        //to the method
-        _receiveAiCallback(event.data, worker);
-      });
-      //pass data for the to let the worker start working
-      worker.postMessage.add([[game.fen, (prefs.getInt('set_depth') ?? 0)]]);
-    } else {
-      //set not loading anymore, do nothing since workers are not even supported
       loadingBotMoves = false;
       update();
     }
@@ -220,11 +190,6 @@ class ChessController {
   }
 
   Future<void> loadOldGame() async {
-    //if is running on web run return new game directly
-    if (kIsWeb) {
-      game = Chess();
-      return;
-    }
 
     final root = await rootDir;
     final saveFile = File('$root/game.fen');
