@@ -2,6 +2,7 @@ import 'dart:isolate';
 import 'dart:math';
 
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
+import 'package:dorker/dorker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -9,10 +10,19 @@ import '../chess_board/chess.dart';
 import 'eval.dart';
 
 class ChessAI {
+  //the main method if is called by worker
+  void main() {
+    var boss = DorkerBoss();
+    boss.onMessage.listen((context) {
+      if(context is List)
+        entryPointMoveFinderIsolate([boss] + context);
+    });
+  }
+
   //the entry point for the new isolate
   static void entryPointMoveFinderIsolate(List context) {
     //init the messenger, which sends messages back to the main thread
-    final SendPort messenger = context[0];
+    final messenger = context[0];
     //set the set depth
     _SET_DEPTH = context[2];
     //if the set depth is not zero, add one since this is just the list index
@@ -20,6 +30,13 @@ class ChessAI {
     //if the received object is a chess game, start the move generation
     //hand over the messenger and the chess
     _findBestMove(Chess.fromFEN(context[1]), messenger);
+  }
+
+  //determine to send via dorker or isolate
+  static void _send(messenger, data) {
+    if (messenger is DorkerBoss)
+      messenger.postMessage.add(data);
+    else if (messenger is SendPort) messenger.send(data);
   }
 
   //the random
@@ -42,7 +59,7 @@ class ChessAI {
   static int _MAX_DEPTH = 3, _SET_DEPTH = 0;
 
   //the actual method starting the alpha beta pruning
-  static void _findBestMove(Chess chess, SendPort messenger) {
+  static void _findBestMove(Chess chess, messenger) {
     //get the start time
     num startTime = DateTime.now().millisecondsSinceEpoch;
 
@@ -63,7 +80,7 @@ class ChessAI {
 
     //if there is no move, send null
     if (bestMove == null) {
-      messenger.send('no_moves');
+      _send(messenger, 'no_moves');
       return;
     }
 
@@ -75,7 +92,7 @@ class ChessAI {
 
     //send the best move up again
     //also return as second argument the time needed
-    messenger.send([bestMove, (endTime - startTime)]);
+    _send(messenger, [bestMove, (endTime - startTime)]);
   }
 
   //prepare the minimax iteratively, meaning:
@@ -87,7 +104,7 @@ class ChessAI {
   //generate any move lists, since they are all in the RAM already and
   //with already having sorted lists, which makes the whole process a lot faster,
   //as then alpha beta pruning will cut of much more trees faster
-  static Move _prepareAndStartMinimax(Chess c, SendPort messenger) {
+  static Move _prepareAndStartMinimax(Chess c, messenger) {
     //set a root move
     Move rootMove = Move(null, null, null, null, null, null, null);
     //call the iterative method prepare minimax here
@@ -111,7 +128,7 @@ class ChessAI {
       //undo the move
       c.undo();
       //send the progress
-      messenger.send(_idx);
+      _send(messenger, _idx);
     }
 
     //if there are no moves, return null
@@ -140,7 +157,7 @@ class ChessAI {
   //this is basically a minimax without alpha beta pruning to sort
   //all nodes till _MAX_DEPTH - 1
   static double _prepareMinimax(
-      Move root, Chess c, int depth, Color player, SendPort messenger) {
+      Move root, Chess c, int depth, Color player, messenger) {
     //update idx
     _idx++;
     //generate the nodes
@@ -170,7 +187,7 @@ class ChessAI {
         //undo after alpha beta
         c.undo();
         //if this is depth 0, report to messenger
-        if (depth == 0) messenger.send(_idx);
+        if (depth == 0) _send(messenger, _idx);
       }
       //sort the branches for max first (big eval numbers first)
       root.children.sort((Move a, Move b) => b.eval.compareTo(a.eval));
@@ -266,12 +283,12 @@ class ChessAI {
   }
 
   static void _calcMaxDepth(Chess chess) {
-//max depth cannot be lower than 2 because of preperation of minimax etc.
+    //max depth cannot be lower than 2 because of preperation of minimax etc.
     if (_SET_DEPTH < 2) {
       _SET_DEPTH = 2;
       return;
     }
-//check if is not default but set depth
+    //check if is not default but set depth
     if (_SET_DEPTH != 0) {
       _MAX_DEPTH = _SET_DEPTH;
       return;

@@ -1,3 +1,4 @@
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'dart:io';
 import 'dart:isolate';
@@ -7,6 +8,7 @@ import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
+import 'package:dorker/dorker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
@@ -63,7 +65,7 @@ class ChessController {
     //set player cannot change anything
     controller.userCanMakeMoves = false;
     //if is on web, html workers have to be used instead of isolates
-    if(kIsWeb)
+    if (kIsWeb)
       _findMoveWorker();
     else
       await _findMoveIsolate();
@@ -73,7 +75,7 @@ class ChessController {
     //for the method _ai.find a new thread (isolate)
     //is spawned
     ReceivePort receivePort =
-    ReceivePort(); //port for this main isolate to receive messages
+        ReceivePort(); //port for this main isolate to receive messages
     //send the game to the isolate
     //generated from fen string, so that the history list is empty and
     //the move generation algorithm can work faster (lightweight)
@@ -113,10 +115,9 @@ class ChessController {
       //update the text etc
       update();
       //kill the isolate or worker
-      if(isolate is Isolate)
+      if (isolate is Isolate)
         isolate.kill();
-      else if(isolate is html.Worker)
-        isolate.terminate();
+      else if (isolate is DorkerWorker) isolate.dispose();
       //reset progress
       progress = 0;
       //print how long it took
@@ -140,10 +141,9 @@ class ChessController {
       update();
     } else if (message is String && message == 'no_moves') {
       //kill the isolate or worker since there are no moves
-      if(isolate is Isolate)
+      if (isolate is Isolate)
         isolate.kill();
-      else if(isolate is html.Worker)
-        isolate.terminate();
+      else if (isolate is DorkerWorker) isolate.dispose();
       //and update the board
       controller.userCanMakeMoves = true;
       loadingBotMoves = false;
@@ -153,15 +153,17 @@ class ChessController {
 
   //this is being called if the chess engine runs on a browser
   Future<void> _findMoveWorker() async {
-    if(html.Worker.supported) {
+    if (html.Worker.supported) {
       //create a new worker since they are supported
-      var worker = html.Worker('ww.dart.js');
+      var worker = DorkerWorker(html.Worker('ai.dart.js'));
       //listen to events being returned
       worker.onMessage.listen((event) {
         //to the method
         _receiveAiCallback(event.data, worker);
       });
-    }else {
+      //pass data for the to let the worker start working
+      worker.postMessage.add([[game.fen, (prefs.getInt('set_depth') ?? 0)]]);
+    } else {
       //set not loading anymore, do nothing since workers are not even supported
       loadingBotMoves = false;
       update();
@@ -170,16 +172,15 @@ class ChessController {
 
   void setKingInCheckSquare() {
     bool isCheck = false;
-    for(Color color in [Color.WHITE, Color.BLACK]) {
-      if(game.king_attacked(color)) {
+    for (Color color in [Color.WHITE, Color.BLACK]) {
+      if (game.king_attacked(color)) {
         kingInCheck = Chess.algebraic(game.game.kings[color]);
         print('$kingInCheck');
         isCheck = true;
       }
     }
 
-    if(!isCheck)
-      kingInCheck = null;
+    if (!isCheck) kingInCheck = null;
   }
 
   bool makeBotMoveIfRequired() {
@@ -220,7 +221,7 @@ class ChessController {
 
   Future<void> loadOldGame() async {
     //if is running on web run return new game directly
-    if(kIsWeb) {
+    if (kIsWeb) {
       game = Chess();
       return;
     }
