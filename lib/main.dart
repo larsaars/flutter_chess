@@ -1,4 +1,3 @@
-import 'dart:html';
 import 'dart:math';
 
 import 'package:chess_bot/chess_board/chess.dart';
@@ -38,6 +37,14 @@ class MyApp extends StatelessWidget {
     //and portrait only
     SystemChrome.setPreferredOrientations(
         [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+
+    showTextDialog("Warning!", null,
+      forceCancelText: 'no',
+      onDoneText: 'yes',
+      children: [
+        Image.asset('res/drawable/moo.png')
+      ]
+    );
 
     //create the material app
     return MaterialApp(
