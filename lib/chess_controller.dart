@@ -1,3 +1,4 @@
+import 'dart:html' as html;
 import 'dart:io';
 import 'dart:isolate';
 
@@ -7,6 +8,7 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';
@@ -60,10 +62,18 @@ class ChessController {
     loadingBotMoves = true;
     //set player cannot change anything
     controller.userCanMakeMoves = false;
+    //if is on web, html workers have to be used instead of isolates
+    if(kIsWeb)
+      _findMoveWorker();
+    else
+      await _findMoveIsolate();
+  }
+
+  Future<void> _findMoveIsolate() async {
     //for the method _ai.find a new thread (isolate)
     //is spawned
     ReceivePort receivePort =
-        ReceivePort(); //port for this main isolate to receive messages
+    ReceivePort(); //port for this main isolate to receive messages
     //send the game to the isolate
     //generated from fen string, so that the history list is empty and
     //the move generation algorithm can work faster (lightweight)
@@ -75,60 +85,87 @@ class ChessController {
     //listen at the receive port for the game (exit point)
     //or update the progress
     receivePort.listen((message) {
-      //if message is the move, execute further actions
-      if (message is List) {
-        //execute exitPointMoveFinderIsolate
-        //in the main thread again, manage the move object
-        //get the move object
-        var move = message[0] as Move;
-        //set the move from and move to object
-        //for the animation in board_square
-        moveFrom = move.fromAlgebraic;
-        moveTo = move.toAlgebraic;
-        //make the move, if there is one
-        if (message != null) game.makeMove(move);
-        //set king in check square
-        setKingInCheckSquare();
-        //now set user can make moves true again
-        controller.userCanMakeMoves = true;
-        //set loading false
-        loadingBotMoves = false;
-        //for the listeners to be called in case
-        controller.refreshBoard();
-        //update the text etc
-        update();
-        //kill the isolate
-        isolate.kill();
-        //reset progress
-        progress = 0;
-        //print how long it took
-        num time = message[1];
-        print('finished in $time ms');
-        //if botbattle is activated, wait a certain amount of time,
-        //then inverse botColor and
-        //make check if bot move is required
-        if (botBattle) {
-          Future.delayed(Duration(milliseconds: 350)).then((value) {
-            botColor = Color.flip(botColor);
-            update();
-            makeBotMoveIfRequired();
-          });
-        }
-        //if the message is an int, it is the progress
-      } else if (message is int) {
-        //set progress
-        progress = message;
-        //call update to update the text
-        update();
-      } else if (message is String && message == 'no_moves') {
-        //kill the isolate since there are no moves
-        isolate.kill();
-        //and update the board
-        controller.userCanMakeMoves = true;
-        loadingBotMoves = false;
-        update();
-      }
+      _receiveAiCallback(message, isolate);
     });
+  }
+
+  void _receiveAiCallback(message, isolate) {
+    //if message is the move, execute further actions
+    if (message is List) {
+      //execute exitPointMoveFinderIsolate
+      //in the main thread again, manage the move object
+      //get the move object
+      var move = message[0] as Move;
+      //set the move from and move to object
+      //for the animation in board_square
+      moveFrom = move.fromAlgebraic;
+      moveTo = move.toAlgebraic;
+      //make the move, if there is one
+      if (message != null) game.makeMove(move);
+      //set king in check square
+      setKingInCheckSquare();
+      //now set user can make moves true again
+      controller.userCanMakeMoves = true;
+      //set loading false
+      loadingBotMoves = false;
+      //for the listeners to be called in case
+      controller.refreshBoard();
+      //update the text etc
+      update();
+      //kill the isolate or worker
+      if(isolate is Isolate)
+        isolate.kill();
+      else if(isolate is html.Worker)
+        isolate.terminate();
+      //reset progress
+      progress = 0;
+      //print how long it took
+      num time = message[1];
+      print('finished in $time ms');
+      //if botbattle is activated, wait a certain amount of time,
+      //then inverse botColor and
+      //make check if bot move is required
+      if (botBattle) {
+        Future.delayed(Duration(milliseconds: 350)).then((value) {
+          botColor = Color.flip(botColor);
+          update();
+          makeBotMoveIfRequired();
+        });
+      }
+      //if the message is an int, it is the progress
+    } else if (message is int) {
+      //set progress
+      progress = message;
+      //call update to update the text
+      update();
+    } else if (message is String && message == 'no_moves') {
+      //kill the isolate or worker since there are no moves
+      if(isolate is Isolate)
+        isolate.kill();
+      else if(isolate is html.Worker)
+        isolate.terminate();
+      //and update the board
+      controller.userCanMakeMoves = true;
+      loadingBotMoves = false;
+      update();
+    }
+  }
+
+  //this is being called if the chess engine runs on a browser
+  Future<void> _findMoveWorker() async {
+    if(html.Worker.supported) {
+      //create a new worker since they are supported
+      var worker = html.Worker('ww.dart.js');
+      //listen to events being returned
+      worker.onMessage.listen((event) {
+        //to the method
+        _receiveAiCallback(event.data, worker);
+      });
+    }else {
+      //set not loading anymore, do nothing since workers are not even supported
+      loadingBotMoves = false;
+      update();
+    }
   }
 
   void setKingInCheckSquare() {
@@ -182,6 +219,12 @@ class ChessController {
   }
 
   Future<void> loadOldGame() async {
+    //if is running on web run return new game directly
+    if(kIsWeb) {
+      game = Chess();
+      return;
+    }
+
     final root = await rootDir;
     final saveFile = File('$root/game.fen');
     if (await saveFile.exists()) {

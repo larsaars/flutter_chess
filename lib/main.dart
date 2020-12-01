@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:math';
 
 import 'package:chess_bot/chess_board/chess.dart';
@@ -194,6 +195,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
 
   @override
   Widget build(BuildContext context) {
+    //get the available height for the chess board
+    double availableHeight = MediaQuery.of(context).size.height - 200;
     //set the update method
     _chessController.update = update;
     //the default scaffold
@@ -283,19 +286,21 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                       Center(
                         // Center is a layout widget. It takes a single child and positions it
                         // in the middle of the parent.
-                        child: ChessBoard(
-                          boardType: boardTypeFromString(
-                              prefs.getString('board_style') ?? 'd'),
-                          size: min(MediaQuery.of(context).size.width,
-                              MediaQuery.of(context).size.height),
-                          onCheckMate: _chessController.onCheckMate,
-                          onDraw: _chessController.onDraw,
-                          onMove: _chessController.onMove,
-                          onCheck: _chessController.onCheck,
-                          chessBoardController: _chessController.controller,
-                          chess: _chessController.game,
-                          whiteSideTowardsUser:
-                              _chessController.whiteSideTowardsUser,
+                        child: SafeArea(
+                          child: ChessBoard(
+                            boardType: boardTypeFromString(
+                                prefs.getString('board_style') ?? 'd'),
+                            size: min(MediaQuery.of(context).size.width,
+                                availableHeight),
+                            onCheckMate: _chessController.onCheckMate,
+                            onDraw: _chessController.onDraw,
+                            onMove: _chessController.onMove,
+                            onCheck: _chessController.onCheck,
+                            chessBoardController: _chessController.controller,
+                            chess: _chessController.game,
+                            whiteSideTowardsUser:
+                                _chessController.whiteSideTowardsUser,
+                          ),
                         ),
                       ),
                     ],
