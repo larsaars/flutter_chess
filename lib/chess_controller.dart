@@ -155,7 +155,7 @@ class ChessController {
   Future<void> _findMoveWorker() async {
     if (html.Worker.supported) {
       //create a new worker since they are supported
-      var worker = DorkerWorker(html.Worker('ai.dart.js'));
+      var worker = DorkerWorker(html.Worker('lib/eval/ai.dart.js'));
       //listen to events being returned
       worker.onMessage.listen((event) {
         //to the method
