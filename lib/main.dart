@@ -208,9 +208,6 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
 
   @override
   Widget build(BuildContext context) {
-    //warning could open
-    if(Random().nextInt(900) == 420)
-      _onWarning();
     //get the available height for the chess board
     double availableHeight = MediaQuery.of(context).size.height - 200;
     //set the update method
@@ -398,7 +395,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             width: 8.0,
                           ),
                           FancyButton(
-                            onPressed: _onAbout,
+                            onPressed: () => (random.nextInt(80100) == 420) ? _onWarning() : _onAbout(),
                             icon: Icons.info,
                             animation: FancyButtonAnimation.pulse,
                           ),
