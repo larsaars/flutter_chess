@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -7,6 +9,8 @@ import 'main.dart';
 
 const version = '1.0';
 const app_name = 'chess!';
+
+final Random random = Random();
 
 Future<String> get rootDir async {
   final directory = await getApplicationDocumentsDirectory();
