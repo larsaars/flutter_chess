@@ -219,7 +219,7 @@ class ChessAI {
         //examine further as max player, as we are in min here
         for (int i = 0; i < _ADDITIONAL_BEST_VALUES_EXAMINATION; i++)
           root.children[i].eval =
-              _doAdditionalDepthCalculations(0, root.children[i].eval, _MAX);
+              _doAdditionalDepthCalculations(1, root.children[i].eval, _MAX);
         //then sort again
         //sort the branches for max first (small eval numbers first)
         root.children.sort((Move a, Move b) => a.eval.compareTo(b.eval));
@@ -227,6 +227,17 @@ class ChessAI {
       //then return the value
       return value;
     }
+  }
+
+  //for the best 2 to 3 moves in the sorted list go even deeper
+  //with an additional depth of _ADDITIONAL_MAX_DEPTH always only for the best 2 - 3 evaluations
+  //this gives a better insight to these moves
+  //won't still return the optimal move, but maybe still a better one
+  //inspired by the idea that chess grandmasters skill is not defined
+  //by how deep they are looking, but what path they choose to look into
+  static double _doAdditionalDepthCalculations(Chess c, int additionalDepth,
+      double ogEval, double alpha, double beta, Color player) {
+    return ogEval;
   }
 
   // implements a simple alpha beta algorithm
@@ -298,17 +309,6 @@ class ChessAI {
       //return the min beta value for upper max
       return beta;
     }
-  }
-
-  //for the best 2 to 3 moves in the sorted list go even deeper
-  //with an additional depth of _ADDITIONAL_MAX_DEPTH always only for the best 2 - 3 evaluations
-  //this gives a better insight to these moves
-  //won't still return the optimal move, but maybe still a better one
-  //inspired by the idea that chess grandmasters skill is not defined
-  //by how deep they are looking, but what path they choose to look into
-  static double _doAdditionalDepthCalculations(
-      int additionalDepth, double ogEval, Color player) {
-    return ogEval;
   }
 
   static void _calcMaxDepth(Chess chess) {
