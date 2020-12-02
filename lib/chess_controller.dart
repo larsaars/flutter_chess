@@ -44,6 +44,8 @@ class ChessController {
     print('onMove: $move');
     // update the ui
     update();
+    //save the game after every move
+    saveOldGame();
     //check if bot should make a move
     //and then find it
     //make move if needed
@@ -190,9 +192,9 @@ class ChessController {
   }
 
   Future<void> loadOldGame() async {
-
     final root = await rootDir;
-    final saveFile = File('$root/game.fen');
+    final saveFile = File('$root${Platform.pathSeparator}game.fen');
+    print('searching from ${saveFile.path}');
     if (await saveFile.exists()) {
       String fen = await saveFile.readAsString();
       if (fen.length < 2) {
@@ -200,7 +202,7 @@ class ChessController {
         return;
       }
 
-      print('game loaded');
+      print('game loaded from ${saveFile.path}');
 
       game = Chess.fromFEN(fen);
     } else
@@ -209,9 +211,11 @@ class ChessController {
 
   void saveOldGame() async {
     final root = await rootDir;
-    final saveFile = File('$root/game.fen');
+    final saveFile = File('$root${Platform.pathSeparator}game.fen');
     if (!await saveFile.exists()) await saveFile.create();
     await saveFile.writeAsString(game.generate_fen());
+
+    print('saving to ${saveFile.path}');
 
     print('game saved');
   }

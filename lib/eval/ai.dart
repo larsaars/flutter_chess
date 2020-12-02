@@ -9,7 +9,6 @@ import '../chess_board/chess.dart';
 import 'eval.dart';
 
 class ChessAI {
-
   //the entry point for the new isolate
   static void entryPointMoveFinderIsolate(List context) {
     //init the messenger, which sends messages back to the main thread
@@ -18,6 +17,7 @@ class ChessAI {
     _SET_DEPTH = context[2];
     //if the set depth is not zero, add one since this is just the list index
     if (_SET_DEPTH != 0) _SET_DEPTH++;
+    print('set depth is now $_SET_DEPTH');
     //if the received object is a chess game, start the move generation
     //hand over the messenger and the chess
     _findBestMove(Chess.fromFEN(context[1]), messenger);
@@ -271,53 +271,66 @@ class ChessAI {
     }
   }
 
+  //for the best 2 to 3 moves in the sorted list go even deeper
+  //with an additional depth of _ADDITIONAL_MAX_DEPTH always only for the best 2 - 3 evaluations
+  //this gives a better insight to these moves
+  //won't still return the optimal move, but maybe still a better one
+  //inspired by the idea that chess grandmasters skill is not defined
+  //by how deep they are looking, but what path they choose to look into
+  static double _doAdditionalDepthCalculations(int additionalDepth, Color player) {
+
+  }
+
   static void _calcMaxDepth(Chess chess) {
     //check if is not default but set depth
     if (_SET_DEPTH != 0) {
       _MAX_DEPTH = _SET_DEPTH;
       return;
+    } else {
+      _MIN_CALC_DEPTH = 4;
+      _MAX_CALC_DEPTH = 5;
     }
 
     //max depth cannot be lower than 2 because of preparation of minimax etc.
-    if (_SET_DEPTH < 2) {
-      _SET_DEPTH = 2;
+    if (_MAX_DEPTH < 2) {
+      _MAX_DEPTH = 2;
       return;
     }
 
-//calc the expected time expenditure in a sub function
+    //calc the expected time expenditure in a sub function
     num expectedTimeExpenditure(int depth) {
-//always generate the first move if possible, then check how many moves there are
+      //always generate the first move if possible, then check how many moves there are
       num prod = 1;
       void addNumRecursive(Chess root, int thisDepth) {
-//check for not hitting too deep
+        //check for not hitting too deep
         if (thisDepth > depth) return;
-//list of moves
+        //list of moves
         List moves = root.generateMoves();
         if (moves.length > 0) {
-//create the product
+          //create the product
           prod *= moves.length;
-//make one of them randomly, always selecting 0 move could be wrong
+          //make one of them randomly, always selecting 0 move could be wrong
           root.makeMove(moves[_random.nextInt(moves.length)]);
-//call this one recursive
+          //call this one recursive
           addNumRecursive(root, thisDepth + 1);
-//then undo it
+          //then undo it
           root.undo();
         }
       }
 
-//call the recursive counter
+      //call the recursive counter
       addNumRecursive(chess, 1);
-//calc prod * 3/4 because of pruning
+      //calc prod * 3/4 because of pruning
       return prod * 0.75;
     }
 
-//WE DON'T USE THE SHANNON NUMBER
-//first calculate the number of pieces on the board,
-//from that calculate the time expenditure for alpha beta pruning:
-//b^(3/4)
-//based on that then decide how deep we want to go with alpha beta pruning
-//depth, pm
-//minimizing loop
+    //WE DON'T USE THE SHANNON NUMBER
+    //first calculate the number of pieces on the board,
+    //from that calculate the time expenditure for alpha beta pruning:
+    //b^(3/4)
+    //based on that then decide how deep we want to go with alpha beta pruning
+    //depth, pm
+    //minimizing loop
     bool changed = false;
     for (int depth = _MAX_CALC_DEPTH; depth >= _MIN_CALC_DEPTH; depth--) {
       num exp = expectedTimeExpenditure(depth);
@@ -334,7 +347,7 @@ class ChessAI {
     print('set max depth to $_MAX_DEPTH');
   }
 
-  static const _MIN_CALC_DEPTH = 4,
-      _MAX_CALC_DEPTH = 5,
-      _MAX_CALC_ESTIMATED_MOVES = 135000;
+  // ignore: non_constant_identifier_names
+  static int _MIN_CALC_DEPTH = 4, _MAX_CALC_DEPTH = 5;
+  static const _MAX_CALC_ESTIMATED_MOVES = 135000, _ADDITIONAL_MAX_DEPTH = 4;
 }

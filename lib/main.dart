@@ -174,7 +174,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
 
   Future<bool> _onWillPop() async {
     _chessController.saveOldGame();
-    return false;
+    return true;
   }
 
   void _onAbout() async {
