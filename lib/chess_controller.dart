@@ -223,12 +223,14 @@ class ChessController {
   void resetBoard() {
     showTextDialog(strings.replay, strings.replay_desc, onDoneText: strings.ok,
         onDone: (value) {
-      game.reset();
-      moveTo = null;
-      moveFrom = null;
-      kingInCheck = null;
-      update();
-      makeBotMoveIfRequired();
+      if(value == 'ok') {
+        moveTo = null;
+        moveFrom = null;
+        kingInCheck = null;
+        game.reset();
+        update();
+        makeBotMoveIfRequired();
+      }
     });
   }
 

@@ -27,7 +27,7 @@ class Move {
   //for iterative deepening
   List<Move> children = [];
   num eval = 0;
-  bool gameOver = false, gameDraw = false;
+  bool gameOver = false, gameDraw = false, additionalEvaluated = false;
 
   Move(this.color, this.from, this.to, this.flags, this.piece,
       this.captured, this.promotion);
