@@ -180,11 +180,15 @@ class ChessAI {
       }
       //sort the branches for max first (big eval numbers first)
       root.children.sort((Move a, Move b) => b.eval.compareTo(a.eval));
-      //for the best 2-3 items: examine further
-      if(depth == (_MAX_DEPTH - 2)) {
+      //for the best 2-3 items: examine further,
+      //of course only in _MAX_DEPTH - 2 and then also only
+      //if there are enough moves in list
+      if (depth == (_MAX_DEPTH - 2) &&
+          root.children.length > _ADDITIONAL_BEST_VALUES_EXAMINATION) {
         //examine further as min player, as we are in max here
         for (int i = 0; i < _ADDITIONAL_BEST_VALUES_EXAMINATION; i++)
-          root.children[i].eval = _doAdditionalDepthCalculations(0, _MIN);
+          root.children[i].eval =
+              _doAdditionalDepthCalculations(0, root.children[i].eval, _MIN);
         //then sort again
         //sort the branches for max first (big eval numbers first)
         root.children.sort((Move a, Move b) => b.eval.compareTo(a.eval));
@@ -207,11 +211,15 @@ class ChessAI {
       }
       //sort the branches for max first (small eval numbers first)
       root.children.sort((Move a, Move b) => a.eval.compareTo(b.eval));
-      //for the best 2-3 items: examine further
-      if(depth == (_MAX_DEPTH - 2)) {
+      //for the best 2-3 items: examine further,
+      //of course only in _MAX_DEPTH - 2 and then also only
+      //if there are enough moves in list
+      if (depth == (_MAX_DEPTH - 2) &&
+          root.children.length > _ADDITIONAL_BEST_VALUES_EXAMINATION) {
         //examine further as max player, as we are in min here
         for (int i = 0; i < _ADDITIONAL_BEST_VALUES_EXAMINATION; i++)
-          root.children[i].eval = _doAdditionalDepthCalculations(0, _MAX);
+          root.children[i].eval =
+              _doAdditionalDepthCalculations(0, root.children[i].eval, _MAX);
         //then sort again
         //sort the branches for max first (small eval numbers first)
         root.children.sort((Move a, Move b) => a.eval.compareTo(b.eval));
@@ -299,7 +307,9 @@ class ChessAI {
   //inspired by the idea that chess grandmasters skill is not defined
   //by how deep they are looking, but what path they choose to look into
   static double _doAdditionalDepthCalculations(
-      int additionalDepth, Color player) {}
+      int additionalDepth, double ogEval, Color player) {
+    return ogEval;
+  }
 
   static void _calcMaxDepth(Chess chess) {
     //check if is not default but set depth
@@ -369,5 +379,7 @@ class ChessAI {
 
   // ignore: non_constant_identifier_names
   static int _MIN_CALC_DEPTH = 4, _MAX_CALC_DEPTH = 5;
-  static const _MAX_CALC_ESTIMATED_MOVES = 135000, _ADDITIONAL_MAX_DEPTH = 4, _ADDITIONAL_BEST_VALUES_EXAMINATION = 3;
+  static const _MAX_CALC_ESTIMATED_MOVES = 135000,
+      _ADDITIONAL_MAX_DEPTH = 4,
+      _ADDITIONAL_BEST_VALUES_EXAMINATION = 3;
 }
