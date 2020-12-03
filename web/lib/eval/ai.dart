@@ -1,8 +1,6 @@
-
 import 'dart:math';
 
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
-import 'package:dorker/dorker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,27 +9,14 @@ import 'eval.dart';
 
 class ChessAI {
   //the entry point for the new isolate
-  void main() {
-    var dorker = DorkerBoss();
-    //listen
-    dorker.onMessage.listen((context) {
-      if(context is List) {
-        //set the set depth
-        _SET_DEPTH = context[1];
-        //if the set depth is not zero, add one since this is just the list index
-        if (_SET_DEPTH != 0) _SET_DEPTH++;
-        print('set depth is now $_SET_DEPTH');
-        //if the received object is a chess game, start the move generation
-        //hand over the messenger and the chess
-        _findBestMove(Chess.fromFEN(context[0]), dorker);
-      }
-    });
-
-  }
-
-  //determine to send via dorker or isolate
-  static void _send(messenger, data) {
-    if (messenger is DorkerBoss) messenger.postMessage.add(data);
+  static Future<List> entry(String fen, int setDepth) async {
+    //set the set depth
+    _SET_DEPTH = setDepth;
+    //if the set depth is not zero, add one since this is just the list index
+    if (_SET_DEPTH != 0) _SET_DEPTH++;
+    //if the received object is a chess game, start the move generation
+    //hand over the messenger and the chess
+    return await _findBestMove(Chess.fromFEN(fen));
   }
 
   //the random
@@ -54,7 +39,7 @@ class ChessAI {
   static int _MAX_DEPTH = 3, _SET_DEPTH = 0;
 
   //the actual method starting the alpha beta pruning
-  static void _findBestMove(Chess chess, messenger) {
+  static Future<List> _findBestMove(Chess chess) async {
     //get the start time
     num startTime = DateTime.now().millisecondsSinceEpoch;
 
@@ -71,12 +56,11 @@ class ChessAI {
     //calc the max depth
     _calcMaxDepth(chess);
 
-    Move bestMove = _prepareAndStartMinimax(chess, messenger);
+    Move bestMove = await _prepareAndStartMinimax(chess);
 
     //if there is no move, send null
     if (bestMove == null) {
-      _send(messenger, 'no_moves');
-      return;
+      return null;
     }
 
     //print
@@ -87,7 +71,7 @@ class ChessAI {
 
     //send the best move up again
     //also return as second argument the time needed
-    _send(messenger, [bestMove, (endTime - startTime)]);
+    return [bestMove, (endTime - startTime)];
   }
 
   //prepare the minimax iteratively, meaning:
@@ -99,11 +83,11 @@ class ChessAI {
   //generate any move lists, since they are all in the RAM already and
   //with already having sorted lists, which makes the whole process a lot faster,
   //as then alpha beta pruning will cut of much more trees faster
-  static Move _prepareAndStartMinimax(Chess c, messenger) {
+  static Future<Move> _prepareAndStartMinimax(Chess c) async {
     //set a root move
     Move rootMove = Move(null, null, null, null, null, null, null);
     //call the iterative method prepare minimax here
-    _prepareMinimax(rootMove, c, 0, _MAX, messenger);
+    await _prepareMinimax(rootMove, c, 0, _MAX);
     //after the prepare minimax reset the idx
     _idx = 0;
     //then start the real minimax with alpha beta pruning
@@ -117,13 +101,11 @@ class ChessAI {
       //add the child and the real eval, not the pre-eval
       evalPairs.add([
         child,
-        _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN, child.gameOver,
+        await _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN, child.gameOver,
             child.gameDraw)
       ]);
       //undo the move
       c.undo();
-      //send the progress
-      _send(messenger, _idx);
     }
 
     //if there are no moves, return null
@@ -151,8 +133,8 @@ class ChessAI {
   //all moves till _MAX_DEPTH - 1 will be generated this way
   //this is basically a minimax without alpha beta pruning to sort
   //all nodes till _MAX_DEPTH - 1
-  static double _prepareMinimax(
-      Move root, Chess c, int depth, Color player, messenger) {
+  static Future<double> _prepareMinimax(
+      Move root, Chess c, int depth, Color player) async {
     //update idx
     _idx++;
     //generate the nodes
@@ -178,11 +160,9 @@ class ChessAI {
         c.makeMove(m);
         //recursive execute of minimax
         //get the maximizing value
-        value = max(value, _prepareMinimax(m, c, depth + 1, _MIN, messenger));
+        value = max(value, await _prepareMinimax(m, c, depth + 1, _MIN));
         //undo after alpha beta
         c.undo();
-        //if this is depth 0, report to messenger
-        if (depth == 0) _send(messenger, _idx);
       }
       //sort the branches for max first (big eval numbers first)
       root.children.sort((Move a, Move b) => b.eval.compareTo(a.eval));
@@ -198,7 +178,7 @@ class ChessAI {
         c.makeMove(m);
         //recursive execute of minimax
         //get the minimizing value
-        value = min(value, _prepareMinimax(m, c, depth + 1, _MAX, messenger));
+        value = min(value, await _prepareMinimax(m, c, depth + 1, _MAX));
         //undo after alpha beta
         c.undo();
       }
@@ -210,8 +190,8 @@ class ChessAI {
   }
 
   // implements a simple alpha beta algorithm
-  static double _minimax(Move root, Chess c, int depth, double alpha,
-      double beta, Color player, bool upperIsGameOver, bool upperIsDraw) {
+  static Future<double> _minimax(Move root, Chess c, int depth, double alpha,
+      double beta, Color player, bool upperIsGameOver, bool upperIsDraw) async {
     //update idx
     _idx++;
     //if this is the max depth, then in the preparation the child nodes have not
@@ -246,7 +226,7 @@ class ChessAI {
         //recursive execute of alpha beta
         alpha = max(
             alpha,
-            _minimax(m, c, depth + 1, alpha, beta, _MIN, root.gameOver,
+            await _minimax(m, c, depth + 1, alpha, beta, _MIN, root.gameOver,
                 root.gameDraw));
         //undo after alpha beta
         c.undo();
@@ -266,7 +246,7 @@ class ChessAI {
         //minimize beta from new alpha beta
         beta = min(
             beta,
-            _minimax(m, c, depth + 1, alpha, beta, _MAX, root.gameOver,
+            await _minimax(m, c, depth + 1, alpha, beta, _MAX, root.gameOver,
                 root.gameDraw));
         //undo the moves
         c.undo();
@@ -286,7 +266,7 @@ class ChessAI {
       _MAX_DEPTH = _SET_DEPTH;
       return;
     } else {
-      _MIN_CALC_DEPTH = 4;
+      _MIN_CALC_DEPTH = 3;
       _MAX_CALC_DEPTH = 5;
     }
 
@@ -347,8 +327,8 @@ class ChessAI {
   }
 
   // ignore: non_constant_identifier_names
-  static int _MIN_CALC_DEPTH = 4, _MAX_CALC_DEPTH = 5;
-  static const _MAX_CALC_ESTIMATED_MOVES = 135000,
+  static int _MIN_CALC_DEPTH = 3, _MAX_CALC_DEPTH = 5;
+  static const _MAX_CALC_ESTIMATED_MOVES = 50000,
       _ADDITIONAL_MAX_DEPTH = 3,
       _ADDITIONAL_BEST_VALUES_EXAMINATION = 3;
 }
