@@ -217,6 +217,10 @@ class ChessController {
   }
 
   void saveOldGame() async {
+    //don't save if on web
+    if(kIsWeb)
+      return;
+
     final root = await rootDir;
     final saveFile = File('$root${Platform.pathSeparator}game.fen');
     if (!await saveFile.exists()) await saveFile.create();
