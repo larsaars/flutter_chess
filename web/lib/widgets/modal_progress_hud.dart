@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+import '../main.dart';
+
 class ModalProgressHUD extends StatelessWidget {
   final bool inAsyncCall;
   final double opacity;
   final Color color;
-  final Widget progressIndicator;
   final Offset offset;
   final bool dismissible;
   final Widget child;
@@ -14,7 +15,6 @@ class ModalProgressHUD extends StatelessWidget {
     @required this.inAsyncCall,
     this.opacity = 0.3,
     this.color = Colors.grey,
-    this.progressIndicator = const CircularProgressIndicator(),
     this.offset,
     this.dismissible = false,
     @required this.child,
@@ -29,13 +29,19 @@ class ModalProgressHUD extends StatelessWidget {
     if (inAsyncCall) {
       Widget layOutProgressIndicator;
       if (offset == null)
-        layOutProgressIndicator = Center(child: progressIndicator);
+        layOutProgressIndicator = Center(
+            child: Text(
+          strings.loading,
+          style: Theme.of(context).textTheme.subtitle2,
+        ));
       else {
         layOutProgressIndicator = Positioned(
           child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: progressIndicator,
-          ),
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                strings.loading,
+                style: Theme.of(context).textTheme.subtitle2,
+              )),
           left: offset.dx,
           top: offset.dy,
         );

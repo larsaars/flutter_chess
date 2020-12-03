@@ -24,5 +24,6 @@
   "difficulties": "auto,2,3,4,5",
   "fen_options": "in Zwischenablage,aus Zwischenablage",
   "bot_vs_bot": "bot vs. bot",
-  "copy_fen": "fen kopieren"
+  "copy_fen": "fen kopieren",
+  "loading": "lädt zug..."
 }
