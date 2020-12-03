@@ -23,5 +23,8 @@
   "difficulties": "auto,2,3,4,5",
   "fen_options": "to clipboard,from clipboard",
   "bot_vs_bot": "bot vs. bot",
-  "copy_fen": "copy fen"
+  "copy_fen": "copy fen",
+  "privacy_url": "https://l-chess.flycricket.io/privacy.html",
+  "terms_url": "https://l-chess.flycricket.io/terms.html",
+  "privacy_title": "privacy policy"
 }
