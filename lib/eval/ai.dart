@@ -185,10 +185,16 @@ class ChessAI {
       //if there are enough moves in list
       if (depth == (_MAX_DEPTH - 2) &&
           root.children.length > _ADDITIONAL_BEST_VALUES_EXAMINATION) {
-        //examine further as min player, as we are in max here
+        //examine further as max player, as we are just recalculating the eval
         for (int i = 0; i < _ADDITIONAL_BEST_VALUES_EXAMINATION; i++)
-          root.children[i].eval =
-              _doAdditionalDepthCalculations(0, root.children[i].eval, _MIN);
+          root.children[i].eval = _doAdditionalDepthCalculations(
+              root.children[i],
+              c,
+              0,
+              -_INFINITY,
+              _INFINITY,
+              _MAX,
+              root.children[i].eval);
         //then sort again
         //sort the branches for max first (big eval numbers first)
         root.children.sort((Move a, Move b) => b.eval.compareTo(a.eval));
@@ -216,10 +222,17 @@ class ChessAI {
       //if there are enough moves in list
       if (depth == (_MAX_DEPTH - 2) &&
           root.children.length > _ADDITIONAL_BEST_VALUES_EXAMINATION) {
-        //examine further as max player, as we are in min here
-        for (int i = 0; i < _ADDITIONAL_BEST_VALUES_EXAMINATION; i++)
-          root.children[i].eval =
-              _doAdditionalDepthCalculations(1, root.children[i].eval, _MAX);
+        //examine further as _MIN player, as we are just recalculating the eval
+        for (int i = 0; i < _ADDITIONAL_BEST_VALUES_EXAMINATION; i++) {
+          root.children[i].eval = _doAdditionalDepthCalculations(
+              root.children[i],
+              c,
+              0,
+              -_INFINITY,
+              _INFINITY,
+              _MIN,
+              root.children[i].eval);
+        }
         //then sort again
         //sort the branches for max first (small eval numbers first)
         root.children.sort((Move a, Move b) => a.eval.compareTo(b.eval));
@@ -235,9 +248,39 @@ class ChessAI {
   //won't still return the optimal move, but maybe still a better one
   //inspired by the idea that chess grandmasters skill is not defined
   //by how deep they are looking, but what path they choose to look into
-  static double _doAdditionalDepthCalculations(Chess c, int additionalDepth,
-      double ogEval, double alpha, double beta, Color player) {
-    return ogEval;
+  static double _doAdditionalDepthCalculations(
+      Move root,
+      Chess c,
+      int additionalDepth,
+      double alpha,
+      double beta,
+      Color player,
+      double ogEval) {
+    //update the idx
+    _idx++;
+    //make the move
+    c.makeMove(root);
+    //generate a list of available legal moves
+    List<Move> generatedMoves = c.generateMoves();
+    //generate the eval of this move if this not the first depth
+    if (additionalDepth > 0) {
+      root.gameOver = c.gameOver(generatedMoves.length == 0);
+      root.gameDraw = c.lastInDraw;
+      root.eval = _eval.evaluatePosition(
+          c, root.gameOver, root.gameDraw, (_MAX_DEPTH - 2) + additionalDepth);
+    }
+    //get if is min or max
+    bool isMax = (player == _MAX);
+    //evaluate the moves
+    for (Move child in generatedMoves) {
+      //set the eval
+      child.eval = _doAdditionalDepthCalculations(
+          root, c, additionalDepth + 1, alpha, beta, player, ogEval);
+    }
+    //undo the move again to be able to use this move again
+    c.undo();
+    //return the new eval
+    return newEval;
   }
 
   // implements a simple alpha beta algorithm
