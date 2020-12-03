@@ -74,20 +74,16 @@ class ChessController {
     //send the game to the isolate
     //generated from fen string, so that the history list is empty and
     //the move generation algorithm can work faster (lightweight)
-    DorkerWorker dorker = DorkerWorker(Worker(''));
-    Isolate isolate = await Isolate.spawn(
-      ChessAI.entryPointMoveFinderIsolate,
-      [game.fen, (prefs.getInt('set_depth') ?? 0)],
-      debugName: 'chess_move_generator',
-    );
-    //listen at the receive port for the game (exit point)
-    //or update the progress
-    receivePort.listen((message) {
-      _receiveAiCallback(message, isolate);
+    DorkerWorker dorker = DorkerWorker(Worker('lib/eval/ai.dart.js'));
+    //listen to the dorker
+    dorker.onMessage.listen((event) {
+      _receiveAiCallback(event.data, dorker);
     });
+    //post
+    dorker.postMessage.add([game.fen, (prefs.getInt('set_depth') ?? 0)]);
   }
 
-  void _receiveAiCallback(message, isolate) {
+  void _receiveAiCallback(message, DorkerWorker isolate) {
     //if message is the move, execute further actions
     if (message is List) {
       //execute exitPointMoveFinderIsolate
@@ -111,7 +107,7 @@ class ChessController {
       //update the text etc
       update();
       //kill the isolate or worker
-      isolate.kill();
+      isolate.dispose();
       //reset progress
       progress = 0;
       //print how long it took
@@ -135,7 +131,7 @@ class ChessController {
       update();
     } else if (message is String && message == 'no_moves') {
       //kill the isolate or worker since there are no moves
-      isolate.kill();
+      isolate.dispose();
       //and update the board
       controller.userCanMakeMoves = true;
       loadingBotMoves = false;
