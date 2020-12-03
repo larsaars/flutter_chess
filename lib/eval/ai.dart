@@ -180,36 +180,6 @@ class ChessAI {
       }
       //sort the branches for max first (big eval numbers first)
       root.children.sort((Move a, Move b) => b.eval.compareTo(a.eval));
-      //for the best 2-3 items: examine further,
-      //of course only in _MAX_DEPTH - 2 and then also only
-      //if there are enough moves in list
-      if (depth == (_MAX_DEPTH - 2) &&
-          root.children.length > _ADDITIONAL_BEST_VALUES_EXAMINATION) {
-        //examine further as max player, as we are just recalculating the eval
-        for (int i = 0; i < _ADDITIONAL_BEST_VALUES_EXAMINATION; i++) {
-          if(!root.children[i].gameOver) {
-            //do the move on the board
-            c.makeMove(root.children[i]);
-            //rewrite the eval
-            root.children[i].eval = _doAdditionalDepthCalculations(
-                c,
-                0,
-                -_INFINITY,
-                _INFINITY,
-                _MAX,
-                false,
-                false,
-                root.children[i].eval);
-            //mark the move as additional evaluated to even greater depths
-            root.children[i].additionalEvaluated = true;
-            //undo the move again
-            c.undo();
-          }
-        }
-        //then sort again
-        //sort the branches for max first (big eval numbers first)
-        root.children.sort((Move a, Move b) => b.eval.compareTo(a.eval));
-      }
       //then return the value
       return value;
       //the same of min
@@ -228,98 +198,8 @@ class ChessAI {
       }
       //sort the branches for max first (small eval numbers first)
       root.children.sort((Move a, Move b) => a.eval.compareTo(b.eval));
-      //for the best 2-3 items: examine further,
-      //of course only in _MAX_DEPTH - 2 and then also only
-      //if there are enough moves in list
-      if (depth == (_MAX_DEPTH - 2) &&
-          root.children.length > _ADDITIONAL_BEST_VALUES_EXAMINATION) {
-        //examine further as _MIN player, as we are just recalculating the eval
-        for (int i = 0; i < _ADDITIONAL_BEST_VALUES_EXAMINATION; i++) {
-          if(!root.children[i].gameOver) {
-            //do the move on the board
-            c.makeMove(root.children[i]);
-            //overwrite the old eval
-            root.children[i].eval = _doAdditionalDepthCalculations(
-                c,
-                0,
-                -_INFINITY,
-                _INFINITY,
-                _MIN,
-                false,
-                false,
-                root.children[i].eval);
-            //mark the move as additional evaluated to even greater depths
-            root.children[i].additionalEvaluated = true;
-            //undo the move again
-            c.undo();
-          }
-        }
-        //then sort again
-        //sort the branches for max first (small eval numbers first)
-        root.children.sort((Move a, Move b) => a.eval.compareTo(b.eval));
-      }
       //then return the value
       return value;
-    }
-  }
-
-  //for the best 2 to 3 moves in the sorted list go even deeper
-  //with an additional depth of _ADDITIONAL_MAX_DEPTH always only for the best 2 - 3 evaluations
-  //this gives a better insight to these moves
-  //won't still return the optimal move, but maybe still a better one
-  //inspired by the idea that chess grandmasters skill is not defined
-  //by how deep they are looking, but what path they choose to look into
-  static double _doAdditionalDepthCalculations(
-      Chess c,
-      int additionalDepth,
-      double alpha,
-      double beta,
-      Color player,
-      bool upperIsGameOver,
-      bool upperIsDraw,
-      double ogEval) {
-    //update the idx
-    _idx++;
-    //if additional depth level has been hit, stop (evaluate)
-    if (additionalDepth >= _ADDITIONAL_MAX_DEPTH || upperIsGameOver) {
-      return _eval.evaluatePosition(
-          c, upperIsGameOver, upperIsDraw, (_MAX_DEPTH - 2) + _ADDITIONAL_MAX_DEPTH);
-    }
-    //generate a list of available legal moves
-    List<Move> generatedMoves = c.generateMoves();
-    //get if is min or max
-    //is the max player
-    if(player == _MAX) {
-      for(Move child in generatedMoves) {
-        //make the move on the board
-        c.makeMove(child);
-        //recursive execute of alpha beta
-        alpha = max(alpha, _doAdditionalDepthCalculations(c, additionalDepth + 1, alpha, beta, _MIN, c.gameOver(generatedMoves.length == 0), c.lastInDraw, ogEval));
-        //undo the move again
-        c.undo();
-        //cut of branches
-        if (alpha >= beta) {
-          break;
-        }
-      }
-      //return the alpha since is max here
-      return alpha;
-      //do the same only for min player here
-    }else {
-      for(Move child in generatedMoves) {
-        //make the move on the board
-        c.makeMove(child);
-        //recursive execute of alpha beta
-        beta = min(beta, _doAdditionalDepthCalculations(c, additionalDepth + 1, alpha, beta, _MAX, c.gameOver(generatedMoves.length == 0), c.lastInDraw, ogEval));
-        //undo the move again
-        c.undo();
-        //cut of branches
-        if (alpha >= beta) {
-          break;
-        }
-      }
-      //return the beta since is min here
-      return beta;
     }
   }
 
