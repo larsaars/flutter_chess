@@ -126,6 +126,18 @@ class S {
     return Intl.message("copy fen", name: 'copy_fen');
   }
 
+  String get privacy_url {
+    return Intl.message("https://l-chess.flycricket.io/privacy.html", name: 'privacy_url');
+  }
+
+  String get terms_url {
+    return Intl.message("https://l-chess.flycricket.io/terms.html", name: 'terms_url');
+  }
+
+  String get privacy_title {
+    return Intl.message("privacy policy", name: 'privacy_title');
+  }
+
 
 }
 
