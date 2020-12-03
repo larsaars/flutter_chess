@@ -74,6 +74,9 @@ class $en extends MessageLookupByLibrary {
 		"fen_options" : MessageLookupByLibrary.simpleMessage("to clipboard,from clipboard"),
 		"bot_vs_bot" : MessageLookupByLibrary.simpleMessage("bot vs. bot"),
 		"copy_fen" : MessageLookupByLibrary.simpleMessage("copy fen"),
+		"privacy_url" : MessageLookupByLibrary.simpleMessage("https://l-chess.flycricket.io/privacy.html"),
+		"terms_url" : MessageLookupByLibrary.simpleMessage("https://l-chess.flycricket.io/terms.html"),
+		"privacy_title" : MessageLookupByLibrary.simpleMessage("privacy policy"),
 
   };
 }
