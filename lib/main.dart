@@ -14,9 +14,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'file:///D:/FlutterProjects/chess/lib/eval/chess_controller.dart';
-
 import 'chess_board/src/chess_board.dart';
+import 'chess_controller.dart';
 
 S strings;
 ChessController _chessController;
