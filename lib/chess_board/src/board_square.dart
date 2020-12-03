@@ -5,7 +5,7 @@ import 'package:chess_vectors_flutter/chess_vectors_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
-import '../../eval/chess_controller.dart';
+import '../../chess_controller.dart';
 import '../../main.dart';
 import 'board_model.dart';
 
