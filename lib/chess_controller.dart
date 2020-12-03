@@ -7,12 +7,13 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';
 
-import '../chess_board/src/chess_board_controller.dart';
-import 'ai.dart';
+import 'chess_board/src/chess_board_controller.dart';
+import 'eval/ai.dart';
 
 class ChessController {
   ChessBoardController controller = ChessBoardController();
@@ -192,6 +193,12 @@ class ChessController {
   }
 
   Future<void> loadOldGame() async {
+    //if is compiled for web, do not try to load file
+    if(kIsWeb) {
+      game = Chess();
+      return;
+    }
+
     final root = await rootDir;
     final saveFile = File('$root${Platform.pathSeparator}game.fen');
     print('searching from ${saveFile.path}');
