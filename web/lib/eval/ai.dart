@@ -1,7 +1,8 @@
-import 'dart:isolate';
+
 import 'dart:math';
 
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
+import 'package:dorker/dorker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -10,22 +11,27 @@ import 'eval.dart';
 
 class ChessAI {
   //the entry point for the new isolate
-  static void entryPointMoveFinderIsolate(List context) {
-    //init the messenger, which sends messages back to the main thread
-    final messenger = context[0];
-    //set the set depth
-    _SET_DEPTH = context[2];
-    //if the set depth is not zero, add one since this is just the list index
-    if (_SET_DEPTH != 0) _SET_DEPTH++;
-    print('set depth is now $_SET_DEPTH');
-    //if the received object is a chess game, start the move generation
-    //hand over the messenger and the chess
-    _findBestMove(Chess.fromFEN(context[1]), messenger);
+  void main() {
+    var dorker = DorkerBoss();
+    //listen
+    dorker.onMessage.listen((context) {
+      if(context is List) {
+        //set the set depth
+        _SET_DEPTH = context[1];
+        //if the set depth is not zero, add one since this is just the list index
+        if (_SET_DEPTH != 0) _SET_DEPTH++;
+        print('set depth is now $_SET_DEPTH');
+        //if the received object is a chess game, start the move generation
+        //hand over the messenger and the chess
+        _findBestMove(Chess.fromFEN(context[0]), dorker);
+      }
+    });
+
   }
 
   //determine to send via dorker or isolate
   static void _send(messenger, data) {
-    if (messenger is SendPort) messenger.send(data);
+    if (messenger is DorkerBoss) messenger.postMessage.add(data);
   }
 
   //the random
