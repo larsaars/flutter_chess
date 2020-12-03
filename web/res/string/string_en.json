@@ -26,5 +26,6 @@
   "copy_fen": "copy fen",
   "privacy_url": "https://l-chess.flycricket.io/privacy.html",
   "terms_url": "https://l-chess.flycricket.io/terms.html",
-  "privacy_title": "privacy policy"
+  "privacy_title": "privacy policy",
+  "loading": "loading move..."
 }

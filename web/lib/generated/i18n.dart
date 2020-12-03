@@ -2,8 +2,8 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 
 import 'messages_all.dart';
 
@@ -136,6 +136,10 @@ class S {
 
   String get privacy_title {
     return Intl.message("privacy policy", name: 'privacy_title');
+  }
+
+  String get loading {
+    return Intl.message("loading move...", name: 'loading');
   }
 
 
