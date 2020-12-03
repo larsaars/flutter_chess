@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess_sub;
-import 'package:chess_bot/chess_controller.dart';
 import 'package:chess_bot/generated/i18n.dart';
 import 'package:chess_bot/utils.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
@@ -14,6 +13,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'file:///D:/FlutterProjects/chess/lib/eval/chess_controller.dart';
 
 import 'chess_board/src/chess_board.dart';
 
