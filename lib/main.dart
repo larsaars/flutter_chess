@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'chess_board/src/chess_board.dart';
 import 'chess_controller.dart';
@@ -188,7 +189,12 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         height: 50,
       ),
       applicationLegalese: await rootBundle.loadString('res/licenses/this'),
-      children: [],
+      children: [
+        FancyButton(
+          onPressed: () => launch(strings.privacy_url),
+          text: strings.privacy_title,
+        )
+      ],
     );
   }
 
@@ -197,13 +203,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         forceCancelText: 'no',
         onDoneText: 'yes',
         icon: Icons.warning,
-        onDone: (value) {
-
-        },
-        children: [
-          Image.asset('res/drawable/moo.png')
-        ]
-    );
+        onDone: (value) {},
+        children: [Image.asset('res/drawable/moo.png')]);
   }
 
   @override
@@ -286,14 +287,19 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                         chess_sub.Color.BLACK)
                                     ? strings.black
                                     : strings.white),
-                            style: Theme.of(context).textTheme.subtitle1.copyWith(
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle1
+                                .copyWith(
                                   inherit: true,
-                                  color:
-                                      (_chessController?.game?.in_check() ?? false)
-                                          ? ((_chessController.game.inCheckmate(_chessController.game.moveCountIsZero()))
-                                              ? Colors.purple
-                                              : Colors.red)
-                                          : Colors.black,
+                                  color: (_chessController?.game?.in_check() ??
+                                          false)
+                                      ? ((_chessController.game.inCheckmate(
+                                              _chessController.game
+                                                  .moveCountIsZero()))
+                                          ? Colors.purple
+                                          : Colors.red)
+                                      : Colors.black,
                                 )),
                       ),
                       Center(
@@ -383,9 +389,10 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                 _chessController.botBattle = value;
                                 setState(() {});
                                 //check if has to make bot move
-                                if(!_chessController.makeBotMoveIfRequired()) {
+                                if (!_chessController.makeBotMoveIfRequired()) {
                                   //since move has not been made, inverse the bot color and retry
-                                  _chessController.botColor = Chess.swap_color(_chessController.botColor);
+                                  _chessController.botColor = Chess.swap_color(
+                                      _chessController.botColor);
                                   _chessController.makeBotMoveIfRequired();
                                 }
                               },
@@ -395,7 +402,9 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             width: 8.0,
                           ),
                           FancyButton(
-                            onPressed: () => (random.nextInt(80100) == 420) ? _onWarning() : _onAbout(),
+                            onPressed: () => (random.nextInt(80100) == 420)
+                                ? _onWarning()
+                                : _onAbout(),
                             icon: Icons.info,
                             animation: FancyButtonAnimation.pulse,
                           ),

@@ -23,6 +23,7 @@ dependencies:
   shared_preferences: ^0.5.12+4
   group_radio_button: ^1.0.1
   quiver: ^2.1.5
+  url_launcher: ^5.7.10
   #json serialization
   json_annotation: ^3.1.1
 
@@ -32,8 +33,8 @@ dependencies:
 
 dev_dependencies:
   gen_lang: 0.1.3
-  json_serializable: ^3.5.0
-  build_runner: ^1.10.6
+  json_serializable: ^3.5.1
+  build_runner: ^1.10.7
 
   flutter_test:
     sdk: flutter
