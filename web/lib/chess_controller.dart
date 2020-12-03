@@ -5,7 +5,6 @@ import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
-import 'package:dorker/dorker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,7 +49,7 @@ class ChessController {
     makeBotMoveIfRequired();
   }
 
-  void findMove() async {
+  void findMove() {
     //do nothing if controller or game is null
     //also return the method if is already called
     if (controller == null || game == null || loadingBotMoves) {
@@ -61,29 +60,14 @@ class ChessController {
     //set player cannot change anything
     controller.userCanMakeMoves = false;
     //if is on web, html workers have to be used instead of isolates
-    await _findMoveWorker();
+    Future.delayed(Duration(milliseconds: 100)).then((value) => _findMoveWorker());
   }
 
   Future<void> _findMoveWorker() async {
-    //workers are not supported
-    if(!Worker.supported)
-      return;
-
-    //for the method _ai.find a new thread (worker)
-    //is spawned
-    //send the game to the isolate
-    //generated from fen string, so that the history list is empty and
-    //the move generation algorithm can work faster (lightweight)
-    DorkerWorker dorker = DorkerWorker(Worker('lib/eval/ai.dart.js'));
-    //listen to the dorker
-    dorker.onMessage.listen((event) {
-      _receiveAiCallback(event.data, dorker);
-    });
-    //post
-    dorker.postMessage.add([game.fen, (prefs.getInt('set_depth') ?? 0)]);
+    ChessAI.entry(game.fen, (prefs.getInt('set_depth') ?? 0)).then((value) => _receiveAiCallback(value));
   }
 
-  void _receiveAiCallback(message, DorkerWorker isolate) {
+  void _receiveAiCallback(message) {
     //if message is the move, execute further actions
     if (message is List) {
       //execute exitPointMoveFinderIsolate
@@ -106,8 +90,6 @@ class ChessController {
       controller.refreshBoard();
       //update the text etc
       update();
-      //kill the isolate or worker
-      isolate.dispose();
       //reset progress
       progress = 0;
       //print how long it took
@@ -124,18 +106,6 @@ class ChessController {
         });
       }
       //if the message is an int, it is the progress
-    } else if (message is int) {
-      //set progress
-      progress = message;
-      //call update to update the text
-      update();
-    } else if (message is String && message == 'no_moves') {
-      //kill the isolate or worker since there are no moves
-      isolate.dispose();
-      //and update the board
-      controller.userCanMakeMoves = true;
-      loadingBotMoves = false;
-      update();
     }
   }
 

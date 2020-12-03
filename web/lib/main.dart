@@ -200,16 +200,6 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
     //the default scaffold
     return ModalProgressHUD(
       inAsyncCall: ChessController.loadingBotMoves,
-      progressIndicator: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(),
-          Text(
-            strings.moves_done(_chessController.progress),
-            style: Theme.of(context).textTheme.bodyText1,
-          ),
-        ],
-      ),
       child: SafeArea(
         child: Scaffold(
           backgroundColor: Colors.brown[50],

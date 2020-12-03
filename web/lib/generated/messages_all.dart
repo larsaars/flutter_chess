@@ -39,6 +39,7 @@ class $de extends MessageLookupByLibrary {
 		"fen_options" : MessageLookupByLibrary.simpleMessage("in Zwischenablage,aus Zwischenablage"),
 		"bot_vs_bot" : MessageLookupByLibrary.simpleMessage("bot vs. bot"),
 		"copy_fen" : MessageLookupByLibrary.simpleMessage("fen kopieren"),
+		"loading" : MessageLookupByLibrary.simpleMessage("lädt zug..."),
 
   };
 }
@@ -77,6 +78,7 @@ class $en extends MessageLookupByLibrary {
 		"privacy_url" : MessageLookupByLibrary.simpleMessage("https://l-chess.flycricket.io/privacy.html"),
 		"terms_url" : MessageLookupByLibrary.simpleMessage("https://l-chess.flycricket.io/terms.html"),
 		"privacy_title" : MessageLookupByLibrary.simpleMessage("privacy policy"),
+		"loading" : MessageLookupByLibrary.simpleMessage("loading move..."),
 
   };
 }
