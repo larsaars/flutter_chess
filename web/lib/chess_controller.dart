@@ -1,13 +1,12 @@
-import 'dart:io';
-import 'dart:isolate';
+import 'dart:html';
 
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
 import 'package:chess_bot/utils.dart';
+import 'package:dorker/dorker.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';
@@ -45,8 +44,6 @@ class ChessController {
     print('onMove: $move');
     // update the ui
     update();
-    //save the game after every move
-    saveOldGame();
     //check if bot should make a move
     //and then find it
     //make move if needed
@@ -64,20 +61,23 @@ class ChessController {
     //set player cannot change anything
     controller.userCanMakeMoves = false;
     //if is on web, html workers have to be used instead of isolates
-    await _findMoveIsolate();
+    await _findMoveWorker();
   }
 
-  Future<void> _findMoveIsolate() async {
-    //for the method _ai.find a new thread (isolate)
+  Future<void> _findMoveWorker() async {
+    //workers are not supported
+    if(!Worker.supported)
+      return;
+
+    //for the method _ai.find a new thread (worker)
     //is spawned
-    ReceivePort receivePort =
-        ReceivePort(); //port for this main isolate to receive messages
     //send the game to the isolate
     //generated from fen string, so that the history list is empty and
     //the move generation algorithm can work faster (lightweight)
+    DorkerWorker dorker = DorkerWorker(Worker(''));
     Isolate isolate = await Isolate.spawn(
       ChessAI.entryPointMoveFinderIsolate,
-      [receivePort.sendPort, game.fen, (prefs.getInt('set_depth') ?? 0)],
+      [game.fen, (prefs.getInt('set_depth') ?? 0)],
       debugName: 'chess_move_generator',
     );
     //listen at the receive port for the game (exit point)
@@ -111,7 +111,7 @@ class ChessController {
       //update the text etc
       update();
       //kill the isolate or worker
-        isolate.kill();
+      isolate.kill();
       //reset progress
       progress = 0;
       //print how long it took
@@ -135,7 +135,7 @@ class ChessController {
       update();
     } else if (message is String && message == 'no_moves') {
       //kill the isolate or worker since there are no moves
-        isolate.kill();
+      isolate.kill();
       //and update the board
       controller.userCanMakeMoves = true;
       loadingBotMoves = false;
@@ -192,49 +192,10 @@ class ChessController {
     print('onCheck');
   }
 
-  Future<void> loadOldGame() async {
-    //if is compiled for web, do not try to load file
-    if(kIsWeb) {
-      game = Chess();
-      return;
-    }
-
-    final root = await rootDir;
-    final saveFile = File('$root${Platform.pathSeparator}game.fen');
-    print('searching from ${saveFile.path}');
-    if (await saveFile.exists()) {
-      String fen = await saveFile.readAsString();
-      if (fen.length < 2) {
-        game = Chess();
-        return;
-      }
-
-      print('game loaded from ${saveFile.path}');
-
-      game = Chess.fromFEN(fen);
-    } else
-      game = Chess();
-  }
-
-  void saveOldGame() async {
-    //don't save if on web
-    if(kIsWeb)
-      return;
-
-    final root = await rootDir;
-    final saveFile = File('$root${Platform.pathSeparator}game.fen');
-    if (!await saveFile.exists()) await saveFile.create();
-    await saveFile.writeAsString(game.generate_fen());
-
-    print('saving to ${saveFile.path}');
-
-    print('game saved');
-  }
-
   void resetBoard() {
     showTextDialog(strings.replay, strings.replay_desc, onDoneText: strings.ok,
         onDone: (value) {
-      if(value == 'ok') {
+      if (value == 'ok') {
         moveTo = null;
         moveFrom = null;
         kingInCheck = null;
@@ -392,45 +353,36 @@ class ChessController {
   }
 
   void onFen() {
-    List difficulties = strings.fen_options.split(',');
     BuildContext ctx;
-
-    var fen = game.fen;
-
-    showTextDialog(strings.copy_fen, null, setStateCallback: (ctx0, setState) {
-      ctx = ctx0;
-    }, onDone: (value) {
+    showTextDialog(null, null, onDone: (value) {
       if (value == 'yes') update();
+    }, setStateCallback: (ctx0, setState) {
+      ctx = ctx0;
     }, children: [
-      RadioGroup.builder(
-          direction: Axis.vertical,
-          onChanged: (value) async {
-            //get the option
-            int idx = difficulties.indexOf(value);
-            //do the action
-            if (idx == 0) {
-              //copy fen of game to clipboard
-              Clipboard.setData(new ClipboardData(text: fen));
-              //then pop the nav
-              Navigator.of(ctx).pop('no');
-            } else if (idx == 1) {
-              //insert fen from clipboard and reload game
-              Clipboard.getData('text/plain').then((value) {
-                if (Chess.validate_fen(value.text)['valid']) {
-                  game = Chess.fromFEN(value.text);
-                  moveTo = null;
-                  moveFrom = null;
-                  kingInCheck = null;
-                  Navigator.of(ctx).pop('yes');
-                } else
-                  Navigator.of(ctx).pop('no');
-              });
-            }
+      Align(
+        alignment: Alignment.centerLeft,
+        child: FlatButton(
+          shape: roundButtonShape,
+          child: Text(strings.copy_fen),
+          onPressed: () {
+            Clipboard.setData(new ClipboardData(text: game.fen));
+            Navigator.of(ctx).pop('yes');
           },
-          groupValue: 0,
-          items: difficulties,
-          itemBuilder: (item) => RadioButtonBuilder(item,
-              textPosition: RadioButtonTextPosition.right))
+        ),
+      ),
+      TextField(
+        maxLines: 2,
+        onChanged: (text) {
+          print(text);
+          if(text.endsWith('\n')){
+            game = Chess.fromFEN(text.replaceAll('\n', ''));
+            moveTo = null;
+            moveFrom = null;
+            kingInCheck = null;
+            Navigator.of(ctx).pop('yes');
+          }
+        },
+      )
     ]);
   }
 }
