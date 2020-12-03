@@ -17,13 +17,12 @@ dependencies:
     sdk: flutter
 
   intl: ^0.16.1
-  flutter_launcher_icons: ^0.8.1
-  path_provider: ^1.6.24
   lite_rolling_switch: ^0.1.1
   shared_preferences: ^0.5.12+4
   group_radio_button: ^1.0.1
   quiver: ^2.1.5
   url_launcher: ^5.7.10
+  dorker: ^0.1.4
   #json serialization
   json_annotation: ^3.1.1
 
