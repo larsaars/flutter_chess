@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "758852323501",
+    "project_id": "chess-45a81",
+    "storage_bucket": "chess-45a81.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:758852323501:android:ce395340d03d72a94b9e24",
+        "android_client_info": {
+          "package_name": "com.lurzapps.chess"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "758852323501-8m18b65i084vf44n5vj8bo4eeoh942q7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJ70kNbOMcog2vHy1N0UMvxPLQQuYR4a4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "758852323501-8m18b65i084vf44n5vj8bo4eeoh942q7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
