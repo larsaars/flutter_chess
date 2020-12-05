@@ -184,7 +184,7 @@ class ChessController {
 
   void onDraw() {
     //show the dialog
-    showTextDialog(strings.draw, strings.draw_desc, onDoneText: strings.replay,
+    showAnimatedDialog(title: strings.draw, text: strings.draw_desc, onDoneText: strings.replay,
         onDone: (value) {
       game.reset();
       update();
@@ -196,7 +196,7 @@ class ChessController {
     var winner = color == PieceColor.White ? strings.black : strings.white;
     var loser = color == PieceColor.White ? strings.white : strings.black;
     //show the dialog
-    showTextDialog(strings.checkmate, strings.check_mate_desc(loser, winner),
+    showAnimatedDialog(title: strings.checkmate, text: strings.check_mate_desc(loser, winner),
         onDoneText: strings.replay, onDone: (value) {
       game.reset();
       update();
@@ -246,7 +246,7 @@ class ChessController {
   }
 
   void resetBoard() {
-    showTextDialog(strings.replay, strings.replay_desc, onDoneText: strings.ok,
+    showAnimatedDialog(title: strings.replay, text: strings.replay_desc, onDoneText: strings.ok,
         onDone: (value) {
       if (value == 'ok') {
         moveTo = null;
@@ -271,7 +271,7 @@ class ChessController {
   void _undo() {
     game.undo() != null
         ? controller.refreshBoard()
-        : showTextDialog(strings.undo, strings.undo_impossible);
+        : showAnimatedDialog(title: strings.undo, text:strings.undo_impossible);
   }
 
   void switchColors() {
@@ -384,7 +384,7 @@ class ChessController {
     List difficulties = strings.difficulties.split(',');
     BuildContext ctx;
 
-    showTextDialog(strings.difficulty, null,
+    showAnimatedDialog(title: strings.difficulty,
         setStateCallback: (ctx0, setState) {
       ctx = ctx0;
     }, children: [
@@ -411,7 +411,7 @@ class ChessController {
 
   void _onFenWeb() {
     BuildContext ctx;
-    showTextDialog(null, null, onDone: (value) {
+    showAnimatedDialog(onDone: (value) {
       if (value == 'yes') update();
     }, setStateCallback: (ctx0, setState) {
       ctx = ctx0;
@@ -449,7 +449,7 @@ class ChessController {
 
     var fen = game.fen;
 
-    showTextDialog(strings.copy_fen, null, setStateCallback: (ctx0, setState) {
+    showAnimatedDialog(title: strings.copy_fen, setStateCallback: (ctx0, setState) {
       ctx = ctx0;
     }, onDone: (value) {
       if (value == 'yes') update();
