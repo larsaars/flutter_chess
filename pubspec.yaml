@@ -24,6 +24,13 @@ dependencies:
   group_radio_button: ^1.0.1
   quiver: ^2.1.5
   url_launcher: ^5.7.10
+  #firebase
+  firebase_core: ^0.5.3
+  firebase_analytics: ^6.3.0
+  cloud_firestore: ^0.14.4
+  #internet connection checking
+  connectivity: ^2.0.2
+  data_connection_checker: ^0.3.4
   #json serialization
   json_annotation: ^3.1.1
 

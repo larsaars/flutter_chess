@@ -40,6 +40,7 @@ class $de extends MessageLookupByLibrary {
 		"bot_vs_bot" : MessageLookupByLibrary.simpleMessage("bot vs. bot"),
 		"copy_fen" : MessageLookupByLibrary.simpleMessage("fen kopieren"),
 		"loading_moves_web" : MessageLookupByLibrary.simpleMessage("lädt Züge..."),
+		"join_code_multiplayer" : MessageLookupByLibrary.simpleMessage("Spielecode beitreten"),
 
   };
 }
@@ -79,6 +80,7 @@ class $en extends MessageLookupByLibrary {
 		"terms_url" : MessageLookupByLibrary.simpleMessage("https://l-chess.flycricket.io/terms.html"),
 		"privacy_title" : MessageLookupByLibrary.simpleMessage("privacy policy"),
 		"loading_moves_web" : MessageLookupByLibrary.simpleMessage("loading moves..."),
+		"join_code_multiplayer" : MessageLookupByLibrary.simpleMessage("join game code"),
 
   };
 }

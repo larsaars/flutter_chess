@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 enum FancyButtonAnimation {
-  rotate_right, rotate_left, pulse, none
+  rotate_right, rotate_left, pulse
 }
 
 class FancyButton extends StatefulWidget {
@@ -118,7 +118,7 @@ class _FancyButtonState extends State<FancyButton>
   @override
   void initState() {
     animationController = AnimationController(
-      duration: const Duration(milliseconds: 622),
+      duration: const Duration(milliseconds: 400),
       vsync: this,
     );
 
