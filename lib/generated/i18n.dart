@@ -142,6 +142,10 @@ class S {
     return Intl.message("loading moves...", name: 'loading_moves_web');
   }
 
+  String get join_code_multiplayer {
+    return Intl.message("join game code", name: 'join_code_multiplayer');
+  }
+
 
 }
 
