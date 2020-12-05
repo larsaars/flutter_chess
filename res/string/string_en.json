@@ -28,5 +28,8 @@
   "terms_url": "https://l-chess.flycricket.io/terms.html",
   "privacy_title": "privacy policy",
   "loading_moves_web": "loading moves...",
-  "join_code_multiplayer": "join game code"
+  "online_game_options": "online game",
+  "join_code": "join game",
+  "create_code": "create game",
+  "local": "[local game]"
 }

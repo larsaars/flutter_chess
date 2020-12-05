@@ -14,6 +14,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 import 'chess_board/src/chess_board.dart';
 import 'chess_controller.dart';
@@ -21,6 +22,7 @@ import 'chess_controller.dart';
 S strings;
 ChessController _chessController;
 SharedPreferences prefs;
+String uuid;
 
 void main() async {
   //run the app
@@ -93,6 +95,12 @@ class _MyHomepageState extends State<MyHomePage> {
     _chessController.whiteSideTowardsUser =
         prefs.getBool('whiteSideTowardsUser') ?? true;
     _chessController.botBattle = prefs.getBool('botbattle') ?? false;
+    //load user id and if not available create and save one
+    uuid = prefs.getString('uuid');
+    if (uuid == null) {
+      uuid = Uuid().v4();
+      prefs.setString('uuid', uuid);
+    }
   }
 
   @override
@@ -199,7 +207,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
   }
 
   void _onWarning() {
-    showTextDialog("Warning!", null,
+    showAnimatedDialog(
+        title: "Warning!",
         forceCancelText: 'no',
         onDoneText: 'yes',
         icon: Icons.warning,
@@ -207,9 +216,24 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         children: [Image.asset('res/drawable/moo.png')]);
   }
 
-  void _joinOnlineGame() {
-
+  void _onOnlineGameOptions() {
+    showAnimatedDialog(showAnyActionButton: false, children: [
+      FlatButton(
+        child: Text(strings.create_code,
+            style: Theme.of(ContextSingleton.context).textTheme.button),
+        onPressed: _onCreateCode,
+      ),
+      FlatButton(
+        child: Text(strings.join_code,
+            style: Theme.of(ContextSingleton.context).textTheme.button),
+        onPressed: _onJoinCode,
+      )
+    ]);
   }
+
+  void _onJoinCode() {}
+
+  void _onCreateCode() {}
 
   @override
   Widget build(BuildContext context) {
@@ -256,9 +280,18 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
                                 FancyButton(
-                                  onPressed: _joinOnlineGame,
-                                  text: strings.join_code_multiplayer,
+                                  onPressed: _onJoinCode,
+                                  text: strings.join_code,
                                   icon: Icons.online_prediction,
+                                  animation: FancyButtonAnimation.pulse,
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                FancyButton(
+                                  onPressed: _onCreateCode,
+                                  text: strings.create_code,
+                                  icon: Icons.add,
                                   animation: FancyButtonAnimation.pulse,
                                 )
                               ],
@@ -312,27 +345,37 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                            strings.turn_of_x(
-                                (_chessController?.game?.game?.turn ==
-                                        chess_sub.Color.BLACK)
-                                    ? strings.black
-                                    : strings.white),
-                            style: Theme.of(context)
-                                .textTheme
-                                .subtitle1
-                                .copyWith(
-                                  inherit: true,
-                                  color: (_chessController?.game?.in_check() ??
-                                          false)
-                                      ? ((_chessController.game.inCheckmate(
-                                              _chessController.game
-                                                  .moveCountIsZero()))
-                                          ? Colors.purple
-                                          : Colors.red)
-                                      : Colors.black,
-                                )),
+                        padding: const EdgeInsets.all(8),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SelectableText(
+                              currentGameCode,
+                              style: Theme.of(context).textTheme.subtitle2,
+                            ),
+                            Text(
+                                strings.turn_of_x(
+                                    (_chessController?.game?.game?.turn ==
+                                            chess_sub.Color.BLACK)
+                                        ? strings.black
+                                        : strings.white),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .subtitle1
+                                    .copyWith(
+                                      inherit: true,
+                                      color: (_chessController?.game
+                                                  ?.in_check() ??
+                                              false)
+                                          ? ((_chessController.game.inCheckmate(
+                                                  _chessController.game
+                                                      .moveCountIsZero()))
+                                              ? Colors.purple
+                                              : Colors.red)
+                                          : Colors.black,
+                                    )),
+                          ],
+                        ),
                       ),
                       Center(
                         // Center is a layout widget. It takes a single child and positions it

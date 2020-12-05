@@ -38,9 +38,9 @@ bool _showing = false;
 typedef void OnDialogCancelCallback(value);
 typedef void OnDialogReturnSetStateCallback(BuildContext context, setState);
 
-void showTextDialog(
+void showAnimatedDialog({
   String title,
-  String text, {
+  String text,
   String onDoneText,
   String forceCancelText,
   List<Widget> children = const [],
@@ -48,6 +48,7 @@ void showTextDialog(
   OnDialogReturnSetStateCallback setStateCallback,
   IconData icon,
   var update,
+  bool showAnyActionButton = true,
 }) async {
   if (_showing) return;
 
@@ -104,30 +105,34 @@ void showTextDialog(
                         ),
                   Column(
                     mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: children,
                   ),
                 ],
               ),
-              actions: <Widget>[
-                FlatButton(
-                    shape: roundButtonShape,
-                    child: Text(forceCancelText != null
-                        ? forceCancelText
-                        : (onDone == null ? strings.ok : strings.cancel)),
-                    onPressed: () {
-                      _showing = false;
-                      Navigator.of(context).pop(onDone == null ? 'ok' : null);
-                    }),
-                onDone != null
-                    ? FlatButton(
-                        shape: roundButtonShape,
-                        child: Text(onDoneText ?? ""),
-                        onPressed: () {
-                          _showing = false;
-                          Navigator.of(context).pop('ok');
-                        })
-                    : Container()
-              ],
+              actions: showAnyActionButton
+                  ? [
+                      FlatButton(
+                          shape: roundButtonShape,
+                          child: Text(forceCancelText != null
+                              ? forceCancelText
+                              : (onDone == null ? strings.ok : strings.cancel)),
+                          onPressed: () {
+                            _showing = false;
+                            Navigator.of(context)
+                                .pop(onDone == null ? 'ok' : null);
+                          }),
+                      onDone != null
+                          ? FlatButton(
+                              shape: roundButtonShape,
+                              child: Text(onDoneText ?? ""),
+                              onPressed: () {
+                                _showing = false;
+                                Navigator.of(context).pop('ok');
+                              })
+                          : Container()
+                    ]
+                  : [],
             );
           }),
         ),
@@ -180,4 +185,20 @@ void addLicenses() {
     yield LicenseEntryWithLineBreaks(['modal_progress_hud'],
         await rootBundle.loadString('res/licenses/modal_progress_hud'));
   });
+}
+
+String createGameCode() {
+  final availableChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+      .runes
+      .map((int rune) => String.fromCharCode(rune))
+      .toList();
+  String out = '';
+  for (int i = 0; i < 6; i++)
+    out += availableChars[random.nextInt(availableChars.length)];
+  return out;
+}
+
+String _currentGameCode;
+String get currentGameCode {
+  return _currentGameCode == null ? strings.local : _currentGameCode;
 }
