@@ -207,6 +207,10 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         children: [Image.asset('res/drawable/moo.png')]);
   }
 
+  void _joinOnlineGame() {
+
+  }
+
   @override
   Widget build(BuildContext context) {
     //get the available height for the chess board
@@ -246,41 +250,64 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            FlatButton(
-                                shape: roundButtonShape,
-                                onPressed: () {
-                                  //inverse the bot color and save it
-                                  _chessController.botColor =
-                                      chess_sub.Color.flip(
-                                          _chessController.botColor);
-                                  //save value int to prefs
-                                  prefs.setInt('bot_color',
-                                      _chessController.botColor.value);
-                                  //set state, update the views
-                                  setState(() {});
-                                  //make move if needed
-                                  _chessController.makeBotMoveIfRequired();
-                                },
-                                child: Text((_chessController.botColor ==
-                                        chess_sub.Color.WHITE)
-                                    ? strings.white
-                                    : strings.black)),
-                            LiteRollingSwitch(
-                              value: (prefs.getBool("bot") ?? false),
-                              onChanged: (pos) {
-                                prefs.setBool("bot", pos);
-                                //make move if needed
-                                _chessController?.makeBotMoveIfRequired();
-                              },
-                              iconOn: Icons.done,
-                              iconOff: Icons.close,
-                              textOff: strings.bot_off,
-                              textOn: strings.bot_on,
-                              colorOff: Colors.red[800],
-                              colorOn: Colors.green[800],
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                FancyButton(
+                                  onPressed: _joinOnlineGame,
+                                  text: strings.join_code_multiplayer,
+                                  icon: Icons.online_prediction,
+                                  animation: FancyButtonAnimation.pulse,
+                                )
+                              ],
                             ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                FlatButton(
+                                  shape: roundButtonShape,
+                                  onPressed: () {
+                                    //inverse the bot color and save it
+                                    _chessController.botColor =
+                                        chess_sub.Color.flip(
+                                            _chessController.botColor);
+                                    //save value int to prefs
+                                    prefs.setInt('bot_color',
+                                        _chessController.botColor.value);
+                                    //set state, update the views
+                                    setState(() {});
+                                    //make move if needed
+                                    _chessController.makeBotMoveIfRequired();
+                                  },
+                                  child: Text(
+                                      (_chessController.botColor ==
+                                              chess_sub.Color.WHITE)
+                                          ? strings.white
+                                          : strings.black,
+                                      style:
+                                          Theme.of(context).textTheme.button),
+                                ),
+                                SizedBox(
+                                  width: 8,
+                                ),
+                                LiteRollingSwitch(
+                                  value: (prefs.getBool("bot") ?? false),
+                                  onChanged: (pos) {
+                                    prefs.setBool("bot", pos);
+                                    //make move if needed
+                                    _chessController?.makeBotMoveIfRequired();
+                                  },
+                                  iconOn: Icons.done,
+                                  iconOff: Icons.close,
+                                  textOff: strings.bot_off,
+                                  textOn: strings.bot_on,
+                                  colorOff: Colors.red[800],
+                                  colorOn: Colors.green[800],
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),

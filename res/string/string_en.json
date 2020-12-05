@@ -27,5 +27,6 @@
   "privacy_url": "https://l-chess.flycricket.io/privacy.html",
   "terms_url": "https://l-chess.flycricket.io/terms.html",
   "privacy_title": "privacy policy",
-  "loading_moves_web": "loading moves..."
+  "loading_moves_web": "loading moves...",
+  "join_code_multiplayer": "join game code"
 }
