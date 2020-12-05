@@ -40,7 +40,10 @@ class $de extends MessageLookupByLibrary {
 		"bot_vs_bot" : MessageLookupByLibrary.simpleMessage("bot vs. bot"),
 		"copy_fen" : MessageLookupByLibrary.simpleMessage("fen kopieren"),
 		"loading_moves_web" : MessageLookupByLibrary.simpleMessage("lädt Züge..."),
-		"join_code_multiplayer" : MessageLookupByLibrary.simpleMessage("Spielecode beitreten"),
+		"online_game_options" : MessageLookupByLibrary.simpleMessage("online-Spiel"),
+		"join_code" : MessageLookupByLibrary.simpleMessage("Spiel beitreten"),
+		"create_code" : MessageLookupByLibrary.simpleMessage("Spiel erstellen"),
+		"local" : MessageLookupByLibrary.simpleMessage("[lokales Spiel]"),
 
   };
 }
@@ -80,7 +83,10 @@ class $en extends MessageLookupByLibrary {
 		"terms_url" : MessageLookupByLibrary.simpleMessage("https://l-chess.flycricket.io/terms.html"),
 		"privacy_title" : MessageLookupByLibrary.simpleMessage("privacy policy"),
 		"loading_moves_web" : MessageLookupByLibrary.simpleMessage("loading moves..."),
-		"join_code_multiplayer" : MessageLookupByLibrary.simpleMessage("join game code"),
+		"online_game_options" : MessageLookupByLibrary.simpleMessage("online game"),
+		"join_code" : MessageLookupByLibrary.simpleMessage("join game"),
+		"create_code" : MessageLookupByLibrary.simpleMessage("create game"),
+		"local" : MessageLookupByLibrary.simpleMessage("[local game]"),
 
   };
 }

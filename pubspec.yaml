@@ -24,6 +24,7 @@ dependencies:
   group_radio_button: ^1.0.1
   quiver: ^2.1.5
   url_launcher: ^5.7.10
+  uuid: ^2.2.2
   #firebase
   firebase_core: ^0.5.3
   firebase_analytics: ^6.3.0
