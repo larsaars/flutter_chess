@@ -26,5 +26,8 @@
   "bot_vs_bot": "bot vs. bot",
   "copy_fen": "fen kopieren",
   "loading_moves_web": "lädt Züge...",
-  "join_code_multiplayer": "Spielecode beitreten"
+  "online_game_options": "online-Spiel",
+  "join_code": "Spiel beitreten",
+  "create_code": "Spiel erstellen",
+  "local": "[lokales Spiel]"
 }

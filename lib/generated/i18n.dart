@@ -142,8 +142,20 @@ class S {
     return Intl.message("loading moves...", name: 'loading_moves_web');
   }
 
-  String get join_code_multiplayer {
-    return Intl.message("join game code", name: 'join_code_multiplayer');
+  String get online_game_options {
+    return Intl.message("online game", name: 'online_game_options');
+  }
+
+  String get join_code {
+    return Intl.message("join game", name: 'join_code');
+  }
+
+  String get create_code {
+    return Intl.message("create game", name: 'create_code');
+  }
+
+  String get local {
+    return Intl.message("[local game]", name: 'local');
   }
 
 
