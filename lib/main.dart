@@ -453,17 +453,19 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           FancyButton(
+                            visible: !inOnlineGame,
                             onPressed: _chessController.undo,
                             animation: FancyButtonAnimation.pulse,
                             icon: Icons.undo,
                           ),
-                          Divider8(),
+                          DividerIfOffline(),
                           FancyButton(
                             onPressed: _chessController.resetBoard,
                             icon: Icons.autorenew,
                           ),
                           Divider8(),
                           FancyButton(
+                            visible: !inOnlineGame,
                             onPressed: _chessController.switchColors,
                             icon: Icons.switch_left,
                           ),
@@ -474,7 +476,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             icon: Icons.upload_rounded,
                             animation: FancyButtonAnimation.pulse,
                           ),
-                          Divider8(),
+                          DividerIfOffline(),
                           FancyButton(
                             onPressed: _chessController.changeBoardStyle,
                             icon: Icons.style,
@@ -511,7 +513,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                               ),
                             ),
                           ),
-                          Divider8(),
+                          DividerIfOffline(),
                           FancyButton(
                             onPressed: () => (random.nextInt(80100) == 420)
                                 ? _onWarning()
