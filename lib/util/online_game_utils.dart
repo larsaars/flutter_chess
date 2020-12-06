@@ -84,18 +84,26 @@ class OnlineGameController {
     //check if the code exists
     currentGameDoc.get().then((event) {
       //check if doc exists and white is not already this user
-      if (event.exists && (event.get('white') != uuid)) {
+      if (event.exists) {
         //reset the local
-        _chessController.resetBoard();
+        _chessController.controller.resetBoard();
         //set the local bot disabled etc
         _chessController.botBattle = false;
         prefs.setBool('bot', false);
         prefs.setBool('botbattle', false);
-        //set the black id
-        currentGameDoc.update(<String, dynamic>{'black': uuid});
-        //black towards user
-        _chessController.whiteSideTowardsUser = false;
-        prefs.setBool('whiteSideTowardsUser', false);
+        //the player is not white, not rejoining
+        if(event.get('white') != uuid) {
+          //set the black id
+          currentGameDoc.update(<String, dynamic>{'black': uuid});
+          //black towards user
+          _chessController.whiteSideTowardsUser = false;
+          prefs.setBool('whiteSideTowardsUser', false);
+        }else {
+          //rejoin the game
+          //black towards user
+          _chessController.whiteSideTowardsUser = true;
+          prefs.setBool('whiteSideTowardsUser', true);
+        }
         //lock the listener since the game exists
         lockListener();
         //update
@@ -113,15 +121,25 @@ class OnlineGameController {
 
   //leave the online game / set the code to null then update views
   void leaveGame() {
+    //if this player's color was white, delete the doc since he was host
+    currentGameDoc.get().then((event) {
+      if(event.get('white') == uuid)
+        currentGameDoc.delete();
+    });
+    //set code to null
     _currentGameCode = null;
+    //refresh views
     update();
   }
 
   void lockListener() {
-    currentGameDoc.snapshots().listen((event) {
+    currentGameDoc.snapshots(includeMetadataChanges: true).listen((event) {
       //if the doc does not exist, set game code to null
       if (!event.exists) {
         _currentGameCode = null;
+        //reset the game, update the ui
+        _chessController.controller.resetBoard();
+        //and exit this void
         return;
       }
       //only update if the listener is sure that this is not an old game code

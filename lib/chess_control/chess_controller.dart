@@ -266,11 +266,27 @@ class ChessController {
     showAnimatedDialog(title: strings.replay, text: strings.replay_desc, onDoneText: strings.ok,
         onDone: (value) {
       if (value == 'ok') {
+        //reset all boards
         moveTo = null;
         moveFrom = null;
         kingInCheck = null;
+        //reset the game
         game.reset();
+        //if is in online game, update that
+        if(inOnlineGame) {
+          //firestore update
+          Map<String, dynamic> onMoveUpdate = {};
+          //set the local bot disabled etc
+          onMoveUpdate['moveFrom'] = null;
+          onMoveUpdate['moveTo'] = null;
+          onMoveUpdate['fen'] = game.fen;
+          currentGameDoc.update(onMoveUpdate);
+          //update the ui
+          update();
+        }
+        //update the ui
         update();
+        //make move if required
         makeBotMoveIfRequired();
       }
     });
