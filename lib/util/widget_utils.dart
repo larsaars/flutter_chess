@@ -1,12 +1,11 @@
 import 'package:chess_bot/util/utils.dart';
 import 'package:chess_bot/widgets/divider.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
 
 RoundedRectangleBorder roundButtonShape =
-RoundedRectangleBorder(borderRadius: BorderRadius.circular(45));
+    RoundedRectangleBorder(borderRadius: BorderRadius.circular(45));
 
 typedef void OnDialogCancelCallback(value);
 typedef void OnDialogReturnSetStateCallback(BuildContext context, setState);
@@ -24,10 +23,14 @@ void showAnimatedDialog({
   IconData icon,
   var update,
   bool showAnyActionButton = true,
+  bool withInputField = false,
+  String inputFieldHint,
 }) async {
   if (_showing) return;
 
   _showing = true;
+
+  String inputText;
 
   //show dialog
   showGeneralDialog(
@@ -70,44 +73,62 @@ void showAnimatedDialog({
                   (text == null)
                       ? SizedBox()
                       : Center(
-                    child: Container(
-                      constraints: BoxConstraints(maxWidth: 400),
-                      child: Text(
-                        text ?? "",
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.subtitle2,
-                      ),
-                    ),
-                  ),
+                          child: Container(
+                            constraints: BoxConstraints(maxWidth: 400),
+                            child: Text(
+                              text ?? "",
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.subtitle2,
+                            ),
+                          ),
+                        ),
                   Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.start,
-                    children: children,
+                    children: <Widget>[
+                          Visibility(
+                            visible: withInputField,
+                            child: TextFormField(
+                              maxLines: 1,
+                              onChanged: (value) => inputText = value,
+                              decoration: new InputDecoration(
+                                  border: InputBorder.none,
+                                  focusedBorder: InputBorder.none,
+                                  enabledBorder: InputBorder.none,
+                                  errorBorder: InputBorder.none,
+                                  disabledBorder: InputBorder.none,
+                                  contentPadding: EdgeInsets.only(
+                                      left: 15, bottom: 11, top: 11, right: 15),
+                                  hintText: inputFieldHint),
+                            ),
+                          )
+                        ] +
+                        children,
                   ),
                 ],
               ),
               actions: showAnyActionButton
                   ? [
-                FlatButton(
-                    shape: roundButtonShape,
-                    child: Text(forceCancelText != null
-                        ? forceCancelText
-                        : (onDone == null ? strings.ok : strings.cancel)),
-                    onPressed: () {
-                      _showing = false;
-                      Navigator.of(context)
-                          .pop(onDone == null ? 'ok' : null);
-                    }),
-                onDone != null
-                    ? FlatButton(
-                    shape: roundButtonShape,
-                    child: Text(onDoneText ?? ""),
-                    onPressed: () {
-                      _showing = false;
-                      Navigator.of(context).pop('ok');
-                    })
-                    : Container()
-              ]
+                      FlatButton(
+                          shape: roundButtonShape,
+                          child: Text(forceCancelText != null
+                              ? forceCancelText
+                              : (onDone == null ? strings.ok : strings.cancel)),
+                          onPressed: () {
+                            _showing = false;
+                            Navigator.of(context)
+                                .pop(onDone == null ? 'ok' : null);
+                          }),
+                      onDone != null
+                          ? FlatButton(
+                              shape: roundButtonShape,
+                              child: Text(onDoneText ?? ""),
+                              onPressed: () {
+                                _showing = false;
+                                Navigator.of(context).pop('ok');
+                              })
+                          : Container()
+                    ]
                   : [],
             );
           }),
@@ -119,6 +140,11 @@ void showAnimatedDialog({
     //set showing dialog false
     _showing = false;
     //execute the on done
-    if (onDone != null && value != null) onDone(value);
+    if (onDone != null && value != null) {
+      if(withInputField)
+        onDone(inputText);
+      else
+        onDone(value);
+    }
   });
 }
