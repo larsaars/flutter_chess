@@ -16,7 +16,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  intl: 0.17.0-nullsafety.2
+  intl: 0.16.1
   flutter_launcher_icons: ^0.8.1
   path_provider: ^1.6.24
   lite_rolling_switch: ^0.1.1
