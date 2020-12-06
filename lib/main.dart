@@ -482,7 +482,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             icon: Icons.style,
                             animation: FancyButtonAnimation.pulse,
                           ),
-                          DividerIfOffline(),
+                          Divider8(),
                           FancyButton(
                             visible: !inOnlineGame,
                             onPressed: _chessController.onFen,
