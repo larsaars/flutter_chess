@@ -10,7 +10,6 @@ import 'package:chess_bot/util/widget_utils.dart';
 import 'package:chess_bot/widgets/divider.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:chess_bot/widgets/modal_progress_hud.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +21,11 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
 import 'chess_board/src/chess_board.dart';
-import 'chess_controller.dart';
+import 'chess_control/chess_controller.dart';
 
 S strings;
 ChessController _chessController;
+OnlineGameController _onlineGameController;
 SharedPreferences prefs;
 String uuid;
 
@@ -123,6 +123,8 @@ class _MyHomepageState extends State<MyHomePage> {
       _chessController = ChessController(context);
     else
       _chessController.context = context;
+    //create the online game controller if is null
+    _onlineGameController ??= OnlineGameController(_chessController);
     //future builder: load old screen and show here on start the loading screen,
     //when the future is finished,
     //with setState show the real scaffold
@@ -233,23 +235,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
       text: strings.game_reset_join_code_warning,
       onDoneText: strings.proceed,
       icon: Icons.warning,
-      onDone: (value) async {
-        //create new game id locally
-        String gameCode = joinGameCode();
-        //create the bucket in cloud firestore
-        //reset the local game
-        _chessController.controller.resetBoard();
-        //new game map
-        Map<String, dynamic> game = {};
-        game['white'] = uuid;
-        game['fen'] = _chessController.game.fen;
-        game['turn'] = chess_sub.Color.WHITE.value;
-        game['code'] = gameCode;
-        //upload to firebase
-        FirebaseFirestore.instance.collection('games').add(game);
-        //currentGameDoc.update(game);
-        //update views
-        update();
+      onDone: (value) {
+        if (value == 'ok') _onlineGameController.finallyCreateGameCode();
       },
     );
   }
@@ -260,6 +247,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
     double availableHeight = MediaQuery.of(context).size.height - 200;
     //set the update method
     _chessController.update = update;
+    //set the update method in the online game controller
+    _onlineGameController.update = update;
     //the default scaffold
     return WillPopScope(
       onWillPop: _onWillPop,
@@ -478,10 +467,12 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                   _chessController.botBattle = value;
                                   setState(() {});
                                   //check if has to make bot move
-                                  if (!_chessController.makeBotMoveIfRequired()) {
+                                  if (!_chessController
+                                      .makeBotMoveIfRequired()) {
                                     //since move has not been made, inverse the bot color and retry
-                                    _chessController.botColor = Chess.swap_color(
-                                        _chessController.botColor);
+                                    _chessController.botColor =
+                                        Chess.swap_color(
+                                            _chessController.botColor);
                                     _chessController.makeBotMoveIfRequired();
                                   }
                                 },

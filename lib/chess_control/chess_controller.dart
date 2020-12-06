@@ -13,8 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';
 
-import 'chess_board/src/chess_board_controller.dart';
-import 'eval/ai.dart';
+import '../chess_board/src/chess_board_controller.dart';
+import '../eval/ai.dart';
 
 class ChessController {
   ChessBoardController controller = ChessBoardController();
@@ -33,7 +33,7 @@ class ChessController {
   ChessController(this.context);
 
   //update the views
-  var update;
+  Function update;
 
   void onMove(move) {
     //set the king if needed
