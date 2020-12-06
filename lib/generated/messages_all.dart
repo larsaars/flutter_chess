@@ -50,6 +50,8 @@ class $de extends MessageLookupByLibrary {
 		"leave_online_game" : MessageLookupByLibrary.simpleMessage("Spiel verlassen"),
 		"enter_game_id" : MessageLookupByLibrary.simpleMessage("Spiele-Code eingeben"),
 		"game_id_not_found" : MessageLookupByLibrary.simpleMessage("Spiele-Code wurde nicht gefunden"),
+		"game_id_ex" : MessageLookupByLibrary.simpleMessage("z.B.: KDFGHQ"),
+		"join" : MessageLookupByLibrary.simpleMessage("beitreten"),
 
   };
 }
@@ -99,6 +101,8 @@ class $en extends MessageLookupByLibrary {
 		"leave_online_game" : MessageLookupByLibrary.simpleMessage("leave game"),
 		"enter_game_id" : MessageLookupByLibrary.simpleMessage("enter a game id"),
 		"game_id_not_found" : MessageLookupByLibrary.simpleMessage("game id not found"),
+		"game_id_ex" : MessageLookupByLibrary.simpleMessage("ex.: KDFGHQ"),
+		"join" : MessageLookupByLibrary.simpleMessage("join"),
 
   };
 }
