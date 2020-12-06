@@ -257,6 +257,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
     //show dialog to leave the online game
     showAnimatedDialog(
       title: strings.leave_online_game,
+      text: strings.deleting_as_host_info,
       icon: Icons.warning,
       onDoneText: strings.ok,
       onDone: (value) {
