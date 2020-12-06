@@ -85,20 +85,24 @@ class OnlineGameController {
     currentGameDoc.get().then((event) {
       //check if doc exists and white is not already this user
       if (event.exists) {
-        //reset the local
-        _chessController.controller.resetBoard();
         //set the local bot disabled etc
         _chessController.botBattle = false;
         prefs.setBool('bot', false);
         prefs.setBool('botbattle', false);
         //the player is not white, not rejoining
         if(event.get('white') != uuid) {
+          //if rejoining, overwrite old data
+          _chessController.game = Chess.fromFEN(event.get('fen'));
+          ChessController.moveFrom = event.get('moveFrom');
+          ChessController.moveTo = event.get('moveTo');
           //set the black id
           currentGameDoc.update(<String, dynamic>{'black': uuid});
           //black towards user
           _chessController.whiteSideTowardsUser = false;
           prefs.setBool('whiteSideTowardsUser', false);
         }else {
+          //reset the local
+          _chessController.controller.resetBoard();
           //rejoin the game
           //black towards user
           _chessController.whiteSideTowardsUser = true;
