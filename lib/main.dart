@@ -4,7 +4,9 @@ import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess_sub;
 import 'package:chess_bot/generated/i18n.dart';
-import 'package:chess_bot/utils.dart';
+import 'package:chess_bot/util/online_game_utils.dart';
+import 'package:chess_bot/util/utils.dart';
+import 'package:chess_bot/util/widget_utils.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:chess_bot/widgets/modal_progress_hud.dart';
 import 'package:flutter/foundation.dart';
@@ -208,7 +210,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
 
   void _onWarning() {
     showAnimatedDialog(
-        title: "Warning!",
+        title: strings.warning,
         forceCancelText: 'no',
         onDoneText: 'yes',
         icon: Icons.warning,
@@ -216,24 +218,25 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         children: [Image.asset('res/drawable/moo.png')]);
   }
 
-  void _onOnlineGameOptions() {
-    showAnimatedDialog(showAnyActionButton: false, children: [
-      FlatButton(
-        child: Text(strings.create_code,
-            style: Theme.of(ContextSingleton.context).textTheme.button),
-        onPressed: _onCreateCode,
-      ),
-      FlatButton(
-        child: Text(strings.join_code,
-            style: Theme.of(ContextSingleton.context).textTheme.button),
-        onPressed: _onJoinCode,
-      )
-    ]);
+  void _onJoinCode() {
+
   }
 
-  void _onJoinCode() {}
+  void _onCreateCode() {
+    //if is currently in a game, this will disconnect from all local games, reset the board and create a firestore document
+    showAnimatedDialog(
+        title: strings.warning,
+        text: strings.game_reset_join_code_warning,
+        onDoneText: strings.proceed,
+        icon: Icons.warning,
+        onDone: (value) {
+          //create new game id locally
+          String gameCode = joinGameCode();
+          //create the bucket in cloud firestore
 
-  void _onCreateCode() {}
+        },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
