@@ -337,6 +337,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                       icon: Icons.exit_to_app,
                                       visible: inOnlineGame,
                                       onPressed: _onLeaveOnlineGame),
+                                  DividerIfOffline()
                                 ],
                               ),
                               Visibility(
@@ -371,7 +372,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                       width: 8,
                                     ),
                                     LiteRollingSwitch(
-                                      value: (prefs.getBool("bot") ?? false),
+                                      value: (prefs?.getBool("bot") ?? false),
                                       onChanged: (pos) {
                                         prefs.setBool("bot", pos);
                                         //make move if needed
