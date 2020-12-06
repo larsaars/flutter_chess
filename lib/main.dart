@@ -9,7 +9,7 @@ import 'package:chess_bot/util/utils.dart';
 import 'package:chess_bot/util/widget_utils.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:chess_bot/widgets/modal_progress_hud.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -30,6 +30,8 @@ String uuid;
 void main() async {
   //run the app
   runApp(MyApp());
+  //init firebase app
+  Firebase.initializeApp();
   //add all licenses
   addLicenses();
 }
@@ -86,6 +88,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomepageState extends State<MyHomePage> {
   Future<void> _loadEverythingUp() async {
+    //load the old game
     await _chessController.loadOldGame();
     //set the king in chess board
     _chessController.setKingInCheckSquare();
@@ -219,23 +222,29 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         children: [Image.asset('res/drawable/moo.png')]);
   }
 
-  void _onJoinCode() {
-
-  }
+  void _onJoinCode() {}
 
   void _onCreateCode() {
     //if is currently in a game, this will disconnect from all local games, reset the board and create a firestore document
     showAnimatedDialog(
-        title: strings.warning,
-        text: strings.game_reset_join_code_warning,
-        onDoneText: strings.proceed,
-        icon: Icons.warning,
-        onDone: (value) {
-          //create new game id locally
-          String gameCode = joinGameCode();
-          //create the bucket in cloud firestore
-          FirebaseFirestore.instance.collection('games').doc(gameCode).update(data);
-        },
+      title: strings.warning,
+      text: strings.game_reset_join_code_warning,
+      onDoneText: strings.proceed,
+      icon: Icons.warning,
+      onDone: (value) async {
+        //create new game id locally
+        joinGameCode();
+        //create the bucket in cloud firestore
+        //reset the local game
+        _chessController.controller.resetBoard();
+        //new game map
+        Map game = {};
+        game['white'] = uuid;
+        game['fen'] = _chessController.game.fen;
+        game['turn'] = chess_sub.Color.WHITE.value;
+        //upload to firebase
+        currentGameDoc.update(game);
+      },
     );
   }
 
