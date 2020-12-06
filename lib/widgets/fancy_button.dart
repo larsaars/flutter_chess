@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-enum FancyButtonAnimation {
-  rotate_right, rotate_left, pulse
-}
+enum FancyButtonAnimation { rotate_right, rotate_left, pulse }
 
 class FancyButton extends StatefulWidget {
   final VoidCallback onPressed;
   final String text;
   final IconData icon;
   final Color splashColor, fillColor, iconColor;
+  final bool visible;
 
   final FancyButtonAnimation animation;
 
   FancyButton(
       {Key key,
       @required this.onPressed,
+      this.visible = true,
       this.text = "",
       this.icon,
       this.splashColor = Colors.white60,
@@ -46,7 +46,7 @@ class _FancyButtonState extends State<FancyButton>
     );
     //set the transition according to enum with switch case
     var _transition;
-    switch(widget.animation) {
+    switch (widget.animation) {
       case FancyButtonAnimation.rotate_right:
         _transition = RotationTransition(
           turns: Tween(
@@ -67,10 +67,7 @@ class _FancyButtonState extends State<FancyButton>
         break;
       case FancyButtonAnimation.pulse:
         _transition = FadeTransition(
-          opacity: Tween(
-            begin: 1.0,
-            end: 0.0
-          ).animate(animationController),
+          opacity: Tween(begin: 1.0, end: 0.0).animate(animationController),
           child: _icon,
         );
         break;
@@ -79,31 +76,34 @@ class _FancyButtonState extends State<FancyButton>
     }
 
     //the button
-    return RawMaterialButton(
-      onPressed: onTapped,
-      splashColor: widget.splashColor,
-      fillColor: widget.fillColor,
-      shape: StadiumBorder(),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 8.0,
-          horizontal: 20.0,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            widget.icon == null ? Container(): _transition,
-            SizedBox(
-              //set the sized box only 8 wide when a text is set
-              width: widget.text.length == 0 || widget.icon == null ? 0.0 : 8.0,
-            ),
-            Text(
-              widget.text,
-              style: TextStyle(
-                color: widget.iconColor,
+    return Visibility(
+      visible: widget.visible,
+      child: RawMaterialButton(
+        onPressed: onTapped,
+        splashColor: widget.splashColor,
+        fillColor: widget.fillColor,
+        shape: StadiumBorder(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 8.0,
+            horizontal: 20.0,
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              widget.icon == null ? Container() : _transition,
+              SizedBox(
+                //set the sized box only 8 wide when a text is set
+                width: widget.text.length == 0 || widget.icon == null ? 0.0 : 8.0,
               ),
-            ),
-          ],
+              Text(
+                widget.text,
+                style: TextStyle(
+                  color: widget.iconColor,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
