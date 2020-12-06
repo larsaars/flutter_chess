@@ -9,6 +9,7 @@ import 'package:chess_bot/util/utils.dart';
 import 'package:chess_bot/util/widget_utils.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:chess_bot/widgets/modal_progress_hud.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -233,7 +234,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
           //create new game id locally
           String gameCode = joinGameCode();
           //create the bucket in cloud firestore
-
+          FirebaseFirestore.instance.collection('games').doc(gameCode).update(data);
         },
     );
   }
