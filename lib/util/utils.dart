@@ -33,7 +33,7 @@ class ContextSingleton {
   }
 }
 
-Future<bool> hasInternet() async {
+Future<bool> get hasInternet async {
   var connectivityResult = await (Connectivity().checkConnectivity());
   if (connectivityResult == ConnectivityResult.mobile) {
     // I am connected to a mobile network, make sure there is actually a net connection.

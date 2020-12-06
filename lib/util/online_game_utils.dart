@@ -1,4 +1,5 @@
 import 'package:chess_bot/util/utils.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../main.dart';
 
@@ -20,6 +21,13 @@ String joinGameCode({String gameCode}) {
     return _currentGameCode = gameCode;
   else
     return _currentGameCode = _createGameCode();
+}
+
+DocumentReference get currentGameDoc {
+  if (inOnlineGame)
+    return FirebaseFirestore.instance.collection('games').doc(_currentGameCode);
+  else
+    return null;
 }
 
 String get currentGameCode {
