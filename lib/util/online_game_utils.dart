@@ -74,10 +74,11 @@ class OnlineGameController {
   //join and init the game code
   void joinGame(String code) {
     //create the game locally
-    joinGameCodeWithoutFirebaseCreation(gameCode: code);
+    joinGameCodeWithoutFirebaseCreation(gameCode: code.toUpperCase());
     //check if the code exists
     currentGameDoc.get().then((event) {
-      if(event.exists) {
+      //check if doc exists and white is not already this user
+      if(event.exists && (event.get('white') != uuid)) {
         //set the black id
         currentGameDoc.update(<String, dynamic>{'black': uuid});
         //lock the listener since the game exists
