@@ -44,6 +44,9 @@ class $de extends MessageLookupByLibrary {
 		"join_code" : MessageLookupByLibrary.simpleMessage("Spiel beitreten"),
 		"create_code" : MessageLookupByLibrary.simpleMessage("Spiel erstellen"),
 		"local" : MessageLookupByLibrary.simpleMessage("[lokales Spiel]"),
+		"warning" : MessageLookupByLibrary.simpleMessage("Warnung!"),
+		"game_reset_join_code_warning" : MessageLookupByLibrary.simpleMessage("Durch diese Aktion wird ein neues Spiel erstellt, über das einer deiner Freunde über einen generierten code beitreten kann. Dabei werden alle lokalen Spiele zurückgesetzt und die Verbindung zu einem laufenden anderen Spiele-Code getrennt."),
+		"proceed" : MessageLookupByLibrary.simpleMessage("fortfahren"),
 
   };
 }
@@ -87,6 +90,9 @@ class $en extends MessageLookupByLibrary {
 		"join_code" : MessageLookupByLibrary.simpleMessage("join game"),
 		"create_code" : MessageLookupByLibrary.simpleMessage("create game"),
 		"local" : MessageLookupByLibrary.simpleMessage("[local game]"),
+		"warning" : MessageLookupByLibrary.simpleMessage("warning!"),
+		"game_reset_join_code_warning" : MessageLookupByLibrary.simpleMessage("By creating a new game code, you will reset your local board and leave a running online game. A friend can join your game via the generated code."),
+		"proceed" : MessageLookupByLibrary.simpleMessage("proceed"),
 
   };
 }

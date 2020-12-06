@@ -29,5 +29,8 @@
   "online_game_options": "online-Spiel",
   "join_code": "Spiel beitreten",
   "create_code": "Spiel erstellen",
-  "local": "[lokales Spiel]"
+  "local": "[lokales Spiel]",
+  "warning": "Warnung!",
+  "game_reset_join_code_warning": "Durch diese Aktion wird ein neues Spiel erstellt, über das einer deiner Freunde über einen generierten code beitreten kann. Dabei werden alle lokalen Spiele zurückgesetzt und die Verbindung zu einem laufenden anderen Spiele-Code getrennt.",
+  "proceed": "fortfahren"
 }
