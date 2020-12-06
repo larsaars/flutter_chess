@@ -33,7 +33,7 @@
   "create_code": "create game",
   "local": "[local game]",
   "warning": "warning!",
-  "game_reset_join_code_warning": "By creating a new game code, you will reset your local board and leave a running online game. A friend can join your game via the generated code.",
+  "game_reset_join_code_warning": "By creating a new game code, you will reset your local board and leave a running online game. A friend can join your game via the generated code. The creator of the game is always white.",
   "proceed": "proceed",
   "leave_online_game": "leave game",
   "enter_game_id": "enter a game id",
