@@ -5,6 +5,7 @@ import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/main.dart';
+import 'package:chess_bot/util/online_game_utils.dart';
 import 'package:chess_bot/util/utils.dart';
 import 'package:chess_bot/util/widget_utils.dart';
 import 'package:flutter/cupertino.dart';
@@ -44,14 +45,19 @@ class ChessController {
     ChessController.moveTo = move['to'];
     //print the move
     print('onMove: $move');
-    // update the ui
-    update();
-    //save the game after every move
-    saveOldGame();
-    //check if bot should make a move
-    //and then find it
-    //make move if needed
-    makeBotMoveIfRequired();
+    //if is in online game
+    if(inOnlineGame) {
+
+    }else {
+      // update the ui
+      update();
+      //save the game after every move
+      saveOldGame();
+      //check if bot should make a move
+      //and then find it
+      //make move if needed
+      makeBotMoveIfRequired();
+    }
   }
 
   void findMove() async {
@@ -173,6 +179,8 @@ class ChessController {
   }
 
   bool makeBotMoveIfRequired() {
+    if(inOnlineGame)
+      return false;
     //make move if needed
     if (((game?.game?.turn ?? Color.flip(botColor)) == botColor) &&
         prefs.getBool('bot')) {

@@ -163,7 +163,7 @@ class S {
   }
 
   String get game_reset_join_code_warning {
-    return Intl.message("By creating a new game code, you will reset your local board and leave a running online game. A friend can join your game via the generated code.", name: 'game_reset_join_code_warning');
+    return Intl.message("By creating a new game code, you will reset your local board and leave a running online game. A friend can join your game via the generated code. The creator of the game is always white.", name: 'game_reset_join_code_warning');
   }
 
   String get proceed {
