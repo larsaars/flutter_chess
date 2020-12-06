@@ -95,6 +95,7 @@ class OnlineGameController {
           _chessController.game = Chess.fromFEN(event.get('fen'));
           ChessController.moveFrom = event.get('moveFrom');
           ChessController.moveTo = event.get('moveTo');
+          _chessController.setKingInCheckSquare();
           //set the black id
           currentGameDoc.update(<String, dynamic>{'black': uuid});
           //black towards user
@@ -154,6 +155,8 @@ class OnlineGameController {
         _chessController.game = Chess.fromFEN(event.get('fen'));
         ChessController.moveFrom = event.get('moveFrom');
         ChessController.moveTo = event.get('moveTo');
+        //update king square
+        _chessController.setKingInCheckSquare();
         //update all views
         update();
       }
