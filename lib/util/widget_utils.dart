@@ -1,4 +1,5 @@
 import 'package:chess_bot/util/utils.dart';
+import 'package:chess_bot/widgets/divider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -54,9 +55,7 @@ void showAnimatedDialog({
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       icon == null ? Container() : Icon(icon),
-                      SizedBox(
-                        width: 8.0,
-                      ),
+                      Divider8(),
                       Text(
                         title ?? "",
                         style: Theme.of(context).textTheme.subtitle1,
