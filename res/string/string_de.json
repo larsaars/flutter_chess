@@ -37,5 +37,6 @@
   "enter_game_id": "Spiele-Code eingeben",
   "game_id_not_found": "Spiele-Code wurde nicht gefunden",
   "game_id_ex": "z.B.: KDFGHQ",
-  "join": "beitreten"
+  "join": "beitreten",
+  "deleting_as_host_info": "Dadurch wird das gesamte Spiel gelöscht, da du der Host bist."
 }

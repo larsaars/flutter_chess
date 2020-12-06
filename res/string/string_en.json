@@ -39,5 +39,6 @@
   "enter_game_id": "enter a game id",
   "game_id_not_found": "game id not found",
   "game_id_ex": "ex.: KDFGHQ",
-  "join": "join"
+  "join": "join",
+  "deleting_as_host_info": "Since you are hosting the game, leaving it means deleting it."
 }

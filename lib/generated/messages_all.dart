@@ -52,6 +52,7 @@ class $de extends MessageLookupByLibrary {
 		"game_id_not_found" : MessageLookupByLibrary.simpleMessage("Spiele-Code wurde nicht gefunden"),
 		"game_id_ex" : MessageLookupByLibrary.simpleMessage("z.B.: KDFGHQ"),
 		"join" : MessageLookupByLibrary.simpleMessage("beitreten"),
+		"deleting_as_host_info" : MessageLookupByLibrary.simpleMessage("Dadurch wird das gesamte Spiel gelöscht, da du der Host bist."),
 
   };
 }
@@ -103,6 +104,7 @@ class $en extends MessageLookupByLibrary {
 		"game_id_not_found" : MessageLookupByLibrary.simpleMessage("game id not found"),
 		"game_id_ex" : MessageLookupByLibrary.simpleMessage("ex.: KDFGHQ"),
 		"join" : MessageLookupByLibrary.simpleMessage("join"),
+		"deleting_as_host_info" : MessageLookupByLibrary.simpleMessage("Since you are hosting the game, leaving it means deleting it."),
 
   };
 }

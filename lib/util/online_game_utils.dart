@@ -125,11 +125,12 @@ class OnlineGameController {
     currentGameDoc.get().then((event) {
       if(event.get('white') == uuid)
         currentGameDoc.delete();
+
+      //set code to null
+      _currentGameCode = null;
+      //refresh views
+      update();
     });
-    //set code to null
-    _currentGameCode = null;
-    //refresh views
-    update();
   }
 
   void lockListener() {
