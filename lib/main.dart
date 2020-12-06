@@ -241,6 +241,18 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
     );
   }
 
+  void _onLeaveOnlineGame() {
+    //show dialog to leave the online game
+    showAnimatedDialog(
+      title: strings.leave_online_game,
+      icon: Icons.warning,
+      onDoneText: strings.ok,
+      onDone: (value) {
+        if (value == 'ok') _onlineGameController.leaveGame();
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     //get the available height for the chess board
@@ -293,15 +305,23 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                   icon: Icons.online_prediction,
                                   animation: FancyButtonAnimation.pulse,
                                 ),
-                                SizedBox(
-                                  width: 8,
-                                ),
+                                Divider8(),
                                 FancyButton(
                                   onPressed: _onCreateCode,
                                   text: strings.create_code,
                                   icon: Icons.add,
                                   animation: FancyButtonAnimation.pulse,
-                                )
+                                ),
+                                Visibility(
+                                  visible: inOnlineGame,
+                                  child: Divider8(),
+                                ),
+                                FancyButton(
+                                    text: strings.leave_online_game,
+                                    animation: FancyButtonAnimation.pulse,
+                                    icon: Icons.exit_to_app,
+                                    visible: inOnlineGame,
+                                    onPressed: _onLeaveOnlineGame),
                               ],
                             ),
                             Visibility(

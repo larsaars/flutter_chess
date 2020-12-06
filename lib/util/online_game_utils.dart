@@ -1,7 +1,9 @@
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/chess_control/chess_controller.dart';
 import 'package:chess_bot/util/utils.dart';
+import 'package:chess_bot/util/widget_utils.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 import '../main.dart';
 
@@ -18,7 +20,7 @@ String _createGameCode() {
 
 String _currentGameCode;
 
-String joinGameCode({String gameCode}) {
+String joinGameCodeWithoutFirebaseCreation({String gameCode}) {
   if (gameCode != null)
     return _currentGameCode = gameCode;
   else
@@ -48,7 +50,7 @@ class OnlineGameController {
 
   void finallyCreateGameCode() {
     //create new game id locally
-    joinGameCode();
+    String gameId = joinGameCodeWithoutFirebaseCreation();
     //create the bucket in cloud firestore
     //reset the local game
     _chessController.controller.resetBoard();
@@ -60,13 +62,56 @@ class OnlineGameController {
     game['turn'] = Color.WHITE.value;
     game['blackTurn'] = null;
     game['whiteTurn'] = null;
+    game['id'] = gameId;
     //upload to firebase
     currentGameDoc.set(game);
     //lock listener
-    currentGameDoc.snapshots().listen((event) {
-
-    });
+    lockListener();
     //update views
     update();
+  }
+
+  //join and init the game code
+  void joinGame(String code) {
+    //create the game locally
+    joinGameCodeWithoutFirebaseCreation(gameCode: code);
+    //check if the code exists
+    currentGameDoc.get().then((event) {
+      if(event.exists) {
+        //set the black id
+        currentGameDoc.update(<String, dynamic>{'black': uuid});
+        //lock the listener since the game exists
+        lockListener();
+      }else {
+        //game code is null then, inform user
+        _currentGameCode = null;
+        showAnimatedDialog(
+          icon: Icons.warning,
+          title: strings.warning,
+          text: strings.game_id_not_found
+        );
+      }
+    });
+  }
+
+  //leave the online game / set the code to null then update views
+  void leaveGame() {
+    _currentGameCode = null;
+    update();
+  }
+
+  void lockListener() {
+    currentGameDoc.snapshots().listen((event) {
+      //if the doc does not exist, set game code to null
+      if(!event.exists) {
+        _currentGameCode = null;
+        return;
+      }
+      //only update if the listener is sure that this is not an old game code
+      //and the data are not null
+      if(event.data() != null && (event.get('id') == _currentGameCode)) {
+        print('${event.data()}');
+      }
+    });
   }
 }

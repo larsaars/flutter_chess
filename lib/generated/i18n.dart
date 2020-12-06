@@ -170,6 +170,18 @@ class S {
     return Intl.message("proceed", name: 'proceed');
   }
 
+  String get leave_online_game {
+    return Intl.message("leave game", name: 'leave_online_game');
+  }
+
+  String get enter_game_id {
+    return Intl.message("enter a game id", name: 'enter_game_id');
+  }
+
+  String get game_id_not_found {
+    return Intl.message("game id not found", name: 'game_id_not_found');
+  }
+
 
 }
 

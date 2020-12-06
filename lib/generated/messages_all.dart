@@ -47,6 +47,9 @@ class $de extends MessageLookupByLibrary {
 		"warning" : MessageLookupByLibrary.simpleMessage("Warnung!"),
 		"game_reset_join_code_warning" : MessageLookupByLibrary.simpleMessage("Durch diese Aktion wird ein neues Spiel erstellt, über das einer deiner Freunde über einen generierten code beitreten kann. Dabei werden alle lokalen Spiele zurückgesetzt und die Verbindung zu einem laufenden anderen Spiele-Code getrennt."),
 		"proceed" : MessageLookupByLibrary.simpleMessage("fortfahren"),
+		"leave_online_game" : MessageLookupByLibrary.simpleMessage("Spiel verlassen"),
+		"enter_game_id" : MessageLookupByLibrary.simpleMessage("Spiele-Code eingeben"),
+		"game_id_not_found" : MessageLookupByLibrary.simpleMessage("Spiele-Code wurde nicht gefunden"),
 
   };
 }
@@ -93,6 +96,9 @@ class $en extends MessageLookupByLibrary {
 		"warning" : MessageLookupByLibrary.simpleMessage("warning!"),
 		"game_reset_join_code_warning" : MessageLookupByLibrary.simpleMessage("By creating a new game code, you will reset your local board and leave a running online game. A friend can join your game via the generated code."),
 		"proceed" : MessageLookupByLibrary.simpleMessage("proceed"),
+		"leave_online_game" : MessageLookupByLibrary.simpleMessage("leave game"),
+		"enter_game_id" : MessageLookupByLibrary.simpleMessage("enter a game id"),
+		"game_id_not_found" : MessageLookupByLibrary.simpleMessage("game id not found"),
 
   };
 }
