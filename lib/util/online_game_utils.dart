@@ -1,3 +1,4 @@
+import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/chess_control/chess_controller.dart';
 import 'package:chess_bot/util/utils.dart';
@@ -52,6 +53,10 @@ class OnlineGameController {
     //create new game id locally
     String gameId = joinGameCodeWithoutFirebaseCreation();
     //create the bucket in cloud firestore
+    //set the local bot disabled etc
+    _chessController.botBattle = false;
+    prefs.setBool('bot', false);
+    prefs.setBool('botbattle', false);
     //reset the local game
     _chessController.controller.resetBoard();
     //new game map
@@ -59,10 +64,12 @@ class OnlineGameController {
     game['white'] = uuid;
     game['black'] = null;
     game['fen'] = _chessController.game.fen;
-    game['turn'] = Color.WHITE.value;
-    game['blackTurn'] = null;
-    game['whiteTurn'] = null;
+    game['moveFrom'] = null;
+    game['moveTo'] = null;
     game['id'] = gameId;
+    //white towards user
+    _chessController.whiteSideTowardsUser = true;
+    prefs.setBool('whiteSideTowardsUser', true);
     //upload to firebase
     currentGameDoc.set(game);
     //lock listener
@@ -79,10 +86,21 @@ class OnlineGameController {
     currentGameDoc.get().then((event) {
       //check if doc exists and white is not already this user
       if(event.exists && (event.get('white') != uuid)) {
+        //reset the local
+        _chessController.resetBoard();
+        //set the local bot disabled etc
+        _chessController.botBattle = false;
+        prefs.setBool('bot', false);
+        prefs.setBool('botbattle', false);
         //set the black id
         currentGameDoc.update(<String, dynamic>{'black': uuid});
+        //black towards user
+        _chessController.whiteSideTowardsUser = false;
+        prefs.setBool('whiteSideTowardsUser', false);
         //lock the listener since the game exists
         lockListener();
+        //update
+        update();
       }else {
         //game code is null then, inform user
         _currentGameCode = null;
@@ -111,7 +129,12 @@ class OnlineGameController {
       //only update if the listener is sure that this is not an old game code
       //and the data are not null
       if(event.data() != null && (event.get('id') == _currentGameCode)) {
-        print('${event.data()}');
+        //update complete game
+        _chessController.game = Chess.fromFEN(event.get('fen'));
+        ChessController.moveFrom = event.get('moveFrom');
+        ChessController.moveTo = event.get('moveTo');
+        //update all views
+        update();
       }
     });
   }

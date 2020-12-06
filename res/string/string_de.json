@@ -31,7 +31,7 @@
   "create_code": "Spiel erstellen",
   "local": "[lokales Spiel]",
   "warning": "Warnung!",
-  "game_reset_join_code_warning": "Durch diese Aktion wird ein neues Spiel erstellt, über das einer deiner Freunde über einen generierten code beitreten kann. Dabei werden alle lokalen Spiele zurückgesetzt und die Verbindung zu einem laufenden anderen Spiele-Code getrennt.",
+  "game_reset_join_code_warning": "Durch diese Aktion wird ein neues Spiel erstellt, über das einer deiner Freunde über einen generierten code beitreten kann. Dabei werden alle lokalen Spiele zurückgesetzt und die Verbindung zu einem laufenden anderen Spiele-Code getrennt. Der Ersteller des Spiels ist immer weiß",
   "proceed": "fortfahren",
   "leave_online_game": "Spiel verlassen",
   "enter_game_id": "Spiele-Code eingeben",
