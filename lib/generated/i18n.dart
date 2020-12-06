@@ -182,6 +182,14 @@ class S {
     return Intl.message("game id not found", name: 'game_id_not_found');
   }
 
+  String get game_id_ex {
+    return Intl.message("ex.: KDFGHQ", name: 'game_id_ex');
+  }
+
+  String get join {
+    return Intl.message("join", name: 'join');
+  }
+
 
 }
 
