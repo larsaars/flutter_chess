@@ -1,5 +1,4 @@
 import 'package:chess_bot/chess_board/chess.dart';
-import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/chess_control/chess_controller.dart';
 import 'package:chess_bot/util/utils.dart';
 import 'package:chess_bot/util/widget_utils.dart';
@@ -85,7 +84,7 @@ class OnlineGameController {
     //check if the code exists
     currentGameDoc.get().then((event) {
       //check if doc exists and white is not already this user
-      if(event.exists && (event.get('white') != uuid)) {
+      if (event.exists && (event.get('white') != uuid)) {
         //reset the local
         _chessController.resetBoard();
         //set the local bot disabled etc
@@ -101,14 +100,13 @@ class OnlineGameController {
         lockListener();
         //update
         update();
-      }else {
+      } else {
         //game code is null then, inform user
         _currentGameCode = null;
         showAnimatedDialog(
-          icon: Icons.warning,
-          title: strings.warning,
-          text: strings.game_id_not_found
-        );
+            icon: Icons.warning,
+            title: strings.warning,
+            text: strings.game_id_not_found);
       }
     });
   }
@@ -122,13 +120,13 @@ class OnlineGameController {
   void lockListener() {
     currentGameDoc.snapshots().listen((event) {
       //if the doc does not exist, set game code to null
-      if(!event.exists) {
+      if (!event.exists) {
         _currentGameCode = null;
         return;
       }
       //only update if the listener is sure that this is not an old game code
       //and the data are not null
-      if(event.data() != null && (event.get('id') == _currentGameCode)) {
+      if (event.data() != null && (event.get('id') == _currentGameCode)) {
         //update complete game
         _chessController.game = Chess.fromFEN(event.get('fen'));
         ChessController.moveFrom = event.get('moveFrom');

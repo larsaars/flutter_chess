@@ -47,7 +47,15 @@ class ChessController {
     print('onMove: $move');
     //if is in online game
     if(inOnlineGame) {
-
+      //firestore update
+      Map<String, dynamic> onMoveUpdate = {};
+      //set the local bot disabled etc
+      onMoveUpdate['moveFrom'] = moveFrom;
+      onMoveUpdate['moveTo'] = moveTo;
+      onMoveUpdate['fen'] = game.fen;
+      currentGameDoc.update(onMoveUpdate);
+      //update the ui
+      update();
     }else {
       // update the ui
       update();
