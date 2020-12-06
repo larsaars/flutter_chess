@@ -229,15 +229,14 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
   void _onJoinCode() {
     //dialog to enter a code
     showAnimatedDialog(
-      title: strings.enter_game_id,
-      onDoneText: strings.join,
-      icon: Icons.online_prediction,
-      withInputField: true,
-      inputFieldHint: strings.game_id_ex,
-      onDone: (value) {
-        _onlineGameController.joinGame(value);
-      }
-    );
+        title: strings.enter_game_id,
+        onDoneText: strings.join,
+        icon: Icons.online_prediction,
+        withInputField: true,
+        inputFieldHint: strings.game_id_ex,
+        onDone: (value) {
+          _onlineGameController.joinGame(value);
+        });
   }
 
   void _onCreateCode() {
@@ -304,90 +303,52 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Visibility(
+                          visible: !inOnlineGame,
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  FancyButton(
-                                    onPressed: _onJoinCode,
-                                    text: strings.join_code,
-                                    icon: Icons.online_prediction,
-                                    animation: FancyButtonAnimation.pulse,
-                                  ),
-                                  Divider8(),
-                                  FancyButton(
-                                    onPressed: _onCreateCode,
-                                    text: strings.create_code,
-                                    icon: Icons.add,
-                                    animation: FancyButtonAnimation.pulse,
-                                  ),
-                                  Visibility(
-                                    visible: inOnlineGame,
-                                    child: Divider8(),
-                                  ),
-                                  FancyButton(
-                                      text: strings.leave_online_game,
-                                      animation: FancyButtonAnimation.pulse,
-                                      icon: Icons.exit_to_app,
-                                      visible: inOnlineGame,
-                                      onPressed: _onLeaveOnlineGame),
-                                  DividerIfOffline()
-                                ],
+                              FlatButton(
+                                shape: roundButtonShape,
+                                onPressed: () {
+                                  //inverse the bot color and save it
+                                  _chessController.botColor =
+                                      chess_sub.Color.flip(
+                                          _chessController.botColor);
+                                  //save value int to prefs
+                                  prefs.setInt('bot_color',
+                                      _chessController.botColor.value);
+                                  //set state, update the views
+                                  setState(() {});
+                                  //make move if needed
+                                  _chessController.makeBotMoveIfRequired();
+                                },
+                                child: Text(
+                                    (_chessController.botColor ==
+                                            chess_sub.Color.WHITE)
+                                        ? strings.white
+                                        : strings.black,
+                                    style: Theme.of(context).textTheme.button),
                               ),
-                              Visibility(
-                                visible: !inOnlineGame,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    FlatButton(
-                                      shape: roundButtonShape,
-                                      onPressed: () {
-                                        //inverse the bot color and save it
-                                        _chessController.botColor =
-                                            chess_sub.Color.flip(
-                                                _chessController.botColor);
-                                        //save value int to prefs
-                                        prefs.setInt('bot_color',
-                                            _chessController.botColor.value);
-                                        //set state, update the views
-                                        setState(() {});
-                                        //make move if needed
-                                        _chessController.makeBotMoveIfRequired();
-                                      },
-                                      child: Text(
-                                          (_chessController.botColor ==
-                                                  chess_sub.Color.WHITE)
-                                              ? strings.white
-                                              : strings.black,
-                                          style:
-                                              Theme.of(context).textTheme.button),
-                                    ),
-                                    SizedBox(
-                                      width: 8,
-                                    ),
-                                    LiteRollingSwitch(
-                                      value: (prefs?.getBool("bot") ?? false),
-                                      onChanged: (pos) {
-                                        prefs.setBool("bot", pos);
-                                        //make move if needed
-                                        _chessController?.makeBotMoveIfRequired();
-                                      },
-                                      iconOn: Icons.done,
-                                      iconOff: Icons.close,
-                                      textOff: strings.bot_off,
-                                      textOn: strings.bot_on,
-                                      colorOff: Colors.red[800],
-                                      colorOn: Colors.green[800],
-                                    ),
-                                  ],
-                                ),
-                              )
+                              SizedBox(
+                                width: 8,
+                              ),
+                              LiteRollingSwitch(
+                                value: (prefs?.getBool("bot") ?? false),
+                                onChanged: (pos) {
+                                  prefs.setBool("bot", pos);
+                                  //make move if needed
+                                  _chessController?.makeBotMoveIfRequired();
+                                },
+                                iconOn: Icons.done,
+                                iconOff: Icons.close,
+                                textOff: strings.bot_off,
+                                textOn: strings.bot_on,
+                                colorOff: Colors.red[800],
+                                colorOn: Colors.green[800],
+                              ),
                             ],
                           ),
                         ),
@@ -494,6 +455,35 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             text: 'fen',
                           ),
                           DividerIfOffline(),
+                          FancyButton(
+                            onPressed: _onJoinCode,
+                            text: strings.join_code,
+                            icon: Icons.online_prediction,
+                            animation: FancyButtonAnimation.pulse,
+                          ),
+                          Divider8(),
+                          FancyButton(
+                            onPressed: _onCreateCode,
+                            text: strings.create_code,
+                            icon: Icons.add,
+                            animation: FancyButtonAnimation.pulse,
+                          ),
+                          Divider8(),
+                          Visibility(
+                            visible: inOnlineGame,
+                            child: Divider8(),
+                          ),
+                          FancyButton(
+                            text: strings.leave_online_game,
+                            animation: FancyButtonAnimation.pulse,
+                            icon: Icons.exit_to_app,
+                            visible: inOnlineGame,
+                            onPressed: _onLeaveOnlineGame,
+                          ),
+                          Visibility(
+                            visible: inOnlineGame,
+                            child: Divider8(),
+                          ),
                           Visibility(
                             visible: !inOnlineGame,
                             child: Container(
