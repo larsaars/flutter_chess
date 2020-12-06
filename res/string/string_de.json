@@ -35,5 +35,7 @@
   "proceed": "fortfahren",
   "leave_online_game": "Spiel verlassen",
   "enter_game_id": "Spiele-Code eingeben",
-  "game_id_not_found": "Spiele-Code wurde nicht gefunden"
+  "game_id_not_found": "Spiele-Code wurde nicht gefunden",
+  "game_id_ex": "z.B.: KDFGHQ",
+  "join": "beitreten"
 }

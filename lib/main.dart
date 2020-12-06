@@ -226,7 +226,19 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         children: [Image.asset('res/drawable/moo.png')]);
   }
 
-  void _onJoinCode() {}
+  void _onJoinCode() {
+    //dialog to enter a code
+    showAnimatedDialog(
+      title: strings.enter_game_id,
+      onDoneText: strings.join,
+      icon: Icons.online_prediction,
+      withInputField: true,
+      inputFieldHint: strings.game_id_ex,
+      onDone: (value) {
+        _onlineGameController.joinGame(value);
+      }
+    );
+  }
 
   void _onCreateCode() {
     //if is currently in a game, this will disconnect from all local games, reset the board and create a firestore document

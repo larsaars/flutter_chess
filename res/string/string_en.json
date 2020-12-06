@@ -37,5 +37,7 @@
   "proceed": "proceed",
   "leave_online_game": "leave game",
   "enter_game_id": "enter a game id",
-  "game_id_not_found": "game id not found"
+  "game_id_not_found": "game id not found",
+  "game_id_ex": "ex.: KDFGHQ",
+  "join": "join"
 }
