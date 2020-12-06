@@ -7,8 +7,10 @@ import 'package:chess_bot/generated/i18n.dart';
 import 'package:chess_bot/util/online_game_utils.dart';
 import 'package:chess_bot/util/utils.dart';
 import 'package:chess_bot/util/widget_utils.dart';
+import 'package:chess_bot/widgets/divider.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:chess_bot/widgets/modal_progress_hud.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -233,17 +235,21 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
       icon: Icons.warning,
       onDone: (value) async {
         //create new game id locally
-        joinGameCode();
+        String gameCode = joinGameCode();
         //create the bucket in cloud firestore
         //reset the local game
         _chessController.controller.resetBoard();
         //new game map
-        Map game = {};
+        Map<String, dynamic> game = {};
         game['white'] = uuid;
         game['fen'] = _chessController.game.fen;
         game['turn'] = chess_sub.Color.WHITE.value;
+        game['code'] = gameCode;
         //upload to firebase
-        currentGameDoc.update(game);
+        FirebaseFirestore.instance.collection('games').add(game);
+        //currentGameDoc.update(game);
+        //update views
+        update();
       },
     );
   }
@@ -309,50 +315,53 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                 )
                               ],
                             ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                FlatButton(
-                                  shape: roundButtonShape,
-                                  onPressed: () {
-                                    //inverse the bot color and save it
-                                    _chessController.botColor =
-                                        chess_sub.Color.flip(
-                                            _chessController.botColor);
-                                    //save value int to prefs
-                                    prefs.setInt('bot_color',
-                                        _chessController.botColor.value);
-                                    //set state, update the views
-                                    setState(() {});
-                                    //make move if needed
-                                    _chessController.makeBotMoveIfRequired();
-                                  },
-                                  child: Text(
-                                      (_chessController.botColor ==
-                                              chess_sub.Color.WHITE)
-                                          ? strings.white
-                                          : strings.black,
-                                      style:
-                                          Theme.of(context).textTheme.button),
-                                ),
-                                SizedBox(
-                                  width: 8,
-                                ),
-                                LiteRollingSwitch(
-                                  value: (prefs.getBool("bot") ?? false),
-                                  onChanged: (pos) {
-                                    prefs.setBool("bot", pos);
-                                    //make move if needed
-                                    _chessController?.makeBotMoveIfRequired();
-                                  },
-                                  iconOn: Icons.done,
-                                  iconOff: Icons.close,
-                                  textOff: strings.bot_off,
-                                  textOn: strings.bot_on,
-                                  colorOff: Colors.red[800],
-                                  colorOn: Colors.green[800],
-                                ),
-                              ],
+                            Visibility(
+                              visible: !inOnlineGame,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  FlatButton(
+                                    shape: roundButtonShape,
+                                    onPressed: () {
+                                      //inverse the bot color and save it
+                                      _chessController.botColor =
+                                          chess_sub.Color.flip(
+                                              _chessController.botColor);
+                                      //save value int to prefs
+                                      prefs.setInt('bot_color',
+                                          _chessController.botColor.value);
+                                      //set state, update the views
+                                      setState(() {});
+                                      //make move if needed
+                                      _chessController.makeBotMoveIfRequired();
+                                    },
+                                    child: Text(
+                                        (_chessController.botColor ==
+                                                chess_sub.Color.WHITE)
+                                            ? strings.white
+                                            : strings.black,
+                                        style:
+                                            Theme.of(context).textTheme.button),
+                                  ),
+                                  SizedBox(
+                                    width: 8,
+                                  ),
+                                  LiteRollingSwitch(
+                                    value: (prefs.getBool("bot") ?? false),
+                                    onChanged: (pos) {
+                                      prefs.setBool("bot", pos);
+                                      //make move if needed
+                                      _chessController?.makeBotMoveIfRequired();
+                                    },
+                                    iconOn: Icons.done,
+                                    iconOff: Icons.close,
+                                    textOff: strings.bot_off,
+                                    textOn: strings.bot_on,
+                                    colorOff: Colors.red[800],
+                                    colorOn: Colors.green[800],
+                                  ),
+                                ],
+                              ),
                             )
                           ],
                         ),
@@ -427,68 +436,59 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             animation: FancyButtonAnimation.pulse,
                             icon: Icons.undo,
                           ),
-                          SizedBox(
-                            width: 8.0,
-                          ),
+                          Divider8(),
                           FancyButton(
                             onPressed: _chessController.resetBoard,
                             icon: Icons.autorenew,
                           ),
-                          SizedBox(
-                            width: 8.0,
-                          ),
+                          Divider8(),
                           FancyButton(
                             onPressed: _chessController.switchColors,
                             icon: Icons.switch_left,
                           ),
-                          SizedBox(
-                            width: 8.0,
-                          ),
+                          DividerIfOffline(),
                           FancyButton(
+                            visible: !inOnlineGame,
                             onPressed: _chessController.onSetDepth,
                             icon: Icons.upload_rounded,
                             animation: FancyButtonAnimation.pulse,
                           ),
-                          SizedBox(
-                            width: 8.0,
-                          ),
+                          Divider8(),
                           FancyButton(
                             onPressed: _chessController.changeBoardStyle,
                             icon: Icons.style,
                             animation: FancyButtonAnimation.pulse,
                           ),
-                          SizedBox(
-                            width: 8.0,
-                          ),
+                          DividerIfOffline(),
                           FancyButton(
+                            visible: !inOnlineGame,
                             onPressed: _chessController.onFen,
                             text: 'fen',
                           ),
-                          SizedBox(
-                            width: 8.0,
-                          ),
-                          Container(
-                            width: 150,
-                            child: CheckboxListTile(
-                              title: Text(strings.bot_vs_bot),
-                              value: _chessController.botBattle,
-                              onChanged: (value) {
-                                prefs.setBool('botbattle', value);
-                                _chessController.botBattle = value;
-                                setState(() {});
-                                //check if has to make bot move
-                                if (!_chessController.makeBotMoveIfRequired()) {
-                                  //since move has not been made, inverse the bot color and retry
-                                  _chessController.botColor = Chess.swap_color(
-                                      _chessController.botColor);
-                                  _chessController.makeBotMoveIfRequired();
-                                }
-                              },
+                          DividerIfOffline(),
+                          Visibility(
+                            visible: !inOnlineGame,
+                            child: Container(
+                              width: 150,
+                              child: CheckboxListTile(
+                                title: Text(strings.bot_vs_bot),
+                                value: _chessController.botBattle,
+                                onChanged: (value) {
+                                  prefs.setBool('botbattle', value);
+                                  _chessController.botBattle = value;
+                                  setState(() {});
+                                  //check if has to make bot move
+                                  if (!_chessController.makeBotMoveIfRequired()) {
+                                    //since move has not been made, inverse the bot color and retry
+                                    _chessController.botColor = Chess.swap_color(
+                                        _chessController.botColor);
+                                    _chessController.makeBotMoveIfRequired();
+                                  }
+                                },
+                              ),
                             ),
                           ),
-                          SizedBox(
-                            width: 8.0,
-                          ),
+                          Divider8(),
                           FancyButton(
                             onPressed: () => (random.nextInt(80100) == 420)
                                 ? _onWarning()
