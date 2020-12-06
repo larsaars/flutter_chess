@@ -190,6 +190,10 @@ class S {
     return Intl.message("join", name: 'join');
   }
 
+  String get deleting_as_host_info {
+    return Intl.message("Since you are hosting the game, leaving it means deleting it.", name: 'deleting_as_host_info');
+  }
+
 
 }
 
