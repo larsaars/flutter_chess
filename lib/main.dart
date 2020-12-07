@@ -7,6 +7,7 @@ import 'package:chess_bot/generated/i18n.dart';
 import 'package:chess_bot/util/online_game_utils.dart';
 import 'package:chess_bot/util/utils.dart';
 import 'package:chess_bot/util/widget_utils.dart';
+import 'package:chess_bot/widgets/animated_options_button.dart';
 import 'package:chess_bot/widgets/divider.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:chess_bot/widgets/modal_progress_hud.dart';
@@ -516,6 +517,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             icon: Icons.info,
                             animation: FancyButtonAnimation.pulse,
                           ),
+                          AnimatedOptionsButton()
                         ],
                       ),
                     ),
