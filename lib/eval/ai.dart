@@ -298,7 +298,7 @@ class ChessAI {
       _MAX_DEPTH = _SET_DEPTH;
       return;
     } else {
-      _MIN_CALC_DEPTH = kIsWeb ? 3 : 4;
+      _MIN_CALC_DEPTH = 4;
       _MAX_CALC_DEPTH = 5;
     }
 
@@ -359,6 +359,6 @@ class ChessAI {
   }
 
   // ignore: non_constant_identifier_names
-  static int _MIN_CALC_DEPTH = kIsWeb ? 3 : 4, _MAX_CALC_DEPTH = 5;
+  static int _MIN_CALC_DEPTH = 4, _MAX_CALC_DEPTH = 5;
   static const _MAX_CALC_ESTIMATED_MOVES = kIsWeb ? 50000 : 135000;
 }
