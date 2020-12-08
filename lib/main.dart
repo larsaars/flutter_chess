@@ -272,7 +272,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
     double availableHeight = MediaQuery
         .of(context)
         .size
-        .height - 250;
+        .height - 184.3;
     //set the update method
     _chessController.update = update;
     //set the update method in the online game controller
