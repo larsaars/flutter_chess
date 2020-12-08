@@ -499,9 +499,6 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                     up: true,
                                     rootIcon: Icons.online_prediction,
                                     rootText: strings.online_game_options,
-                                    updateBar: () {
-                                      Future.delayed(Duration(milliseconds: 1)).then((value) => setState(() {}));
-                                    },
                                     children: [
                                       FancyButton(
                                         onPressed: _onJoinCode,
