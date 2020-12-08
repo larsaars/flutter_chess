@@ -39,5 +39,6 @@
   "game_id_ex": "z.B.: KDFGHQ",
   "join": "beitreten",
   "deleting_as_host_info": "Dadurch wird das gesamte Spiel gelöscht, da du der Host bist.",
-  "switch_colors": "brett drehen"
+  "switch_colors": "brett drehen",
+  "availability_other_devices": "Verfügbarkeit auf anderen Geräten"
 }

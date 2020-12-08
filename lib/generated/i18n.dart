@@ -198,6 +198,26 @@ class S {
     return Intl.message("turn board", name: 'switch_colors');
   }
 
+  String get availability_other_devices {
+    return Intl.message("availability on other devices", name: 'availability_other_devices');
+  }
+
+  String get android {
+    return Intl.message("android", name: 'android');
+  }
+
+  String get web {
+    return Intl.message("web", name: 'web');
+  }
+
+  String get website_url {
+    return Intl.message("https://chess-45a81.web.app/#/", name: 'website_url');
+  }
+
+  String get playstore_url {
+    return Intl.message("https://play.google.com/store/apps/details?id=com.lurzapps.chess", name: 'playstore_url');
+  }
+
 
 }
 
