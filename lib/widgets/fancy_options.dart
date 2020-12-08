@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:chess_bot/util/utils.dart';
+import 'package:chess_bot/util/widget_utils.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:flutter/material.dart';
 
@@ -8,6 +11,7 @@ class FancyOptions extends StatefulWidget {
   final IconData rootIcon;
   final bool up;
   final double widgetHeight, widgetWidth;
+  final Function updateBar;
 
   FancyOptions({
     Key key,
@@ -17,6 +21,7 @@ class FancyOptions extends StatefulWidget {
     this.up = true,
     this.widgetHeight = 40,
     this.widgetWidth = 165,
+    @required this.updateBar,
   }) : super(key: key);
 
   @override
@@ -27,7 +32,6 @@ class _FancyOptionsState extends State<FancyOptions>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
   List<Animation> animations = [];
-  double maxHeight = 1;
 
   @override
   void initState() {
@@ -50,8 +54,6 @@ class _FancyOptionsState extends State<FancyOptions>
 
       yOffset += additionalHeight;
     }
-
-    maxHeight = additionalHeight.abs() * widget.children.length;
 
     //call super to init
     super.initState();
@@ -83,8 +85,16 @@ class _FancyOptionsState extends State<FancyOptions>
     }
 
     List<Widget> ignorePointer = [];
-    if(_controller.isCompleted) {
-      ignorePointer = [IgnorePointer(child: Container(width: widget.widgetWidth, height: maxHeight,),)];
+    if (_controller.isCompleted) {
+      double maxHeight = additionalHeight.abs() * (widget.children.length + 1);
+      ignorePointer = [
+        IgnorePointer(
+          child: Container(
+            width: widget.widgetWidth,
+            height: maxHeight,
+          ),
+        )
+      ];
     }
 
     return Stack(
@@ -99,7 +109,6 @@ class _FancyOptionsState extends State<FancyOptions>
                 else
                   _controller.forward();
               },
-
               animation: FancyButtonAnimation.pulse,
               icon: widget.rootIcon,
               text: widget.rootText,
