@@ -7,7 +7,7 @@ class FancyOptions extends StatefulWidget {
   final String rootText;
   final IconData rootIcon;
   final bool up;
-  final double widgetHeight;
+  final double widgetHeight, widgetWidth;
 
   FancyOptions({
     Key key,
@@ -16,6 +16,7 @@ class FancyOptions extends StatefulWidget {
     this.rootIcon,
     this.up = true,
     this.widgetHeight = 40,
+    this.widgetWidth = 165,
   }) : super(key: key);
 
   @override
@@ -26,6 +27,7 @@ class _FancyOptionsState extends State<FancyOptions>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
   List<Animation> animations = [];
+  double maxHeight = 1;
 
   @override
   void initState() {
@@ -48,6 +50,8 @@ class _FancyOptionsState extends State<FancyOptions>
 
       yOffset += additionalHeight;
     }
+
+    maxHeight = additionalHeight.abs() + yOffset.abs();
 
     //call super to init
     super.initState();
@@ -78,9 +82,15 @@ class _FancyOptionsState extends State<FancyOptions>
       ));
     }
 
+    List<Widget> ignorePointer = [];
+    if(_controller.isCompleted) {
+      //ignorePointer = [IgnorePointer(child: Container(width: widget.widgetWidth, height: maxHeight,),)];
+    }
+
     return Stack(
       alignment: Alignment.center,
-      children: childrenTransforms +
+      children: ignorePointer +
+          childrenTransforms +
           <Widget>[
             FancyButton(
               onPressed: () {
@@ -89,9 +99,11 @@ class _FancyOptionsState extends State<FancyOptions>
                 else
                   _controller.forward();
               },
+
               animation: FancyButtonAnimation.pulse,
               icon: widget.rootIcon,
               text: widget.rootText,
+              width: widget.widgetWidth,
             ),
           ],
     );

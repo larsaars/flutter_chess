@@ -269,7 +269,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
   @override
   Widget build(BuildContext context) {
     //get the available height for the chess board
-    double availableHeight = MediaQuery.of(context).size.height - 200;
+    double availableHeight = MediaQuery.of(context).size.height - 250;
     //set the update method
     _chessController.update = update;
     //set the update method in the online game controller
@@ -450,41 +450,39 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             animation: FancyButtonAnimation.pulse,
                           ),
                           Divider8(),
+                          FancyOptions(
+                            up: true,
+                            rootIcon: Icons.online_prediction,
+                            rootText: strings.online_game_options,
+                            children: [
+                              FancyButton(
+                                onPressed: _onJoinCode,
+                                text: strings.join_code,
+                                icon: Icons.online_prediction,
+                                animation: FancyButtonAnimation.pulse,
+                              ),
+                              FancyButton(
+                                onPressed: _onCreateCode,
+                                text: strings.create_code,
+                                icon: Icons.add,
+                                animation: FancyButtonAnimation.pulse,
+                              ),
+                              FancyButton(
+                                text: strings.leave_online_game,
+                                animation: FancyButtonAnimation.pulse,
+                                icon: Icons.exit_to_app,
+                                visible: inOnlineGame,
+                                onPressed: _onLeaveOnlineGame,
+                              ),
+                            ],
+                          ),
+                          Divider8(),
                           FancyButton(
                             visible: !inOnlineGame,
                             onPressed: _chessController.onFen,
                             text: 'fen',
                           ),
                           DividerIfOffline(),
-                          FancyButton(
-                            onPressed: _onJoinCode,
-                            text: strings.join_code,
-                            icon: Icons.online_prediction,
-                            animation: FancyButtonAnimation.pulse,
-                          ),
-                          Divider8(),
-                          FancyButton(
-                            onPressed: _onCreateCode,
-                            text: strings.create_code,
-                            icon: Icons.add,
-                            animation: FancyButtonAnimation.pulse,
-                          ),
-                          Divider8(),
-                          Visibility(
-                            visible: inOnlineGame,
-                            child: Divider8(),
-                          ),
-                          FancyButton(
-                            text: strings.leave_online_game,
-                            animation: FancyButtonAnimation.pulse,
-                            icon: Icons.exit_to_app,
-                            visible: inOnlineGame,
-                            onPressed: _onLeaveOnlineGame,
-                          ),
-                          Visibility(
-                            visible: inOnlineGame,
-                            child: Divider8(),
-                          ),
                           Visibility(
                             visible: !inOnlineGame,
                             child: Container(
@@ -517,27 +515,6 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             icon: Icons.info,
                             animation: FancyButtonAnimation.pulse,
                           ),
-                          FancyOptions(
-                            rootIcon: Icons.online_prediction,
-                            rootText: 'whatever',
-                            children: [
-                              FancyButton(
-                                onPressed: () {},
-                                icon: Icons.add,
-                                text: 'button 1',
-                              ),
-                              FancyButton(
-                                onPressed: () {},
-                                icon: Icons.map,
-                                text: 'button 2',
-                              ),
-                              FancyButton(
-                                onPressed: () {},
-                                icon: Icons.remove,
-                                text: 'button 3',
-                              ),
-                            ],
-                          )
                         ],
                       ),
                     ),
