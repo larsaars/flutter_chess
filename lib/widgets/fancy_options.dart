@@ -117,7 +117,7 @@ class _FancyOptionsState extends State<FancyOptions>
               animation: FancyButtonAnimation.pulse,
               icon: widget.rootIcon,
               text: widget.rootText,
-              width: widget.widgetWidth,
+              width: -1,
             ),
           ],
     );
