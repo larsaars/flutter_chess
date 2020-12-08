@@ -42,7 +42,7 @@
   "join": "join",
   "deleting_as_host_info": "Since you are hosting the game, leaving it means deleting it.",
   "switch_colors": "turn board",
-  "availability_other_devices": "availability on other devices",
+  "availability_other_devices": "platforms",
   "android": "android",
   "web": "web",
   "website_url": "https://chess-45a81.web.app/#/",

@@ -455,10 +455,10 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -467,6 +467,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                     up: true,
                                     rootIcon: Icons.online_prediction,
                                     rootText: strings.online_game_options,
+                                    widgetWidth: 400,
                                     children: [
                                       FancyButton(
                                         onPressed: _onJoinCode,
