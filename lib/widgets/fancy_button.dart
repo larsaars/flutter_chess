@@ -13,7 +13,7 @@ class FancyButton extends StatefulWidget {
 
   FancyButton(
       {Key key,
-      @required this.onPressed,
+      this.onPressed,
       this.visible = true,
       this.text = "",
       this.icon,
@@ -34,13 +34,13 @@ class _FancyButtonState extends State<FancyButton>
   void onTapped() {
     //animate, then call callback
     animationController.forward();
-    widget.onPressed();
+    widget?.onPressed();
   }
 
   @override
   Widget build(BuildContext context) {
     //predefine icon since anim could change
-    var _icon = Icon(
+    var icon = Icon(
       widget.icon,
       color: widget.iconColor,
     );
@@ -53,7 +53,7 @@ class _FancyButtonState extends State<FancyButton>
             begin: 0.0,
             end: 1.0,
           ).animate(animationController),
-          child: _icon,
+          child: icon,
         );
         break;
       case FancyButtonAnimation.rotate_left:
@@ -62,13 +62,13 @@ class _FancyButtonState extends State<FancyButton>
             begin: 1.0,
             end: 0.0,
           ).animate(animationController),
-          child: _icon,
+          child: icon,
         );
         break;
       case FancyButtonAnimation.pulse:
         _transition = FadeTransition(
           opacity: Tween(begin: 1.0, end: 0.0).animate(animationController),
-          child: _icon,
+          child: icon,
         );
         break;
       default:
@@ -97,7 +97,7 @@ class _FancyButtonState extends State<FancyButton>
                 width: widget.text.length == 0 || widget.icon == null ? 0.0 : 8.0,
               ),
               Text(
-                widget.text,
+                widget.text ?? "",
                 style: TextStyle(
                   color: widget.iconColor,
                 ),
