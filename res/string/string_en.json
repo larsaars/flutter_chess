@@ -15,7 +15,7 @@
   "replay_desc": "Are you sure to restart the game and reset the board?",
   "undo_impossible": "can't perform undo",
   "undo": "undo",
-  "choose_style": "choose board style",
+  "choose_style": "change board style",
   "bot_on": "bot on",
   "bot_off": "bot off",
   "moves_done": "${progress} boards processed",
@@ -40,5 +40,6 @@
   "game_id_not_found": "game id not found",
   "game_id_ex": "ex.: KDFGHQ",
   "join": "join",
-  "deleting_as_host_info": "Since you are hosting the game, leaving it means deleting it."
+  "deleting_as_host_info": "Since you are hosting the game, leaving it means deleting it.",
+  "switch_colors": "turn board"
 }

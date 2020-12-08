@@ -91,7 +91,7 @@ class S {
   }
 
   String get choose_style {
-    return Intl.message("choose board style", name: 'choose_style');
+    return Intl.message("change board style", name: 'choose_style');
   }
 
   String get bot_on {
@@ -192,6 +192,10 @@ class S {
 
   String get deleting_as_host_info {
     return Intl.message("Since you are hosting the game, leaving it means deleting it.", name: 'deleting_as_host_info');
+  }
+
+  String get switch_colors {
+    return Intl.message("turn board", name: 'switch_colors');
   }
 
 

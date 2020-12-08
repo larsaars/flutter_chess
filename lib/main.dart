@@ -232,7 +232,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
     showAnimatedDialog(
         title: strings.enter_game_id,
         onDoneText: strings.join,
-        icon: Icons.online_prediction,
+        icon: Icons.transit_enterexit,
         withInputField: true,
         inputFieldHint: strings.game_id_ex,
         onDone: (value) {
@@ -463,38 +463,6 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                 mainAxisSize: MainAxisSize.min,
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
-                                  FancyButton(
-                                    visible: !inOnlineGame,
-                                    onPressed: _chessController.undo,
-                                    animation: FancyButtonAnimation.pulse,
-                                    icon: Icons.undo,
-                                  ),
-                                  DividerIfOffline(),
-                                  FancyButton(
-                                    onPressed: _chessController.resetBoard,
-                                    icon: Icons.autorenew,
-                                  ),
-                                  Divider8(),
-                                  FancyButton(
-                                    visible: !inOnlineGame,
-                                    onPressed: _chessController.switchColors,
-                                    icon: Icons.switch_left,
-                                  ),
-                                  DividerIfOffline(),
-                                  FancyButton(
-                                    visible: !inOnlineGame,
-                                    onPressed: _chessController.onSetDepth,
-                                    icon: Icons.upload_rounded,
-                                    animation: FancyButtonAnimation.pulse,
-                                  ),
-                                  DividerIfOffline(),
-                                  FancyButton(
-                                    onPressed: _chessController
-                                        .changeBoardStyle,
-                                    icon: Icons.style,
-                                    animation: FancyButtonAnimation.pulse,
-                                  ),
-                                  Divider8(),
                                   FancyOptions(
                                     up: true,
                                     rootIcon: Icons.online_prediction,
@@ -503,7 +471,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                       FancyButton(
                                         onPressed: _onJoinCode,
                                         text: strings.join_code,
-                                        icon: Icons.online_prediction,
+                                        icon: Icons.transit_enterexit,
                                         animation: FancyButtonAnimation.pulse,
                                       ),
                                       FancyButton(
@@ -524,6 +492,43 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                   Divider8(),
                                   FancyButton(
                                     visible: !inOnlineGame,
+                                    onPressed: _chessController.undo,
+                                    animation: FancyButtonAnimation.pulse,
+                                    icon: Icons.undo,
+                                    text: strings.undo,
+                                  ),
+                                  DividerIfOffline(),
+                                  FancyButton(
+                                    onPressed: _chessController.resetBoard,
+                                    icon: Icons.autorenew,
+                                    text: strings.replay,
+                                  ),
+                                  Divider8(),
+                                  FancyButton(
+                                    visible: !inOnlineGame,
+                                    onPressed: _chessController.switchColors,
+                                    icon: Icons.switch_left,
+                                    text: strings.switch_colors,
+                                  ),
+                                  DividerIfOffline(),
+                                  FancyButton(
+                                    visible: !inOnlineGame,
+                                    onPressed: _chessController.onSetDepth,
+                                    icon: Icons.upload_rounded,
+                                    animation: FancyButtonAnimation.pulse,
+                                    text: strings.difficulty,
+                                  ),
+                                  DividerIfOffline(),
+                                  FancyButton(
+                                    onPressed: _chessController
+                                        .changeBoardStyle,
+                                    icon: Icons.style,
+                                    animation: FancyButtonAnimation.pulse,
+                                    text: strings.choose_style,
+                                  ),
+                                  Divider8(),
+                                  FancyButton(
+                                    visible: !inOnlineGame,
                                     onPressed: _chessController.onFen,
                                     text: 'fen',
                                   ),
@@ -533,6 +538,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                     child: Container(
                                       width: 150,
                                       child: CheckboxListTile(
+                                        shape: roundButtonShape,
                                         title: Text(strings.bot_vs_bot),
                                         value: _chessController.botBattle,
                                         onChanged: (value) {

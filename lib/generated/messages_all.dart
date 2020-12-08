@@ -29,7 +29,7 @@ class $de extends MessageLookupByLibrary {
 		"replay_desc" : MessageLookupByLibrary.simpleMessage("Bist du dir sicher, dass du das Spiel neustarten willst?"),
 		"undo_impossible" : MessageLookupByLibrary.simpleMessage("Zug kann nicht rückgänig gemacht werden"),
 		"undo" : MessageLookupByLibrary.simpleMessage("rückgängig"),
-		"choose_style" : MessageLookupByLibrary.simpleMessage("Brett-Stil wählen"),
+		"choose_style" : MessageLookupByLibrary.simpleMessage("Brett-Stil ändern"),
 		"bot_on" : MessageLookupByLibrary.simpleMessage("bot an"),
 		"bot_off" : MessageLookupByLibrary.simpleMessage("bot aus"),
 		"legal" : MessageLookupByLibrary.simpleMessage("von Lurzapps"),
@@ -53,6 +53,7 @@ class $de extends MessageLookupByLibrary {
 		"game_id_ex" : MessageLookupByLibrary.simpleMessage("z.B.: KDFGHQ"),
 		"join" : MessageLookupByLibrary.simpleMessage("beitreten"),
 		"deleting_as_host_info" : MessageLookupByLibrary.simpleMessage("Dadurch wird das gesamte Spiel gelöscht, da du der Host bist."),
+		"switch_colors" : MessageLookupByLibrary.simpleMessage("brett drehen"),
 
   };
 }
@@ -79,7 +80,7 @@ class $en extends MessageLookupByLibrary {
 		"replay_desc" : MessageLookupByLibrary.simpleMessage("Are you sure to restart the game and reset the board?"),
 		"undo_impossible" : MessageLookupByLibrary.simpleMessage("can't perform undo"),
 		"undo" : MessageLookupByLibrary.simpleMessage("undo"),
-		"choose_style" : MessageLookupByLibrary.simpleMessage("choose board style"),
+		"choose_style" : MessageLookupByLibrary.simpleMessage("change board style"),
 		"bot_on" : MessageLookupByLibrary.simpleMessage("bot on"),
 		"bot_off" : MessageLookupByLibrary.simpleMessage("bot off"),
 		"moves_done" : (progress) => "${progress} boards processed",
@@ -105,6 +106,7 @@ class $en extends MessageLookupByLibrary {
 		"game_id_ex" : MessageLookupByLibrary.simpleMessage("ex.: KDFGHQ"),
 		"join" : MessageLookupByLibrary.simpleMessage("join"),
 		"deleting_as_host_info" : MessageLookupByLibrary.simpleMessage("Since you are hosting the game, leaving it means deleting it."),
+		"switch_colors" : MessageLookupByLibrary.simpleMessage("turn board"),
 
   };
 }
