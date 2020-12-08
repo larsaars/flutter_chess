@@ -54,7 +54,7 @@ class $de extends MessageLookupByLibrary {
 		"join" : MessageLookupByLibrary.simpleMessage("beitreten"),
 		"deleting_as_host_info" : MessageLookupByLibrary.simpleMessage("Dadurch wird das gesamte Spiel gelöscht, da du der Host bist."),
 		"switch_colors" : MessageLookupByLibrary.simpleMessage("brett drehen"),
-		"availability_other_devices" : MessageLookupByLibrary.simpleMessage("Verfügbarkeit auf anderen Geräten"),
+		"availability_other_devices" : MessageLookupByLibrary.simpleMessage("Plattformen"),
 
   };
 }
@@ -108,7 +108,7 @@ class $en extends MessageLookupByLibrary {
 		"join" : MessageLookupByLibrary.simpleMessage("join"),
 		"deleting_as_host_info" : MessageLookupByLibrary.simpleMessage("Since you are hosting the game, leaving it means deleting it."),
 		"switch_colors" : MessageLookupByLibrary.simpleMessage("turn board"),
-		"availability_other_devices" : MessageLookupByLibrary.simpleMessage("availability on other devices"),
+		"availability_other_devices" : MessageLookupByLibrary.simpleMessage("platforms"),
 		"android" : MessageLookupByLibrary.simpleMessage("android"),
 		"web" : MessageLookupByLibrary.simpleMessage("web"),
 		"website_url" : MessageLookupByLibrary.simpleMessage("https://chess-45a81.web.app/#/"),

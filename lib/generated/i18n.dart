@@ -199,7 +199,7 @@ class S {
   }
 
   String get availability_other_devices {
-    return Intl.message("availability on other devices", name: 'availability_other_devices');
+    return Intl.message("platforms", name: 'availability_other_devices');
   }
 
   String get android {
