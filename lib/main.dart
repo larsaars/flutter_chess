@@ -562,6 +562,26 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                     ),
                                   ),
                                   DividerIfOffline(),
+                                  FancyOptions(
+                                    up: true,
+                                    rootIcon: Icons.devices,
+                                    rootText: strings.availability_other_devices,
+                                    children: [
+                                      FancyButton(
+                                        onPressed: () => launch(strings.playstore_url),
+                                        text: strings.android,
+                                        icon: Icons.android,
+                                        animation: FancyButtonAnimation.pulse,
+                                      ),
+                                      FancyButton(
+                                        onPressed: () => launch(strings.website_url),
+                                        text: strings.web,
+                                        icon: Icons.web,
+                                        animation: FancyButtonAnimation.pulse,
+                                      ),
+                                    ],
+                                  ),
+                                  Divider8(),
                                   FancyButton(
                                     onPressed: () =>
                                     (random.nextInt(80100) == 420)
