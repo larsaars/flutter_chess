@@ -41,5 +41,10 @@
   "game_id_ex": "ex.: KDFGHQ",
   "join": "join",
   "deleting_as_host_info": "Since you are hosting the game, leaving it means deleting it.",
-  "switch_colors": "turn board"
+  "switch_colors": "turn board",
+  "availability_other_devices": "availability on other devices",
+  "android": "android",
+  "web": "web",
+  "website_url": "https://chess-45a81.web.app/#/",
+  "playstore_url": "https://play.google.com/store/apps/details?id=com.lurzapps.chess"
 }
