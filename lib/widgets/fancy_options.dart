@@ -51,7 +51,7 @@ class _FancyOptionsState extends State<FancyOptions>
       yOffset += additionalHeight;
     }
 
-    maxHeight = additionalHeight.abs() + yOffset.abs();
+    maxHeight = additionalHeight.abs() * widget.children.length;
 
     //call super to init
     super.initState();
@@ -84,11 +84,11 @@ class _FancyOptionsState extends State<FancyOptions>
 
     List<Widget> ignorePointer = [];
     if(_controller.isCompleted) {
-      //ignorePointer = [IgnorePointer(child: Container(width: widget.widgetWidth, height: maxHeight,),)];
+      ignorePointer = [IgnorePointer(child: Container(width: widget.widgetWidth, height: maxHeight,),)];
     }
 
     return Stack(
-      alignment: Alignment.center,
+      alignment: Alignment.bottomCenter,
       children: ignorePointer +
           childrenTransforms +
           <Widget>[
