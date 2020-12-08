@@ -1,7 +1,4 @@
-import 'dart:math';
-
 import 'package:chess_bot/util/utils.dart';
-import 'package:chess_bot/util/widget_utils.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:flutter/material.dart';
 
@@ -11,7 +8,6 @@ class FancyOptions extends StatefulWidget {
   final IconData rootIcon;
   final bool up;
   final double widgetHeight, widgetWidth;
-  final Function updateBar;
 
   FancyOptions({
     Key key,
@@ -20,8 +16,7 @@ class FancyOptions extends StatefulWidget {
     this.rootIcon,
     this.up = true,
     this.widgetHeight = 40,
-    this.widgetWidth = 165,
-    @required this.updateBar,
+    this.widgetWidth = 150,
   }) : super(key: key);
 
   @override
@@ -32,12 +27,13 @@ class _FancyOptionsState extends State<FancyOptions>
     with SingleTickerProviderStateMixin {
   AnimationController _controller;
   List<Animation> animations = [];
+  bool visible = false;
 
   @override
   void initState() {
     //create controller once
     _controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 250));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 150));
     //and the animations for the children
     double yOffset = additionalHeight;
     for (int i = 0; i < widget.children.length; i++) {
@@ -61,6 +57,10 @@ class _FancyOptionsState extends State<FancyOptions>
     _controller.addListener(() {
       setState(() {});
     });
+    //if is dismissed (reversed) set visible false again
+    _controller.addStatusListener((status) {
+      if (status == AnimationStatus.dismissed) visible = false;
+    });
   }
 
   double get additionalHeight {
@@ -78,9 +78,12 @@ class _FancyOptionsState extends State<FancyOptions>
     List<Widget> childrenTransforms = [];
     //create the transforms for the children
     for (int i = 0; i < widget.children.length; i++) {
-      childrenTransforms.add(Transform.translate(
-        offset: Offset(0, animations[i].value),
-        child: widget.children[i],
+      childrenTransforms.add(Visibility(
+        visible: visible,
+        child: Transform.translate(
+          offset: Offset(0, animations[i].value),
+          child: widget.children[i],
+        ),
       ));
     }
 
@@ -106,8 +109,10 @@ class _FancyOptionsState extends State<FancyOptions>
               onPressed: () {
                 if (_controller.isCompleted)
                   _controller.reverse();
-                else
+                else {
                   _controller.forward();
+                  visible = true;
+                }
               },
               animation: FancyButtonAnimation.pulse,
               icon: widget.rootIcon,
