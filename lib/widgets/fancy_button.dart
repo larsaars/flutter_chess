@@ -8,11 +8,13 @@ class FancyButton extends StatefulWidget {
   final IconData icon;
   final Color splashColor, fillColor, iconColor;
   final bool visible;
+  final double width;
 
   final FancyButtonAnimation animation;
 
   FancyButton(
       {Key key,
+      this.width = -1,
       this.onPressed,
       this.visible = true,
       this.text = "",
@@ -76,37 +78,49 @@ class _FancyButtonState extends State<FancyButton>
     }
 
     //the button
-    return Visibility(
+    Widget button = Visibility(
       visible: widget.visible,
-      child: RawMaterialButton(
-        onPressed: onTapped,
-        splashColor: widget.splashColor,
-        fillColor: widget.fillColor,
-        shape: StadiumBorder(),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            vertical: 8.0,
-            horizontal: 20.0,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              widget.icon == null ? Container() : _transition,
-              SizedBox(
-                //set the sized box only 8 wide when a text is set
-                width: widget.text.length == 0 || widget.icon == null ? 0.0 : 8.0,
-              ),
-              Text(
-                widget.text ?? "",
-                style: TextStyle(
-                  color: widget.iconColor,
+      child: Container(
+        height: 40,
+        child: RawMaterialButton(
+          onPressed: onTapped,
+          splashColor: widget.splashColor,
+          fillColor: widget.fillColor,
+          shape: StadiumBorder(),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 20.0,
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                widget.icon == null ? Container() : _transition,
+                SizedBox(
+                  //set the sized box only 8 wide when a text is set
+                  width:
+                      widget.text.length == 0 || widget.icon == null ? 0.0 : 8.0,
                 ),
-              ),
-            ],
+                Text(
+                  widget.text ?? "",
+                  style: TextStyle(
+                    color: widget.iconColor,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+
+    if (widget.width != -1)
+      return Container(
+        width: widget.width,
+        child: button,
+      );
+    else
+      return button;
   }
 
   @override
