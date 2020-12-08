@@ -12,18 +12,18 @@ class FancyButton extends StatefulWidget {
 
   final FancyButtonAnimation animation;
 
-  FancyButton(
-      {Key key,
-      this.width = -1,
-      this.onPressed,
-      this.visible = true,
-      this.text = "",
-      this.icon,
-      this.splashColor = Colors.white60,
-      this.fillColor = Colors.brown,
-      this.iconColor = Colors.white60,
-      this.animation = FancyButtonAnimation.rotate_right})
-      : super(key: key);
+  FancyButton({
+    Key key,
+    this.width = -1,
+    this.onPressed,
+    this.visible = true,
+    this.text = "",
+    this.icon,
+    this.splashColor = Colors.white60,
+    this.fillColor = Colors.brown,
+    this.iconColor = Colors.white60,
+    this.animation = FancyButtonAnimation.rotate_right,
+  }) : super(key: key);
 
   @override
   _FancyButtonState createState() => _FancyButtonState();
@@ -82,32 +82,36 @@ class _FancyButtonState extends State<FancyButton>
       visible: widget.visible,
       child: Container(
         height: 40,
-        child: RawMaterialButton(
-          onPressed: onTapped,
-          splashColor: widget.splashColor,
-          fillColor: widget.fillColor,
-          shape: StadiumBorder(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              vertical: 8.0,
-              horizontal: 20.0,
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                widget.icon == null ? Container() : _transition,
-                SizedBox(
-                  //set the sized box only 8 wide when a text is set
-                  width:
-                      widget.text.length == 0 || widget.icon == null ? 0.0 : 8.0,
-                ),
-                Text(
-                  widget.text ?? "",
-                  style: TextStyle(
-                    color: widget.iconColor,
+        child: Align(
+          alignment: Alignment.bottomCenter,
+          child: RawMaterialButton(
+            onPressed: onTapped,
+            splashColor: widget.splashColor,
+            fillColor: widget.fillColor,
+            shape: StadiumBorder(),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8.0,
+                horizontal: 20.0,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  widget.icon == null ? Container() : _transition,
+                  SizedBox(
+                    //set the sized box only 8 wide when a text is set
+                    width: widget.text.length == 0 || widget.icon == null
+                        ? 0.0
+                        : 8.0,
                   ),
-                ),
-              ],
+                  Text(
+                    widget.text ?? "",
+                    style: TextStyle(
+                      color: widget.iconColor,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
