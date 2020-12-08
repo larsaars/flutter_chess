@@ -7,9 +7,9 @@ import 'package:chess_bot/generated/i18n.dart';
 import 'package:chess_bot/util/online_game_utils.dart';
 import 'package:chess_bot/util/utils.dart';
 import 'package:chess_bot/util/widget_utils.dart';
-import 'package:chess_bot/widgets/animated_options_button.dart';
 import 'package:chess_bot/widgets/divider.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
+import 'package:chess_bot/widgets/fancy_options.dart';
 import 'package:chess_bot/widgets/modal_progress_hud.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
@@ -517,7 +517,27 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             icon: Icons.info,
                             animation: FancyButtonAnimation.pulse,
                           ),
-                          AnimatedOptionsButton()
+                          FancyOptions(
+                            rootIcon: Icons.online_prediction,
+                            rootText: 'whatever',
+                            children: [
+                              FancyButton(
+                                onPressed: () {},
+                                icon: Icons.add,
+                                text: 'button 1',
+                              ),
+                              FancyButton(
+                                onPressed: () {},
+                                icon: Icons.map,
+                                text: 'button 2',
+                              ),
+                              FancyButton(
+                                onPressed: () {},
+                                icon: Icons.remove,
+                                text: 'button 3',
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     ),
