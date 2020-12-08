@@ -132,25 +132,25 @@ class _MyHomepageState extends State<MyHomePage> {
     //return the view
     return (_chessController.game == null)
         ? FutureBuilder(
-            future: _loadEverythingUp(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                if (snapshot.hasError) {
-                  var error = snapshot.error;
-                  print('$error');
-                  return Center(child: Text(strings.error));
-                }
+      future: _loadEverythingUp(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done) {
+          if (snapshot.hasError) {
+            var error = snapshot.error;
+            print('$error');
+            return Center(child: Text(strings.error));
+          }
 
-                return MyHomePageAfterLoading();
-              } else {
-                return Center(
-                    child: ModalProgressHUD(
-                  child: Container(),
-                  inAsyncCall: true,
-                ));
-              }
-            },
-          )
+          return MyHomePageAfterLoading();
+        } else {
+          return Center(
+              child: ModalProgressHUD(
+                child: Container(),
+                inAsyncCall: true,
+              ));
+        }
+      },
+    )
         : MyHomePageAfterLoading();
   }
 }
@@ -269,7 +269,10 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
   @override
   Widget build(BuildContext context) {
     //get the available height for the chess board
-    double availableHeight = MediaQuery.of(context).size.height - 250;
+    double availableHeight = MediaQuery
+        .of(context)
+        .size
+        .height - 250;
     //set the update method
     _chessController.update = update;
     //set the update method in the online game controller
@@ -281,19 +284,25 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         inAsyncCall: ChessController.loadingBotMoves,
         progressIndicator: kIsWeb
             ? Text(
-                strings.loading_moves_web,
-                style: Theme.of(context).textTheme.subtitle2,
-              )
+          strings.loading_moves_web,
+          style: Theme
+              .of(context)
+              .textTheme
+              .subtitle2,
+        )
             : Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  Text(
-                    strings.moves_done(_chessController.progress),
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ],
-              ),
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            Text(
+              strings.moves_done(_chessController.progress),
+              style: Theme
+                  .of(context)
+                  .textTheme
+                  .bodyText1,
+            ),
+          ],
+        ),
         child: SafeArea(
           child: Scaffold(
             backgroundColor: Colors.brown[50],
@@ -330,11 +339,14 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                     },
                                     child: Text(
                                         (_chessController.botColor ==
-                                                chess_sub.Color.WHITE)
+                                            chess_sub.Color.WHITE)
                                             ? strings.white
                                             : strings.black,
                                         style:
-                                            Theme.of(context).textTheme.button),
+                                        Theme
+                                            .of(context)
+                                            .textTheme
+                                            .button),
                                   ),
                                   SizedBox(
                                     width: 8,
@@ -364,30 +376,34 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                               children: [
                                 SelectableText(
                                   currentGameCode,
-                                  style: Theme.of(context).textTheme.subtitle2,
+                                  style: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .subtitle2,
                                 ),
                                 Text(
                                     strings.turn_of_x(
                                         (_chessController?.game?.game?.turn ==
-                                                chess_sub.Color.BLACK)
+                                            chess_sub.Color.BLACK)
                                             ? strings.black
                                             : strings.white),
-                                    style: Theme.of(context)
+                                    style: Theme
+                                        .of(context)
                                         .textTheme
                                         .subtitle1
                                         .copyWith(
-                                          inherit: true,
-                                          color: (_chessController?.game
-                                                      ?.in_check() ??
-                                                  false)
-                                              ? ((_chessController.game
-                                                      .inCheckmate(
-                                                          _chessController.game
-                                                              .moveCountIsZero()))
-                                                  ? Colors.purple
-                                                  : Colors.red)
-                                              : Colors.black,
-                                        )),
+                                      inherit: true,
+                                      color: (_chessController?.game
+                                          ?.in_check() ??
+                                          false)
+                                          ? ((_chessController.game
+                                          .inCheckmate(
+                                          _chessController.game
+                                              .moveCountIsZero()))
+                                          ? Colors.purple
+                                          : Colors.red)
+                                          : Colors.black,
+                                    )),
                               ],
                             ),
                           ),
@@ -398,17 +414,20 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                               child: ChessBoard(
                                 boardType: boardTypeFromString(
                                     prefs.getString('board_style') ?? 'd'),
-                                size: min(MediaQuery.of(context).size.width,
+                                size: min(MediaQuery
+                                    .of(context)
+                                    .size
+                                    .width,
                                     availableHeight),
                                 onCheckMate: _chessController.onCheckMate,
                                 onDraw: _chessController.onDraw,
                                 onMove: _chessController.onMove,
                                 onCheck: _chessController.onCheck,
                                 chessBoardController:
-                                    _chessController.controller,
+                                _chessController.controller,
                                 chess: _chessController.game,
                                 whiteSideTowardsUser:
-                                    _chessController.whiteSideTowardsUser,
+                                _chessController.whiteSideTowardsUser,
                               ),
                             ),
                           ),
@@ -423,8 +442,14 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                 GestureDetector(
                   onTap: () {},
                   child: Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
+                    height: MediaQuery
+                        .of(context)
+                        .size
+                        .height,
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: Column(
@@ -434,111 +459,115 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                             scrollDirection: Axis.horizontal,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
-                              child: Container(
-                                 color: Colors.black.withOpacity(0.3),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    FancyButton(
-                                      visible: !inOnlineGame,
-                                      onPressed: _chessController.undo,
-                                      animation: FancyButtonAnimation.pulse,
-                                      icon: Icons.undo,
-                                    ),
-                                    DividerIfOffline(),
-                                    FancyButton(
-                                      onPressed: _chessController.resetBoard,
-                                      icon: Icons.autorenew,
-                                    ),
-                                    Divider8(),
-                                    FancyButton(
-                                      visible: !inOnlineGame,
-                                      onPressed: _chessController.switchColors,
-                                      icon: Icons.switch_left,
-                                    ),
-                                    DividerIfOffline(),
-                                    FancyButton(
-                                      visible: !inOnlineGame,
-                                      onPressed: _chessController.onSetDepth,
-                                      icon: Icons.upload_rounded,
-                                      animation: FancyButtonAnimation.pulse,
-                                    ),
-                                    DividerIfOffline(),
-                                    FancyButton(
-                                      onPressed: _chessController.changeBoardStyle,
-                                      icon: Icons.style,
-                                      animation: FancyButtonAnimation.pulse,
-                                    ),
-                                    Divider8(),
-                                    FancyOptions(
-                                      up: true,
-                                      rootIcon: Icons.online_prediction,
-                                      rootText: strings.online_game_options,
-                                      children: [
-                                        FancyButton(
-                                          onPressed: _onJoinCode,
-                                          text: strings.join_code,
-                                          icon: Icons.online_prediction,
-                                          animation: FancyButtonAnimation.pulse,
-                                        ),
-                                        FancyButton(
-                                          onPressed: _onCreateCode,
-                                          text: strings.create_code,
-                                          icon: Icons.add,
-                                          animation: FancyButtonAnimation.pulse,
-                                        ),
-                                        FancyButton(
-                                          text: strings.leave_online_game,
-                                          animation: FancyButtonAnimation.pulse,
-                                          icon: Icons.exit_to_app,
-                                          visible: inOnlineGame,
-                                          onPressed: _onLeaveOnlineGame,
-                                        ),
-                                      ],
-                                    ),
-                                    Divider8(),
-                                    FancyButton(
-                                      visible: !inOnlineGame,
-                                      onPressed: _chessController.onFen,
-                                      text: 'fen',
-                                    ),
-                                    DividerIfOffline(),
-                                    Visibility(
-                                      visible: !inOnlineGame,
-                                      child: Container(
-                                        width: 150,
-                                        child: CheckboxListTile(
-                                          title: Text(strings.bot_vs_bot),
-                                          value: _chessController.botBattle,
-                                          onChanged: (value) {
-                                            prefs.setBool('botbattle', value);
-                                            _chessController.botBattle = value;
-                                            setState(() {});
-                                            //check if has to make bot move
-                                            if (!_chessController
-                                                .makeBotMoveIfRequired()) {
-                                              //since move has not been made, inverse the bot color and retry
-                                              _chessController.botColor =
-                                                  Chess.swap_color(
-                                                      _chessController.botColor);
-                                              _chessController
-                                                  .makeBotMoveIfRequired();
-                                            }
-                                          },
-                                        ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  FancyButton(
+                                    visible: !inOnlineGame,
+                                    onPressed: _chessController.undo,
+                                    animation: FancyButtonAnimation.pulse,
+                                    icon: Icons.undo,
+                                  ),
+                                  DividerIfOffline(),
+                                  FancyButton(
+                                    onPressed: _chessController.resetBoard,
+                                    icon: Icons.autorenew,
+                                  ),
+                                  Divider8(),
+                                  FancyButton(
+                                    visible: !inOnlineGame,
+                                    onPressed: _chessController.switchColors,
+                                    icon: Icons.switch_left,
+                                  ),
+                                  DividerIfOffline(),
+                                  FancyButton(
+                                    visible: !inOnlineGame,
+                                    onPressed: _chessController.onSetDepth,
+                                    icon: Icons.upload_rounded,
+                                    animation: FancyButtonAnimation.pulse,
+                                  ),
+                                  DividerIfOffline(),
+                                  FancyButton(
+                                    onPressed: _chessController
+                                        .changeBoardStyle,
+                                    icon: Icons.style,
+                                    animation: FancyButtonAnimation.pulse,
+                                  ),
+                                  Divider8(),
+                                  FancyOptions(
+                                    up: true,
+                                    rootIcon: Icons.online_prediction,
+                                    rootText: strings.online_game_options,
+                                    updateBar: () {
+                                      Future.delayed(Duration(milliseconds: 1)).then((value) => setState(() {}));
+                                    },
+                                    children: [
+                                      FancyButton(
+                                        onPressed: _onJoinCode,
+                                        text: strings.join_code,
+                                        icon: Icons.online_prediction,
+                                        animation: FancyButtonAnimation.pulse,
+                                      ),
+                                      FancyButton(
+                                        onPressed: _onCreateCode,
+                                        text: strings.create_code,
+                                        icon: Icons.add,
+                                        animation: FancyButtonAnimation.pulse,
+                                      ),
+                                      FancyButton(
+                                        text: strings.leave_online_game,
+                                        animation: FancyButtonAnimation.pulse,
+                                        icon: Icons.exit_to_app,
+                                        visible: inOnlineGame,
+                                        onPressed: _onLeaveOnlineGame,
+                                      ),
+                                    ],
+                                  ),
+                                  Divider8(),
+                                  FancyButton(
+                                    visible: !inOnlineGame,
+                                    onPressed: _chessController.onFen,
+                                    text: 'fen',
+                                  ),
+                                  DividerIfOffline(),
+                                  Visibility(
+                                    visible: !inOnlineGame,
+                                    child: Container(
+                                      width: 150,
+                                      child: CheckboxListTile(
+                                        title: Text(strings.bot_vs_bot),
+                                        value: _chessController.botBattle,
+                                        onChanged: (value) {
+                                          prefs.setBool('botbattle', value);
+                                          _chessController.botBattle =
+                                              value;
+                                          setState(() {});
+                                          //check if has to make bot move
+                                          if (!_chessController
+                                              .makeBotMoveIfRequired()) {
+                                            //since move has not been made, inverse the bot color and retry
+                                            _chessController.botColor =
+                                                Chess.swap_color(
+                                                    _chessController
+                                                        .botColor);
+                                            _chessController
+                                                .makeBotMoveIfRequired();
+                                          }
+                                        },
                                       ),
                                     ),
-                                    DividerIfOffline(),
-                                    FancyButton(
-                                      onPressed: () => (random.nextInt(80100) == 420)
-                                          ? _onWarning()
-                                          : _onAbout(),
-                                      icon: Icons.info,
-                                      animation: FancyButtonAnimation.pulse,
-                                    ),
-                                  ],
-                                ),
+                                  ),
+                                  DividerIfOffline(),
+                                  FancyButton(
+                                    onPressed: () =>
+                                    (random.nextInt(80100) == 420)
+                                        ? _onWarning()
+                                        : _onAbout(),
+                                    icon: Icons.info,
+                                    animation: FancyButtonAnimation.pulse,
+                                  ),
+                                ],
                               ),
                             ),
                           ),
