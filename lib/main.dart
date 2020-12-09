@@ -132,25 +132,25 @@ class _MyHomepageState extends State<MyHomePage> {
     //return the view
     return (_chessController.game == null)
         ? FutureBuilder(
-      future: _loadEverythingUp(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          if (snapshot.hasError) {
-            var error = snapshot.error;
-            print('$error');
-            return Center(child: Text(strings.error));
-          }
+            future: _loadEverythingUp(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  var error = snapshot.error;
+                  print('$error');
+                  return Center(child: Text(strings.error));
+                }
 
-          return MyHomePageAfterLoading();
-        } else {
-          return Center(
-              child: ModalProgressHUD(
-                child: Container(),
-                inAsyncCall: true,
-              ));
-        }
-      },
-    )
+                return MyHomePageAfterLoading();
+              } else {
+                return Center(
+                    child: ModalProgressHUD(
+                  child: Container(),
+                  inAsyncCall: true,
+                ));
+              }
+            },
+          )
         : MyHomePageAfterLoading();
   }
 }
@@ -269,10 +269,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
   @override
   Widget build(BuildContext context) {
     //get the available height for the chess board
-    double availableHeight = MediaQuery
-        .of(context)
-        .size
-        .height - 184.3;
+    double availableHeight = MediaQuery.of(context).size.height - 184.3;
     //set the update method
     _chessController.update = update;
     //set the update method in the online game controller
@@ -284,25 +281,19 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
         inAsyncCall: ChessController.loadingBotMoves,
         progressIndicator: kIsWeb
             ? Text(
-          strings.loading_moves_web,
-          style: Theme
-              .of(context)
-              .textTheme
-              .subtitle2,
-        )
+                strings.loading_moves_web,
+                style: Theme.of(context).textTheme.subtitle2,
+              )
             : Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            Text(
-              strings.moves_done(_chessController.progress),
-              style: Theme
-                  .of(context)
-                  .textTheme
-                  .bodyText1,
-            ),
-          ],
-        ),
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(),
+                  Text(
+                    strings.moves_done(_chessController.progress),
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
+                ],
+              ),
         child: SafeArea(
           child: Scaffold(
             backgroundColor: Colors.brown[50],
@@ -339,14 +330,11 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                     },
                                     child: Text(
                                         (_chessController.botColor ==
-                                            chess_sub.Color.WHITE)
+                                                chess_sub.Color.WHITE)
                                             ? strings.white
                                             : strings.black,
                                         style:
-                                        Theme
-                                            .of(context)
-                                            .textTheme
-                                            .button),
+                                            Theme.of(context).textTheme.button),
                                   ),
                                   SizedBox(
                                     width: 8,
@@ -376,34 +364,30 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                               children: [
                                 SelectableText(
                                   currentGameCode,
-                                  style: Theme
-                                      .of(context)
-                                      .textTheme
-                                      .subtitle2,
+                                  style: Theme.of(context).textTheme.subtitle2,
                                 ),
                                 Text(
                                     strings.turn_of_x(
                                         (_chessController?.game?.game?.turn ==
-                                            chess_sub.Color.BLACK)
+                                                chess_sub.Color.BLACK)
                                             ? strings.black
                                             : strings.white),
-                                    style: Theme
-                                        .of(context)
+                                    style: Theme.of(context)
                                         .textTheme
                                         .subtitle1
                                         .copyWith(
-                                      inherit: true,
-                                      color: (_chessController?.game
-                                          ?.in_check() ??
-                                          false)
-                                          ? ((_chessController.game
-                                          .inCheckmate(
-                                          _chessController.game
-                                              .moveCountIsZero()))
-                                          ? Colors.purple
-                                          : Colors.red)
-                                          : Colors.black,
-                                    )),
+                                          inherit: true,
+                                          color: (_chessController?.game
+                                                      ?.in_check() ??
+                                                  false)
+                                              ? ((_chessController.game
+                                                      .inCheckmate(
+                                                          _chessController.game
+                                                              .moveCountIsZero()))
+                                                  ? Colors.purple
+                                                  : Colors.red)
+                                              : Colors.black,
+                                        )),
                               ],
                             ),
                           ),
@@ -414,20 +398,17 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                               child: ChessBoard(
                                 boardType: boardTypeFromString(
                                     prefs.getString('board_style') ?? 'd'),
-                                size: min(MediaQuery
-                                    .of(context)
-                                    .size
-                                    .width,
+                                size: min(MediaQuery.of(context).size.width,
                                     availableHeight),
                                 onCheckMate: _chessController.onCheckMate,
                                 onDraw: _chessController.onDraw,
                                 onMove: _chessController.onMove,
                                 onCheck: _chessController.onCheck,
                                 chessBoardController:
-                                _chessController.controller,
+                                    _chessController.controller,
                                 chess: _chessController.game,
                                 whiteSideTowardsUser:
-                                _chessController.whiteSideTowardsUser,
+                                    _chessController.whiteSideTowardsUser,
                               ),
                             ),
                           ),
@@ -440,16 +421,13 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                   ],
                 ),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    collapseFancyOptions = true;
+                    setState(() {});
+                  },
                   child: Container(
-                    width: MediaQuery
-                        .of(context)
-                        .size
-                        .width,
-                    height: MediaQuery
-                        .of(context)
-                        .size
-                        .height,
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
                     child: Align(
                       alignment: Alignment.bottomCenter,
                       child: Column(
@@ -467,7 +445,6 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                     up: true,
                                     rootIcon: Icons.online_prediction,
                                     rootText: strings.online_game_options,
-                                    widgetWidth: 400,
                                     children: [
                                       FancyButton(
                                         onPressed: _onJoinCode,
@@ -521,8 +498,8 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                   ),
                                   DividerIfOffline(),
                                   FancyButton(
-                                    onPressed: _chessController
-                                        .changeBoardStyle,
+                                    onPressed:
+                                        _chessController.changeBoardStyle,
                                     icon: Icons.style,
                                     animation: FancyButtonAnimation.pulse,
                                     text: strings.choose_style,
@@ -544,8 +521,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                         value: _chessController.botBattle,
                                         onChanged: (value) {
                                           prefs.setBool('botbattle', value);
-                                          _chessController.botBattle =
-                                              value;
+                                          _chessController.botBattle = value;
                                           setState(() {});
                                           //check if has to make bot move
                                           if (!_chessController
@@ -566,16 +542,19 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                   FancyOptions(
                                     up: true,
                                     rootIcon: Icons.devices,
-                                    rootText: strings.availability_other_devices,
+                                    rootText:
+                                        strings.availability_other_devices,
                                     children: [
                                       FancyButton(
-                                        onPressed: () => launch(strings.playstore_url),
+                                        onPressed: () =>
+                                            launch(strings.playstore_url),
                                         text: strings.android,
                                         icon: Icons.android,
                                         animation: FancyButtonAnimation.pulse,
                                       ),
                                       FancyButton(
-                                        onPressed: () => launch(strings.website_url),
+                                        onPressed: () =>
+                                            launch(strings.website_url),
                                         text: strings.web,
                                         icon: Icons.web,
                                         animation: FancyButtonAnimation.pulse,
@@ -585,9 +564,9 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                   Divider8(),
                                   FancyButton(
                                     onPressed: () =>
-                                    (random.nextInt(80100) == 420)
-                                        ? _onWarning()
-                                        : _onAbout(),
+                                        (random.nextInt(80100) == 420)
+                                            ? _onWarning()
+                                            : _onAbout(),
                                     icon: Icons.info,
                                     animation: FancyButtonAnimation.pulse,
                                   ),
