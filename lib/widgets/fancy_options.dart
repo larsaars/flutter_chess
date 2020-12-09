@@ -2,6 +2,8 @@ import 'package:chess_bot/util/utils.dart';
 import 'package:chess_bot/widgets/fancy_button.dart';
 import 'package:flutter/material.dart';
 
+bool collapseFancyOptions = false;
+
 class FancyOptions extends StatefulWidget {
   final List<Widget> children;
   final String rootText;
@@ -75,6 +77,11 @@ class _FancyOptionsState extends State<FancyOptions>
 
   @override
   Widget build(BuildContext context) {
+    if (collapseFancyOptions && _controller.isCompleted) {
+      collapseFancyOptions = false;
+      _controller.reverse();
+    }
+
     List<Widget> childrenTransforms = [];
     //create the transforms for the children
     for (int i = 0; i < widget.children.length; i++) {
