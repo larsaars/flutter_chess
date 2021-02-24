@@ -14,6 +14,8 @@ class ChessAI {
   static void entryPointMoveFinderIsolate(List context) {
     //init the messenger, which sends messages back to the main thread
     final messenger = context[0];
+    //set if tensorflow is usable
+    _TENSORFLOW_USABLE = context[3];
     //set the set depth
     _SET_DEPTH = context[2];
     //if the set depth is not zero, add one since this is just the list index
@@ -60,6 +62,9 @@ class ChessAI {
   // ignore: non_constant_identifier_names
   static int _MAX_DEPTH = 3, _SET_DEPTH = 0;
 
+  //bool if tensorflow is usable
+  static bool _TENSORFLOW_USABLE = false;
+
   //the actual method starting the alpha beta pruning
   static List _findBestMove(Chess chess, messenger) {
     //get the start time
@@ -73,7 +78,7 @@ class ChessAI {
     _MIN = Chess.swap_color(chess.game.turn);
 
     //init the eval
-    _eval = Evaluation(_MAX, _MIN, _LARGE, Evaluation.isEndGame(chess));
+    _eval = Evaluation(_MAX, _MIN, _LARGE, Evaluation.isEndGame(chess), _TENSORFLOW_USABLE);
 
     //calc the max depth
     _calcMaxDepth(chess);

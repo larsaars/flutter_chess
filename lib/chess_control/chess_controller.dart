@@ -31,7 +31,7 @@ class ChessController {
   static bool loadingBotMoves = false;
   static String moveFrom, moveTo, kingInCheck;
 
-  var model;
+  bool tensorflowUsable = false;
 
   ChessController(this.context);
 
@@ -48,7 +48,7 @@ class ChessController {
     //print the move
     print('onMove: $move');
     //if is in online game
-    if(inOnlineGame) {
+    if (inOnlineGame) {
       //firestore update
       Map<String, dynamic> onMoveUpdate = {};
       //set the local bot disabled etc
@@ -58,7 +58,7 @@ class ChessController {
       currentGameDoc.update(onMoveUpdate);
       //update the ui
       update();
-    }else {
+    } else {
       // update the ui
       update();
       //save the game after every move
@@ -91,7 +91,9 @@ class ChessController {
       //without any animations (load on main thread)
       //if is on web, html workers have to be used instead of isolates
       Future.delayed(Duration(milliseconds: 100)).then((value) {
-        ChessAI.entryPointMoveFinderAsync(game.fen, (prefs.getInt('set_depth') ?? 0)).then((value) => _receiveAiCallback(value, null));
+        ChessAI.entryPointMoveFinderAsync(
+                game.fen, (prefs.getInt('set_depth') ?? 0))
+            .then((value) => _receiveAiCallback(value, null));
       });
     } else {
       //for the method _ai.find a new thread (isolate)
@@ -103,7 +105,7 @@ class ChessController {
       //the move generation algorithm can work faster (lightweight)
       Isolate isolate = await Isolate.spawn(
         ChessAI.entryPointMoveFinderIsolate,
-        [receivePort.sendPort, game.fen, (prefs.getInt('set_depth') ?? 0)],
+        [receivePort.sendPort, game.fen, (prefs.getInt('set_depth') ?? 0), tensorflowUsable],
         debugName: 'chess_move_generator',
       );
       //listen at the receive port for the game (exit point)
@@ -189,8 +191,7 @@ class ChessController {
   }
 
   bool makeBotMoveIfRequired() {
-    if(inOnlineGame)
-      return false;
+    if (inOnlineGame) return false;
     //make move if needed
     if (((game?.game?.turn ?? Color.flip(botColor)) == botColor) &&
         prefs.getBool('bot')) {
@@ -203,11 +204,14 @@ class ChessController {
 
   void onDraw() {
     //show the dialog
-    showAnimatedDialog(title: strings.draw, text: strings.draw_desc, onDoneText: strings.replay,
+    showAnimatedDialog(
+        title: strings.draw,
+        text: strings.draw_desc,
+        onDoneText: strings.replay,
         onDone: (value) {
-      game.reset();
-      update();
-    });
+          game.reset();
+          update();
+        });
   }
 
   void onCheckMate(color) {
@@ -215,11 +219,14 @@ class ChessController {
     var winner = color == PieceColor.White ? strings.black : strings.white;
     var loser = color == PieceColor.White ? strings.white : strings.black;
     //show the dialog
-    showAnimatedDialog(title: strings.checkmate, text: strings.check_mate_desc(loser, winner),
-        onDoneText: strings.replay, onDone: (value) {
-      game.reset();
-      update();
-    });
+    showAnimatedDialog(
+        title: strings.checkmate,
+        text: strings.check_mate_desc(loser, winner),
+        onDoneText: strings.replay,
+        onDone: (value) {
+          game.reset();
+          update();
+        });
   }
 
   void onCheck(color) {
@@ -265,33 +272,36 @@ class ChessController {
   }
 
   void resetBoard() {
-    showAnimatedDialog(title: strings.replay, text: strings.replay_desc, onDoneText: strings.ok,
+    showAnimatedDialog(
+        title: strings.replay,
+        text: strings.replay_desc,
+        onDoneText: strings.ok,
         onDone: (value) {
-      if (value == 'ok') {
-        //reset all boards
-        moveTo = null;
-        moveFrom = null;
-        kingInCheck = null;
-        //reset the game
-        game.reset();
-        //if is in online game, update that
-        if(inOnlineGame) {
-          //firestore update
-          Map<String, dynamic> onMoveUpdate = {};
-          //set the local bot disabled etc
-          onMoveUpdate['moveFrom'] = null;
-          onMoveUpdate['moveTo'] = null;
-          onMoveUpdate['fen'] = game.fen;
-          currentGameDoc.update(onMoveUpdate);
-          //update the ui
-          update();
-        }
-        //update the ui
-        update();
-        //make move if required
-        makeBotMoveIfRequired();
-      }
-    });
+          if (value == 'ok') {
+            //reset all boards
+            moveTo = null;
+            moveFrom = null;
+            kingInCheck = null;
+            //reset the game
+            game.reset();
+            //if is in online game, update that
+            if (inOnlineGame) {
+              //firestore update
+              Map<String, dynamic> onMoveUpdate = {};
+              //set the local bot disabled etc
+              onMoveUpdate['moveFrom'] = null;
+              onMoveUpdate['moveTo'] = null;
+              onMoveUpdate['fen'] = game.fen;
+              currentGameDoc.update(onMoveUpdate);
+              //update the ui
+              update();
+            }
+            //update the ui
+            update();
+            //make move if required
+            makeBotMoveIfRequired();
+          }
+        });
   }
 
   void undo() {
@@ -306,7 +316,8 @@ class ChessController {
   void _undo() {
     game.undo() != null
         ? controller.refreshBoard()
-        : showAnimatedDialog(title: strings.undo, text:strings.undo_impossible);
+        : showAnimatedDialog(
+            title: strings.undo, text: strings.undo_impossible);
   }
 
   void switchColors() {
@@ -419,25 +430,27 @@ class ChessController {
     List difficulties = strings.difficulties.split(',');
     BuildContext ctx;
 
-    showAnimatedDialog(title: strings.difficulty,
+    showAnimatedDialog(
+        title: strings.difficulty,
         setStateCallback: (ctx0, setState) {
-      ctx = ctx0;
-    }, children: [
-      RadioGroup.builder(
-          direction: Axis.vertical,
-          onChanged: (value) {
-            //get diff int
-            int diff = difficulties.indexOf(value);
-            //save in the prefs
-            prefs.setInt('set_depth', diff);
-            //then pop the nav
-            Navigator.of(ctx).pop();
-          },
-          groupValue: difficulties[prefs.getInt('set_depth') ?? 0],
-          items: difficulties,
-          itemBuilder: (item) => RadioButtonBuilder(item,
-              textPosition: RadioButtonTextPosition.right))
-    ]);
+          ctx = ctx0;
+        },
+        children: [
+          RadioGroup.builder(
+              direction: Axis.vertical,
+              onChanged: (value) {
+                //get diff int
+                int diff = difficulties.indexOf(value);
+                //save in the prefs
+                prefs.setInt('set_depth', diff);
+                //then pop the nav
+                Navigator.of(ctx).pop();
+              },
+              groupValue: difficulties[prefs.getInt('set_depth') ?? 0],
+              items: difficulties,
+              itemBuilder: (item) => RadioButtonBuilder(item,
+                  textPosition: RadioButtonTextPosition.right))
+        ]);
   }
 
   void onFen() {
@@ -446,36 +459,39 @@ class ChessController {
 
   void _onFenWeb() {
     BuildContext ctx;
-    showAnimatedDialog(onDone: (value) {
-      if (value == 'yes') update();
-    }, setStateCallback: (ctx0, setState) {
-      ctx = ctx0;
-    }, children: [
-      Align(
-        alignment: Alignment.centerLeft,
-        child: FlatButton(
-          shape: roundButtonShape,
-          child: Text(strings.copy_fen),
-          onPressed: () {
-            Clipboard.setData(new ClipboardData(text: game.fen));
-            Navigator.of(ctx).pop('yes');
-          },
-        ),
-      ),
-      TextField(
-        maxLines: 2,
-        onChanged: (text) {
-          print(text);
-          if (text.endsWith('\n')) {
-            game = Chess.fromFEN(text.replaceAll('\n', ''));
-            moveTo = null;
-            moveFrom = null;
-            kingInCheck = null;
-            Navigator.of(ctx).pop('yes');
-          }
+    showAnimatedDialog(
+        onDone: (value) {
+          if (value == 'yes') update();
         },
-      )
-    ]);
+        setStateCallback: (ctx0, setState) {
+          ctx = ctx0;
+        },
+        children: [
+          Align(
+            alignment: Alignment.centerLeft,
+            child: FlatButton(
+              shape: roundButtonShape,
+              child: Text(strings.copy_fen),
+              onPressed: () {
+                Clipboard.setData(new ClipboardData(text: game.fen));
+                Navigator.of(ctx).pop('yes');
+              },
+            ),
+          ),
+          TextField(
+            maxLines: 2,
+            onChanged: (text) {
+              print(text);
+              if (text.endsWith('\n')) {
+                game = Chess.fromFEN(text.replaceAll('\n', ''));
+                moveTo = null;
+                moveFrom = null;
+                kingInCheck = null;
+                Navigator.of(ctx).pop('yes');
+              }
+            },
+          )
+        ]);
   }
 
   void _onFenMobile() {
@@ -484,40 +500,44 @@ class ChessController {
 
     var fen = game.fen;
 
-    showAnimatedDialog(title: strings.copy_fen, setStateCallback: (ctx0, setState) {
-      ctx = ctx0;
-    }, onDone: (value) {
-      if (value == 'yes') update();
-    }, children: [
-      RadioGroup.builder(
-          direction: Axis.vertical,
-          onChanged: (value) async {
-            //get the option
-            int idx = difficulties.indexOf(value);
-            //do the action
-            if (idx == 0) {
-              //copy fen of game to clipboard
-              Clipboard.setData(new ClipboardData(text: fen));
-              //then pop the nav
-              Navigator.of(ctx).pop('no');
-            } else if (idx == 1) {
-              //insert fen from clipboard and reload game
-              Clipboard.getData('text/plain').then((value) {
-                if (Chess.validate_fen(value.text)['valid']) {
-                  game = Chess.fromFEN(value.text);
-                  moveTo = null;
-                  moveFrom = null;
-                  kingInCheck = null;
-                  Navigator.of(ctx).pop('yes');
-                } else
+    showAnimatedDialog(
+        title: strings.copy_fen,
+        setStateCallback: (ctx0, setState) {
+          ctx = ctx0;
+        },
+        onDone: (value) {
+          if (value == 'yes') update();
+        },
+        children: [
+          RadioGroup.builder(
+              direction: Axis.vertical,
+              onChanged: (value) async {
+                //get the option
+                int idx = difficulties.indexOf(value);
+                //do the action
+                if (idx == 0) {
+                  //copy fen of game to clipboard
+                  Clipboard.setData(new ClipboardData(text: fen));
+                  //then pop the nav
                   Navigator.of(ctx).pop('no');
-              });
-            }
-          },
-          groupValue: 0,
-          items: difficulties,
-          itemBuilder: (item) => RadioButtonBuilder(item,
-              textPosition: RadioButtonTextPosition.right))
-    ]);
+                } else if (idx == 1) {
+                  //insert fen from clipboard and reload game
+                  Clipboard.getData('text/plain').then((value) {
+                    if (Chess.validate_fen(value.text)['valid']) {
+                      game = Chess.fromFEN(value.text);
+                      moveTo = null;
+                      moveFrom = null;
+                      kingInCheck = null;
+                      Navigator.of(ctx).pop('yes');
+                    } else
+                      Navigator.of(ctx).pop('no');
+                  });
+                }
+              },
+              groupValue: 0,
+              items: difficulties,
+              itemBuilder: (item) => RadioButtonBuilder(item,
+                  textPosition: RadioButtonTextPosition.right))
+        ]);
   }
 }
