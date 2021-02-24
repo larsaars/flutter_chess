@@ -17,6 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tflite/tflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
@@ -110,6 +111,15 @@ class _MyHomepageState extends State<MyHomePage> {
       uuid = Uuid().v4();
       prefs.setString('uuid', uuid);
     }
+
+    //load the tensorflow lite model
+    if (!kIsWeb)
+      print(await Tflite.loadModel(
+        model: 'res/assets/model.tflite',
+        numThreads: 1,
+        isAsset: true,
+        useGpuDelegate: false,
+      ));
   }
 
   @override
@@ -529,8 +539,7 @@ class _MyHomePageAfterLoadingState extends State<MyHomePageAfterLoading>
                                             //since move has not been made, inverse the bot color and retry
                                             _chessController.botColor =
                                                 Chess.swap_color(
-                                                    _chessController
-                                                        .botColor);
+                                                    _chessController.botColor);
                                             _chessController
                                                 .makeBotMoveIfRequired();
                                           }
