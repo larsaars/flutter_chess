@@ -31,6 +31,8 @@ class ChessController {
   static bool loadingBotMoves = false;
   static String moveFrom, moveTo, kingInCheck;
 
+  var model;
+
   ChessController(this.context);
 
   //update the views
