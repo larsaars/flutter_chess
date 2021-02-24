@@ -113,13 +113,15 @@ class _MyHomepageState extends State<MyHomePage> {
     }
 
     //load the tensorflow lite model
-    if (!kIsWeb)
-      print(await Tflite.loadModel(
-        model: 'res/assets/model.tflite',
-        numThreads: 1,
-        isAsset: true,
-        useGpuDelegate: false,
-      ));
+    if (!kIsWeb) {
+      _chessController.tensorflowUsable = await Tflite.loadModel(
+            model: 'res/assets/model.tflite',
+            numThreads: 1,
+            isAsset: true,
+            useGpuDelegate: false,
+          ) ==
+          'success';
+    }
   }
 
   @override

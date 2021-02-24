@@ -9,8 +9,11 @@ class Evaluation {
 
   // ignore: non_constant_identifier_names
   final double _LARGE;
+  
+  // if tensorflow is usable
+  final _TENSOFLOW_USABLE;
 
-  Evaluation(this._MAX, this._MIN, this._LARGE, this.endGame);
+  Evaluation(this._MAX, this._MIN, this._LARGE, this.endGame, this._TENSOFLOW_USABLE);
 
   // simple material based evaluation
   double evaluatePosition(Chess c, bool gameOver, bool inDraw, int depth) {
