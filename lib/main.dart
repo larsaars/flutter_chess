@@ -17,7 +17,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tflite/tflite.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
@@ -110,17 +109,6 @@ class _MyHomepageState extends State<MyHomePage> {
     if (uuid == null) {
       uuid = Uuid().v4();
       prefs.setString('uuid', uuid);
-    }
-
-    //load the tensorflow lite model
-    if (!kIsWeb) {
-      _chessController.tensorflowUsable = await Tflite.loadModel(
-            model: 'res/assets/model.tflite',
-            numThreads: 1,
-            isAsset: true,
-            useGpuDelegate: false,
-          ) ==
-          'success';
     }
   }
 
