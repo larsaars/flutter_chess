@@ -105,7 +105,12 @@ class ChessController {
       //the move generation algorithm can work faster (lightweight)
       Isolate isolate = await Isolate.spawn(
         ChessAI.entryPointMoveFinderIsolate,
-        [receivePort.sendPort, game.fen, (prefs.getInt('set_depth') ?? 0), tensorflowUsable],
+        [
+          receivePort.sendPort,
+          game.fen,
+          (prefs.getInt('set_depth') ?? 0),
+          tensorflowUsable
+        ],
         debugName: 'chess_move_generator',
       );
       //listen at the receive port for the game (exit point)
@@ -191,6 +196,8 @@ class ChessController {
   }
 
   bool makeBotMoveIfRequired() {
+    print(game.transformToMatrix());
+
     if (inOnlineGame) return false;
     //make move if needed
     if (((game?.game?.turn ?? Color.flip(botColor)) == botColor) &&

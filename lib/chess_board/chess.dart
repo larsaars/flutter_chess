@@ -10,6 +10,8 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
  *  Copyright (c) 2013, Jeff Hlywa (jhlywa@gmail.com)
  *  Released under the BSD license
  *  https://github.com/jhlywa/chess.js/blob/master/LICENSE
+ *
+ *  Manipulated 2020-21 by Lars Specht
  */
 
 typedef void ForEachPieceCallback(Piece piece);
@@ -1089,6 +1091,29 @@ class Chess {
     }
   }
 
+  //reads the board to a matrix that can be entered into the trained tensorflow model
+  List<List<List<int>>> transformToMatrix() {
+    List<List<List<int>>> matrix = [];
+    List<List<int>> currentList;
+    for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
+      if ((i & 0x88) != 0) {
+        i += 7;
+        continue;
+      }
+
+      if (i % 8 == 0 || i == Chess.SQUARES_H1) {
+        if (currentList != null) matrix.add(currentList);
+        currentList = [];
+      }
+
+      Piece piece = game.board[i];
+      var key = piece == null ? '.' : piece.toString();
+      currentList.add(TRANSFORMATION_MAP[key]);
+    }
+
+    return matrix;
+  }
+
   String trim(String str) {
     return str.replaceAll(new RegExp(r"^\s+|\s+$"), '');
   }
@@ -1797,6 +1822,22 @@ class Chess {
     'f1': 117,
     'g1': 118,
     'h1': 119
+  };
+
+  static const Map TRANSFORMATION_MAP = {
+    'p': [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'P': [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    'n': [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'N': [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    'b': [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'B': [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    'r': [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    'R': [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    'q': [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+    'Q': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    'k': [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    'K': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    '.': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   };
 
   static const int SQUARES_A1 = 112;
