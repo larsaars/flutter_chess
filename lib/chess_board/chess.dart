@@ -1092,7 +1092,7 @@ class Chess {
   }
 
   //reads the board to a matrix that can be entered into the trained tensorflow model
-  List<List<List<int>>> transformToMatrix() {
+  List<List<List<int>>> transformForTFModel() {
     List<List<List<int>>> matrix = [];
     List<List<int>> currentList;
     for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
