@@ -196,8 +196,6 @@ class ChessController {
   }
 
   bool makeBotMoveIfRequired() {
-    print(game.transformToMatrix());
-
     if (inOnlineGame) return false;
     //make move if needed
     if (((game?.game?.turn ?? Color.flip(botColor)) == botColor) &&
