@@ -5,7 +5,7 @@ import '../chess.dart';
 class Game {
   Game();
 
-  List<Piece> board = List(128);
+  List<Piece> board = List.filled(128, null);
   ColorMap kings = ColorMap.of(-1);
   Color turn = Color.WHITE;
   ColorMap castling = ColorMap.of(0);
@@ -103,6 +103,11 @@ class Piece {
   bool operator ==(Object other) {
     return (other is Piece) && (other.hashCode == hashCode);
   }
+
+  //white is upper case
+  @override
+  String toString() => color == Color.WHITE ? type.name.toUpperCase() : type.name;
+
 }
 
 class PieceType {
