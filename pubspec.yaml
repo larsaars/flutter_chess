@@ -20,14 +20,15 @@ dependencies:
   flutter_launcher_icons: ^0.8.1
   path_provider: ^2.0.0
   lite_rolling_switch: ^0.1.1
-  shared_preferences: ^2.0.0
+  shared_preferences: ^2.0.1
   group_radio_button: ^1.0.1
-  url_launcher: ^6.0.0
+  url_launcher: ^6.0.1
   uuid: 2.2.2
+  tflite_flutter: ^0.5.0
   #firebase
-  firebase_core: ^0.7.0
-  firebase_analytics: ^7.0.1
-  cloud_firestore: ^0.16.0+1
+  firebase_core: ^1.0.0
+  firebase_analytics: ^7.1.0
+  cloud_firestore: ^1.0.0
   #internet connection checking
   connectivity: ^3.0.0
   data_connection_checker: ^0.3.4

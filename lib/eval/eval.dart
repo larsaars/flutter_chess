@@ -1,6 +1,10 @@
+import 'dart:isolate';
 
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
+import 'package:chess_bot/chess_control/chess_controller.dart';
+import 'package:chess_bot/eval/ai.dart';
+import 'package:flutter/foundation.dart';
 
 class Evaluation {
   final Color _MAX, _MIN;
@@ -12,13 +16,17 @@ class Evaluation {
   final double _LARGE;
 
   // if tensorflow is usable
-  final _TENSOFLOW_USABLE;
+  // ignore: non_constant_identifier_names
+  final _TENSORFLOW_USABLE;
+
+  final messenger;
 
   Evaluation(
-      this._MAX, this._MIN, this._LARGE, this.endGame, this._TENSOFLOW_USABLE);
+      this._MAX, this._MIN, this._LARGE, this.endGame, this._TENSORFLOW_USABLE, this.messenger);
 
   // simple material based evaluation
-  double evaluatePosition(Chess c, bool gameOver, bool inDraw, int depth) {
+  Future<double> evaluatePosition(
+      Chess c, bool gameOver, bool inDraw, int depth) async {
     if (gameOver) {
       if (inDraw) {
         // draw is a neutral outcome
@@ -37,13 +45,16 @@ class Evaluation {
       }
     } else {
       //if can use tensorflow model for heuristics, use it
-      if (_TENSOFLOW_USABLE) {
+      if (_TENSORFLOW_USABLE) {
         //"Keep in mind that the scale goes between -1 and 1, -1 being a checkmate for black and 1 being a checkmate for white."
         //that means, if MAX is white, good for white must be positive,
         //and if MAX is black, good for black must be positive
         //normally positive numbers are positive for black
         double factor = _MAX == Color.BLACK ? 1 : -1;
-        double prediction = 1;//(await Tflite.runModelOnBinary(binary: binary, asynch: false))[0];
+        //call the prediction on local platform
+        double prediction = await ChessController.platform
+            .invokeMethod('predictWithTf', c.transformForTFModelFlat());
+
         return factor * prediction;
       } else {
         //the final evaluation to be returned
@@ -112,6 +123,11 @@ class Evaluation {
     }
 
     return 0;
+  }
+
+  //send via messenger
+  void _send(data) {
+    if (!kIsWeb && (messenger is SendPort)) messenger.send(data);
   }
 
   //the piece values

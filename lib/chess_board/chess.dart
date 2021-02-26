@@ -1107,8 +1107,26 @@ class Chess {
       }
 
       Piece piece = game.board[i];
-      var key = piece == null ? '.' : piece.toString();
-      currentList.add(TRANSFORMATION_MAP[key]);
+      currentList
+          .add(TRANSFORMATION_MAP[piece == null ? '.' : piece.toString()]);
+    }
+
+    return matrix;
+  }
+
+  //reads the board to a matrix that can be entered into the trained tensorflow model
+  List<int> transformForTFModelFlat() {
+    List<int> matrix = [];
+    for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
+      if ((i & 0x88) != 0) {
+        i += 7;
+        continue;
+      }
+
+
+      Piece piece = game.board[i];
+      for(int i in TRANSFORMATION_MAP[piece == null ? '.' : piece.toString()])
+        matrix.add(i);
     }
 
     return matrix;
@@ -1824,6 +1842,7 @@ class Chess {
     'h1': 119
   };
 
+  // ignore: non_constant_identifier_names
   static const Map TRANSFORMATION_MAP = {
     'p': [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     'P': [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
