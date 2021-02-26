@@ -18,6 +18,8 @@ import '../chess_board/src/chess_board_controller.dart';
 import '../eval/ai.dart';
 
 class ChessController {
+  static const platform = const MethodChannel('flutter.native/helper');
+
   ChessBoardController controller = ChessBoardController();
   Chess game;
   BuildContext context;
@@ -91,7 +93,7 @@ class ChessController {
       //without any animations (load on main thread)
       //if is on web, html workers have to be used instead of isolates
       Future.delayed(Duration(milliseconds: 100)).then((value) {
-        ChessAI.entryPointMoveFinderAsync(
+        ChessAI.entryPointMoveFinderNoIsolateAsync(
                 game.fen, (prefs.getInt('set_depth') ?? 0))
             .then((value) => _receiveAiCallback(value, null));
       });
