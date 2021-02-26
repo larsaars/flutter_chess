@@ -31,6 +31,8 @@ SharedPreferences prefs;
 String uuid;
 
 void main() async {
+  //ensure binding to native code is initialized
+  WidgetsFlutterBinding.ensureInitialized();
   //run the app
   runApp(MyApp());
   //init firebase app
@@ -110,6 +112,8 @@ class _MyHomepageState extends State<MyHomePage> {
       uuid = Uuid().v4();
       prefs.setString('uuid', uuid);
     }
+    //check if tensorflow is usable
+    _chessController.tensorflowUsable = !kIsWeb;
   }
 
   @override

@@ -28,7 +28,6 @@ if (keystorePropertiesFile.exists()) {
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 apply plugin: 'com.google.gms.google-services'
 
@@ -50,6 +49,10 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
     }
 
     signingConfigs {
@@ -72,6 +75,10 @@ android {
         noCompress 'tflite'
         noCompress 'lite'
     }
+
+    buildFeatures {
+        mlModelBinding true
+    }
 }
 
 flutter {
@@ -79,8 +86,9 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    //firebase
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-firestore'
+    //multi-dex
     implementation 'androidx.multidex:multidex:2.0.1'
 }
