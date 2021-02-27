@@ -16,9 +16,9 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  path_provider: ^2.0.0
   intl: ^0.17.0
   flutter_launcher_icons: ^0.8.1
-  path_provider: ^2.0.0
   lite_rolling_switch: ^0.1.1
   shared_preferences: ^2.0.1
   group_radio_button: ^1.0.1
@@ -91,6 +91,7 @@ flutter:
     - res/chess_board/
     - res/licenses/
     - res/assets/
+    - assets/
 
 #icons
 flutter_icons:

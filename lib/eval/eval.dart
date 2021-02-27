@@ -3,7 +3,6 @@ import 'dart:isolate';
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:chess_bot/chess_control/chess_controller.dart';
-import 'package:chess_bot/eval/ai.dart';
 import 'package:flutter/foundation.dart';
 
 class Evaluation {
@@ -21,8 +20,8 @@ class Evaluation {
 
   final messenger;
 
-  Evaluation(
-      this._MAX, this._MIN, this._LARGE, this.endGame, this._TENSORFLOW_USABLE, this.messenger);
+  Evaluation(this._MAX, this._MIN, this._LARGE, this.endGame,
+      this._TENSORFLOW_USABLE, this.messenger);
 
   // simple material based evaluation
   Future<double> evaluatePosition(
@@ -51,11 +50,16 @@ class Evaluation {
         //and if MAX is black, good for black must be positive
         //normally positive numbers are positive for black
         double factor = _MAX == Color.BLACK ? 1 : -1;
-        //call the prediction on local platform
-        double prediction = await ChessController.platform
-            .invokeMethod('predictWithTf', c.transformForTFModelFlat());
-
-        return factor * prediction;
+        //run the chess_heuristics model
+        //define input and output (size)
+        var input = [c.transformForTFModel()]; //shape is (1, 8, 8, 12)
+        var output = [
+          [0]
+        ]; //shape is (1, 1)
+        //run on interpreter
+        ChessController.tfInterpreter.run(input, output);
+        //use output prediction * factor
+        return output[0][0] * factor;
       } else {
         //the final evaluation to be returned
         double eval = 0.0;
