@@ -1,3 +1,1 @@
-# chess
-
-A flutter chess bot.
+# flutter chess bot
