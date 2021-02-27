@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess_sub;
+import 'package:chess_bot/eval/ai.dart';
 import 'package:chess_bot/generated/i18n.dart';
 import 'package:chess_bot/util/online_game_utils.dart';
 import 'package:chess_bot/util/utils.dart';
@@ -31,8 +32,6 @@ SharedPreferences prefs;
 String uuid;
 
 void main() async {
-  //ensure binding to native code is initialized
-  WidgetsFlutterBinding.ensureInitialized();
   //run the app
   runApp(MyApp());
   //init firebase app
@@ -114,6 +113,10 @@ class _MyHomepageState extends State<MyHomePage> {
     }
     //check if tensorflow is usable
     _chessController.tensorflowUsable = !kIsWeb;
+    //load the tensorflow model
+    if(_chessController.tensorflowUsable) {
+      ChessAI.tfInterpreter = await tfl.Interpreter.fromAsset('chess_heuristics.tflite');
+    }
   }
 
   @override

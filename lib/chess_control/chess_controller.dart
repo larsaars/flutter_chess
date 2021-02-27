@@ -18,8 +18,6 @@ import '../chess_board/src/chess_board_controller.dart';
 import '../eval/ai.dart';
 
 class ChessController {
-  static const platform = const MethodChannel('flutter.native/helper');
-
   ChessBoardController controller = ChessBoardController();
   Chess game;
   BuildContext context;
@@ -34,6 +32,8 @@ class ChessController {
   static String moveFrom, moveTo, kingInCheck;
 
   bool tensorflowUsable = false;
+
+  static var tfInterpreter;
 
   ChessController(this.context);
 
@@ -274,8 +274,6 @@ class ChessController {
     await saveFile.writeAsString(game.generate_fen());
 
     print('saving to ${saveFile.path}');
-
-    print('game saved');
   }
 
   void resetBoard() {
