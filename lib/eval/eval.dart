@@ -1,7 +1,6 @@
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
-
-import '../chess_control/chess_controller.dart';
+import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 
 class Evaluation {
   // ignore: non_constant_identifier_names
@@ -13,14 +12,14 @@ class Evaluation {
   // ignore: non_constant_identifier_names
   final double _LARGE;
 
-  // ignore: non_constant_identifier_names
-  final bool _TENSORFLOW_USABLE;
+  //the model
+  final tfl.Interpreter tfInterpreter;
 
-  Evaluation(this._MAX, this._LARGE, this.endGame, this._TENSORFLOW_USABLE);
+  Evaluation(this._MAX, this._LARGE, this.endGame, this.tfInterpreter);
 
   // simple material based evaluation
-  Future<double> evaluatePosition(
-      Chess c, bool gameOver, bool inDraw, int depth) async {
+  double evaluatePosition(
+      Chess c, bool gameOver, bool inDraw, int depth) {
     if (gameOver) {
       if (inDraw) {
         // draw is a neutral outcome
@@ -39,7 +38,7 @@ class Evaluation {
       }
     } else {
       //if can use tensorflow model for heuristics, use it
-      if (_TENSORFLOW_USABLE) {
+      if (tfInterpreter != null) {
         //"Keep in mind that the scale goes between -1 and 1, -1 being a checkmate for black and 1 being a checkmate for white."
         //that means, if MAX is white, good for white must be positive,
         //and if MAX is black, good for black must be positive
@@ -49,10 +48,10 @@ class Evaluation {
         //define input and output (size)
         var input = [c.transformForTFModel()]; //shape is (1, 8, 8, 12)
         var output = [
-          [0]
+          [0.0]
         ]; //shape is (1, 1)
         //run on interpreter
-        ChessController.tfInterpreter.run(input, output);
+        tfInterpreter.run(input, output);
         //use output prediction * factor
         return output[0][0] * factor;
       } else {
