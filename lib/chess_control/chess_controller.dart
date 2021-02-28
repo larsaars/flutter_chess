@@ -112,7 +112,8 @@ class ChessController {
           receivePort.sendPort,
           game.fen,
           (prefs.getInt('set_depth') ?? 0),
-          tensorflowUsable
+          tensorflowUsable,
+          tfInterpreter.address,
         ],
         debugName: 'chess_move_generator',
       );
@@ -199,17 +200,6 @@ class ChessController {
   }
 
   bool makeBotMoveIfRequired() {
-    var input = [game.transformForTFModel()]; //shape is (1, 8, 8, 12)
-    var output = [
-      [0.0]
-    ]; //shape is (1, 1)
-    //run on interpreter
-    Future.delayed(Duration(seconds: 1)).then((value) {
-      ChessController.tfInterpreter.run(input, output);
-
-      print(output);
-    });
-
     if (inOnlineGame) return false;
     //make move if needed
     if (((game?.game?.turn ?? Color.flip(botColor)) == botColor) &&

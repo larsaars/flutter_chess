@@ -5,6 +5,7 @@ import 'package:chess_bot/chess_board/src/chess_sub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 
 import '../chess_board/chess.dart';
 import 'eval.dart';
@@ -14,8 +15,10 @@ class ChessAI {
   static void entryPointMoveFinderIsolate(List context) async {
     //init the messenger, which sends messages back to the main thread
     final messenger = context[0];
-    //set if tensorflow is usable
-    _TENSORFLOW_USABLE = context[3];
+    //if tf model is usable, load
+    if (context[3])
+      //load from transferred address
+      tfInterpreter = tfl.Interpreter.fromAddress(context[4]);
     //set the set depth
     _SET_DEPTH = context[2];
     //if the set depth is not zero, add one since this is just the list index
@@ -62,12 +65,11 @@ class ChessAI {
   // ignore: non_constant_identifier_names
   static int _MAX_DEPTH = 3, _SET_DEPTH = 0;
 
-  //bool if tensorflow is usable
-  // ignore: non_constant_identifier_names
-  static bool _TENSORFLOW_USABLE = false;
+  //the model
+  static tfl.Interpreter tfInterpreter;
 
   //the actual method starting the alpha beta pruning
-  static Future<List> _findBestMove(Chess chess, messenger) async {
+  static List _findBestMove(Chess chess, messenger) {
     //get the start time
     num startTime = DateTime.now().millisecondsSinceEpoch;
 
@@ -79,13 +81,13 @@ class ChessAI {
     _MIN = Chess.swap_color(chess.game.turn);
 
     //init the eval
-    _eval = Evaluation(
-        _MAX, _LARGE, Evaluation.isEndGame(chess), _TENSORFLOW_USABLE);
+    _eval =
+        Evaluation(_MAX, _LARGE, Evaluation.isEndGame(chess), tfInterpreter);
 
     //calc the max depth
     _calcMaxDepth(chess);
 
-    Move bestMove = await _prepareAndStartMinimax(chess, messenger);
+    Move bestMove = _prepareAndStartMinimax(chess, messenger);
 
     //if there is no move, send null
     if (bestMove == null) {
@@ -118,7 +120,7 @@ class ChessAI {
   //generate any move lists, since they are all in the RAM already and
   //with already having sorted lists, which makes the whole process a lot faster,
   //as then alpha beta pruning will cut of much more trees faster
-  static Future<Move> _prepareAndStartMinimax(Chess c, messenger) async {
+  static Move _prepareAndStartMinimax(Chess c, messenger) {
     //set a root move
     Move rootMove = Move(null, null, null, null, null, null, null);
     //call the iterative method prepare minimax here
@@ -136,7 +138,7 @@ class ChessAI {
       //add the child and the real eval, not the pre-eval
       evalPairs.add([
         child,
-        await _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN, child.gameOver,
+        _minimax(child, c, 1, -_INFINITY, _INFINITY, _MIN, child.gameOver,
             child.gameDraw)
       ]);
       //undo the move
@@ -170,8 +172,8 @@ class ChessAI {
   //all moves till _MAX_DEPTH - 1 will be generated this way
   //this is basically a minimax without alpha beta pruning to sort
   //all nodes till _MAX_DEPTH - 1
-  static Future<double> _prepareMinimax(
-      Move root, Chess c, int depth, Color player, messenger) async {
+  static double _prepareMinimax(
+      Move root, Chess c, int depth, Color player, messenger) {
     //update idx
     _idx++;
     //generate the nodes
@@ -184,7 +186,7 @@ class ChessAI {
     if (depth >= (_MAX_DEPTH - 1) || root.gameOver) {
       //return the end node evaluation
       return root.eval =
-          await _eval.evaluatePosition(c, root.gameOver, root.gameDraw, depth);
+          _eval.evaluatePosition(c, root.gameOver, root.gameDraw, depth);
     }
 
     // if the computer is the current player (MAX)
@@ -197,8 +199,7 @@ class ChessAI {
         c.makeMove(m);
         //recursive execute of minimax
         //get the maximizing value
-        value =
-            max(value, await _prepareMinimax(m, c, depth + 1, _MIN, messenger));
+        value = max(value, _prepareMinimax(m, c, depth + 1, _MIN, messenger));
         //undo after alpha beta
         c.undo();
         //if this is depth 0, report to messenger
@@ -218,8 +219,7 @@ class ChessAI {
         c.makeMove(m);
         //recursive execute of minimax
         //get the minimizing value
-        value =
-            min(value, await _prepareMinimax(m, c, depth + 1, _MAX, messenger));
+        value = min(value, _prepareMinimax(m, c, depth + 1, _MAX, messenger));
         //undo after alpha beta
         c.undo();
       }
@@ -231,8 +231,8 @@ class ChessAI {
   }
 
   // implements a simple alpha beta algorithm
-  static Future<double> _minimax(Move root, Chess c, int depth, double alpha,
-      double beta, Color player, bool upperIsGameOver, bool upperIsDraw) async {
+  static double _minimax(Move root, Chess c, int depth, double alpha,
+      double beta, Color player, bool upperIsGameOver, bool upperIsDraw) {
     //update idx
     _idx++;
     //if this is the max depth, then in the preparation the child nodes have not
@@ -254,8 +254,8 @@ class ChessAI {
       if (root.additionalEvaluated)
         return root.eval;
       else
-        return root.eval = await _eval.evaluatePosition(
-            c, root.gameOver, root.gameDraw, depth);
+        return root.eval =
+            _eval.evaluatePosition(c, root.gameOver, root.gameDraw, depth);
     }
 
     // if the computer is the current player (MAX)
@@ -267,7 +267,7 @@ class ChessAI {
         //recursive execute of alpha beta
         alpha = max(
             alpha,
-            await _minimax(m, c, depth + 1, alpha, beta, _MIN, root.gameOver,
+            _minimax(m, c, depth + 1, alpha, beta, _MIN, root.gameOver,
                 root.gameDraw));
         //undo after alpha beta
         c.undo();
@@ -287,7 +287,7 @@ class ChessAI {
         //minimize beta from new alpha beta
         beta = min(
             beta,
-            await _minimax(m, c, depth + 1, alpha, beta, _MAX, root.gameOver,
+            _minimax(m, c, depth + 1, alpha, beta, _MAX, root.gameOver,
                 root.gameDraw));
         //undo the moves
         c.undo();
