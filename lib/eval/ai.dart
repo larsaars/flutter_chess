@@ -11,7 +11,7 @@ import 'eval.dart';
 
 class ChessAI {
   //the entry point for the new isolate
-  static void entryPointMoveFinderIsolate(List context) {
+  static void entryPointMoveFinderIsolate(List context) async {
     //init the messenger, which sends messages back to the main thread
     final messenger = context[0];
     //set if tensorflow is usable
@@ -80,7 +80,7 @@ class ChessAI {
 
     //init the eval
     _eval = Evaluation(
-        _MAX, _MIN, _LARGE, Evaluation.isEndGame(chess), _TENSORFLOW_USABLE, messenger);
+        _MAX, _LARGE, Evaluation.isEndGame(chess), _TENSORFLOW_USABLE);
 
     //calc the max depth
     _calcMaxDepth(chess);

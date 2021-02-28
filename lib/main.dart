@@ -32,6 +32,8 @@ SharedPreferences prefs;
 String uuid;
 
 void main() async {
+  //ensure binding to native code
+  WidgetsFlutterBinding.ensureInitialized();
   //run the app
   runApp(MyApp());
   //init firebase app
@@ -114,9 +116,9 @@ class _MyHomepageState extends State<MyHomePage> {
     //check if tensorflow is usable
     _chessController.tensorflowUsable = !kIsWeb;
     //load the tensorflow model
-    if(_chessController.tensorflowUsable) {
-      ChessController.tfInterpreter = await tfl.Interpreter.fromAsset('chess_heuristics.tflite');
-    }
+    if (_chessController.tensorflowUsable)
+      ChessController.tfInterpreter =
+          await tfl.Interpreter.fromAsset('chess_heuristics.tflite');
   }
 
   @override

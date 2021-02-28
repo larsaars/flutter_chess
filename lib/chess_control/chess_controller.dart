@@ -13,6 +13,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';
+import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 
 import '../chess_board/src/chess_board_controller.dart';
 import '../eval/ai.dart';
@@ -33,7 +34,7 @@ class ChessController {
 
   bool tensorflowUsable = false;
 
-  static var tfInterpreter;
+  static tfl.Interpreter tfInterpreter;
 
   ChessController(this.context);
 
@@ -198,6 +199,17 @@ class ChessController {
   }
 
   bool makeBotMoveIfRequired() {
+    var input = [game.transformForTFModel()]; //shape is (1, 8, 8, 12)
+    var output = [
+      [0.0]
+    ]; //shape is (1, 1)
+    //run on interpreter
+    Future.delayed(Duration(seconds: 1)).then((value) {
+      ChessController.tfInterpreter.run(input, output);
+
+      print(output);
+    });
+
     if (inOnlineGame) return false;
     //make move if needed
     if (((game?.game?.turn ?? Color.flip(botColor)) == botColor) &&
@@ -208,6 +220,13 @@ class ChessController {
 
     return false;
   }
+
+  List flatten(List arr) => arr.fold(
+      [],
+      (value, element) => [
+            ...value,
+            ...(element is List ? flatten(element) : [element])
+          ]);
 
   void onDraw() {
     //show the dialog
