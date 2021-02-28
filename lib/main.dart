@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:chess_bot/chess_board/flutter_chess_board.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart' as chess_sub;
-import 'package:chess_bot/eval/ai.dart';
 import 'package:chess_bot/generated/i18n.dart';
 import 'package:chess_bot/util/online_game_utils.dart';
 import 'package:chess_bot/util/utils.dart';
@@ -18,6 +17,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
@@ -115,7 +115,7 @@ class _MyHomepageState extends State<MyHomePage> {
     _chessController.tensorflowUsable = !kIsWeb;
     //load the tensorflow model
     if(_chessController.tensorflowUsable) {
-      ChessAI.tfInterpreter = await tfl.Interpreter.fromAsset('chess_heuristics.tflite');
+      ChessController.tfInterpreter = await tfl.Interpreter.fromAsset('chess_heuristics.tflite');
     }
   }
 
