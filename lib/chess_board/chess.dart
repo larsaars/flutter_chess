@@ -1092,16 +1092,16 @@ class Chess {
   }
 
   //reads the board to a matrix that can be entered into the trained tensorflow model
-  List<List<List<int>>> transformForTFModel() {
-    List<List<List<int>>> matrix = [];
-    List<List<int>> currentList;
+  List<List<List<double>>> transformForTFModel() {
+    List<List<List<double>>> matrix = [];
+    List<List<double>> currentList;
     for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
       if ((i & 0x88) != 0) {
         i += 7;
         continue;
       }
 
-      if (i % 8 == 0 || i == Chess.SQUARES_H1) {
+      if (i % 8 == 0) {
         if (currentList != null) matrix.add(currentList);
         currentList = [];
       }
@@ -1109,23 +1109,25 @@ class Chess {
       Piece piece = game.board[i];
       currentList
           .add(TRANSFORMATION_MAP[piece == null ? '.' : piece.toString()]);
+
+      if (i == SQUARES_H1) matrix.add(currentList);
     }
 
     return matrix;
   }
 
   //reads the board to a matrix that can be entered into the trained tensorflow model
-  List<int> transformForTFModelFlat() {
-    List<int> matrix = [];
+  List<double> transformForTFModelFlat() {
+    List<double> matrix = [];
     for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
       if ((i & 0x88) != 0) {
         i += 7;
         continue;
       }
 
-
       Piece piece = game.board[i];
-      for(int i in TRANSFORMATION_MAP[piece == null ? '.' : piece.toString()])
+      for (double i
+          in TRANSFORMATION_MAP[piece == null ? '.' : piece.toString()])
         matrix.add(i);
     }
 
@@ -1844,19 +1846,19 @@ class Chess {
 
   // ignore: non_constant_identifier_names
   static const Map TRANSFORMATION_MAP = {
-    'p': [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    'P': [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-    'n': [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    'N': [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
-    'b': [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    'B': [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-    'r': [0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
-    'R': [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
-    'q': [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-    'Q': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
-    'k': [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
-    'K': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    '.': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'p': <double>[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'P': <double>[0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    'n': <double>[0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'N': <double>[0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    'b': <double>[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    'B': <double>[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    'r': <double>[0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0],
+    'R': <double>[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    'q': <double>[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+    'Q': <double>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    'k': <double>[0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+    'K': <double>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    '.': <double>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   };
 
   static const int SQUARES_A1 = 112;
