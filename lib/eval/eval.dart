@@ -1,12 +1,11 @@
-import 'dart:isolate';
-
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
-import 'package:chess_bot/chess_control/chess_controller.dart';
-import 'package:flutter/foundation.dart';
+
+import '../chess_control/chess_controller.dart';
 
 class Evaluation {
-  final Color _MAX, _MIN;
+  // ignore: non_constant_identifier_names
+  final Color _MAX;
 
   // ignore: non_constant_identifier_names
   final bool endGame;
@@ -14,14 +13,10 @@ class Evaluation {
   // ignore: non_constant_identifier_names
   final double _LARGE;
 
-  // if tensorflow is usable
   // ignore: non_constant_identifier_names
-  final _TENSORFLOW_USABLE;
+  final bool _TENSORFLOW_USABLE;
 
-  final messenger;
-
-  Evaluation(this._MAX, this._MIN, this._LARGE, this.endGame,
-      this._TENSORFLOW_USABLE, this.messenger);
+  Evaluation(this._MAX, this._LARGE, this.endGame, this._TENSORFLOW_USABLE);
 
   // simple material based evaluation
   Future<double> evaluatePosition(
@@ -127,11 +122,6 @@ class Evaluation {
     }
 
     return 0;
-  }
-
-  //send via messenger
-  void _send(data) {
-    if (!kIsWeb && (messenger is SendPort)) messenger.send(data);
   }
 
   //the piece values
