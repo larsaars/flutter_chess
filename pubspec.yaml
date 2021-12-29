@@ -39,9 +39,6 @@ dependencies:
   chess_vectors_flutter: ^1.0.12
   scoped_model: ^1.1.0
 
-  #tflite_flutter with newest version
-  tflite_flutter:
-    path: D:/FlutterProjects/tflite_flutter_plugin
 
 dev_dependencies:
   gen_lang: ^0.1.3
