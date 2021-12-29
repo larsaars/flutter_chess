@@ -17,7 +17,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:lite_rolling_switch/lite_rolling_switch.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
@@ -113,12 +112,6 @@ class _MyHomepageState extends State<MyHomePage> {
       uuid = Uuid().v4();
       prefs.setString('uuid', uuid);
     }
-    //check if tensorflow is usable
-    _chessController.tensorflowUsable = !kIsWeb;
-    //load the tensorflow model
-    if (_chessController.tensorflowUsable)
-      ChessController.tfInterpreter =
-          await tfl.Interpreter.fromAsset('chess_heuristics.tflite');
   }
 
   @override

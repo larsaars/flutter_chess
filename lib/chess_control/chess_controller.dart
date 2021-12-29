@@ -13,7 +13,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:group_radio_button/group_radio_button.dart';
-import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 
 import '../chess_board/src/chess_board_controller.dart';
 import '../eval/ai.dart';
@@ -31,10 +30,6 @@ class ChessController {
 
   static bool loadingBotMoves = false;
   static String moveFrom, moveTo, kingInCheck;
-
-  bool tensorflowUsable = false;
-
-  static tfl.Interpreter tfInterpreter;
 
   ChessController(this.context);
 
@@ -112,8 +107,6 @@ class ChessController {
           receivePort.sendPort,
           game.fen,
           (prefs.getInt('set_depth') ?? 0),
-          tensorflowUsable,
-          tfInterpreter.address,
         ],
         debugName: 'chess_move_generator',
       );
