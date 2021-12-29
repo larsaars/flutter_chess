@@ -2,10 +2,7 @@ import 'dart:isolate';
 import 'dart:math';
 
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 
 import '../chess_board/chess.dart';
 import 'eval.dart';
@@ -15,10 +12,6 @@ class ChessAI {
   static void entryPointMoveFinderIsolate(List context) async {
     //init the messenger, which sends messages back to the main thread
     final messenger = context[0];
-    //if tf model is usable, load
-    if (context[3])
-      //load from transferred address
-      tfInterpreter = tfl.Interpreter.fromAddress(context[4]);
     //set the set depth
     _SET_DEPTH = context[2];
     //if the set depth is not zero, add one since this is just the list index
@@ -65,10 +58,7 @@ class ChessAI {
   // ignore: non_constant_identifier_names
   static int _MAX_DEPTH = 3, _SET_DEPTH = 0;
 
-  //the model
-  static tfl.Interpreter tfInterpreter;
-
-  //the actual method starting the alpha beta pruning
+//the actual method starting the alpha beta pruning
   static List _findBestMove(Chess chess, messenger) {
     //get the start time
     num startTime = DateTime.now().millisecondsSinceEpoch;
@@ -81,8 +71,7 @@ class ChessAI {
     _MIN = Chess.swap_color(chess.game.turn);
 
     //init the eval
-    _eval =
-        Evaluation(_MAX, _LARGE, Evaluation.isEndGame(chess), tfInterpreter);
+    _eval = Evaluation(_MAX, _LARGE, Evaluation.isEndGame(chess));
 
     //calc the max depth
     _calcMaxDepth(chess);

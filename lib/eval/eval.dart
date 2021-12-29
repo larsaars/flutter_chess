@@ -1,6 +1,5 @@
 import 'package:chess_bot/chess_board/chess.dart';
 import 'package:chess_bot/chess_board/src/chess_sub.dart';
-import 'package:tflite_flutter/tflite_flutter.dart' as tfl;
 
 class Evaluation {
   // ignore: non_constant_identifier_names
@@ -12,14 +11,10 @@ class Evaluation {
   // ignore: non_constant_identifier_names
   final double _LARGE;
 
-  //the model
-  final tfl.Interpreter tfInterpreter;
-
-  Evaluation(this._MAX, this._LARGE, this.endGame, this.tfInterpreter);
+  Evaluation(this._MAX, this._LARGE, this.endGame);
 
   // simple material based evaluation
-  double evaluatePosition(
-      Chess c, bool gameOver, bool inDraw, int depth) {
+  double evaluatePosition(Chess c, bool gameOver, bool inDraw, int depth) {
     if (gameOver) {
       if (inDraw) {
         // draw is a neutral outcome
@@ -37,44 +32,25 @@ class Evaluation {
         }
       }
     } else {
-      //if can use tensorflow model for heuristics, use it
-      if (tfInterpreter != null) {
-        //"Keep in mind that the scale goes between -1 and 1, -1 being a checkmate for black and 1 being a checkmate for white."
-        //that means, if MAX is white, good for white must be positive,
-        //and if MAX is black, good for black must be positive
-        //normally positive numbers are positive for black
-        double factor = _MAX == Color.BLACK ? 1 : -1;
-        //run the chess_heuristics model
-        //define input and output (size)
-        var input = [c.transformForTFModel()]; //shape is (1, 8, 8, 12)
-        var output = [
-          [0.0]
-        ]; //shape is (1, 1)
-        //run on interpreter
-        tfInterpreter.run(input, output);
-        //use output prediction * factor
-        return output[0][0] * factor;
-      } else {
-        //the final evaluation to be returned
-        double eval = 0.0;
-        //loop through all squares
-        for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
-          if ((i & 0x88) != 0) {
-            i += 7;
-            continue;
-          }
-
-          Piece piece = c.game.board[i];
-          if (piece != null) {
-            //get the x and y from the map
-            final x = Chess.file(i), y = Chess.rank(i);
-            //evaluate the piece at the position
-            eval += _getPieceValue(piece, x, y);
-          }
+      //the final evaluation to be returned
+      double eval = 0.0;
+      //loop through all squares
+      for (int i = Chess.SQUARES_A8; i <= Chess.SQUARES_H1; i++) {
+        if ((i & 0x88) != 0) {
+          i += 7;
+          continue;
         }
 
-        return eval;
+        Piece piece = c.game.board[i];
+        if (piece != null) {
+          //get the x and y from the map
+          final x = Chess.file(i), y = Chess.rank(i);
+          //evaluate the piece at the position
+          eval += _getPieceValue(piece, x, y);
+        }
       }
+
+      return eval;
     }
   }
 
